@@ -97,8 +97,11 @@ TRANSACTIONS = [
     ("2026-03-15", "Anthropic",     "Claude Pro",                       20.00),
     ("2026-03-19", "Anthropic",     "Credit purchase",                  10.00),
     ("2026-03-19", "Eleven Labs",   "Creator (first month 50% off)",    11.00),
+    ("2026-03-25", "Lovable",       "Lite plan",                         5.00),
     ("2026-04-01", "Anthropic",     "Claude Pro",                       20.00),
     ("2026-04-01", "Anthropic",     "Credit purchase",                   5.00),
+    ("2026-04-03", "Meta (Ads)",    "Facebook Ads",                      2.25),
+    ("2026-04-05", "IONOS",         "Instant Domain",                   20.00),
 ]
 
 MONTHS = [
