@@ -60,6 +60,9 @@ TOOL_RULES = [
     ("billing@recraft.ai",           "Recraft",          "USD", "body"),
     ("billing@ideogram.ai",          "Ideogram AI",      "USD", "body"),
     ("noreply@genspark.ai",          "Genspark",         "USD", "body"),
+    ("receipts@openai.com",          "OpenAI",           "USD", "body"),
+    ("noreply@tm.openai.com",        "OpenAI",           "USD", "body"),
+    ("openai",                       "OpenAI",           "USD", "body"),
 ]
 
 # ── Gmail helpers ─────────────────────────────────────────────────────────────
@@ -254,7 +257,7 @@ def process_message(service, msg_id):
         description = f"{tool} (₪{amount_raw})"
     else:
         amount_usd  = amount_raw
-        description = tool
+        description = "ChatGPT Plus" if tool == "OpenAI" else tool
 
     return {
         "date":        date.strftime("%Y-%m-%d"),
@@ -269,7 +272,7 @@ def process_message(service, msg_id):
 # ── build_report.py insertion ─────────────────────────────────────────────────
 
 def already_imported(date_str, tool):
-    """True if an entry with the same date+tool exists in TRANSACTIONS."""
+    """True if an entry with the same date+tool exists in MANUAL_TRANSACTIONS."""
     code = REPORT_PY.read_text(encoding="utf-8")
     # Accept partial date match (YYYY-MM) for monthly tools
     ym   = date_str[:7]
@@ -279,7 +282,7 @@ def already_imported(date_str, tool):
 
 
 def insert_transaction(txn):
-    """Insert new line into TRANSACTIONS sorted by date."""
+    """Insert new line into MANUAL_TRANSACTIONS sorted by date."""
     code   = REPORT_PY.read_text(encoding="utf-8")
     lines  = code.splitlines(keepends=True)
     ym     = txn["date"][:7]
@@ -291,7 +294,7 @@ def insert_transaction(txn):
     last_month = None
 
     for i, line in enumerate(lines):
-        if "TRANSACTIONS = [" in line:
+        if "MANUAL_TRANSACTIONS = [" in line:
             in_tx = True
             continue
         if not in_tx:
@@ -312,7 +315,7 @@ def insert_transaction(txn):
         insert_at = last_month + 1
 
     if insert_at is None:
-        log.error("Could not find insertion point in TRANSACTIONS")
+        log.error("Could not find insertion point in MANUAL_TRANSACTIONS")
         return False
 
     lines.insert(insert_at, new_ln)

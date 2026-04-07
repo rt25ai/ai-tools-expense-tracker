@@ -1,12 +1,24 @@
 {
-  "generated": "2026-04-07",
+  "generated": "2026-04-08",
   "usd_rate": 3.65,
-  "grand_total": 1272.19,
-  "grand_total_ils": 4643.49,
+  "grand_total": 1886.76,
+  "grand_total_ils": 6886.67,
   "current_month": "2026-04",
-  "current_month_total": 68.04,
-  "current_month_total_ils": 248.35,
+  "current_month_total": 139.04,
+  "current_month_total_ils": 507.5,
   "transactions": [
+    {
+      "date": "2026-05-16",
+      "tool": "OpenAI",
+      "description": "ChatGPT Plus",
+      "amount": 20.0
+    },
+    {
+      "date": "2026-04-16",
+      "tool": "OpenAI",
+      "description": "ChatGPT Plus",
+      "amount": 20.0
+    },
     {
       "date": "2026-04-05",
       "tool": "IONOS",
@@ -38,6 +50,12 @@
       "amount": 20.79
     },
     {
+      "date": "2026-04-01",
+      "tool": "Meta (Ads)",
+      "description": "Facebook Ads",
+      "amount": 51.0
+    },
+    {
       "date": "2026-03-25",
       "tool": "Lovable",
       "description": "Lite plan",
@@ -54,6 +72,12 @@
       "tool": "Eleven Labs",
       "description": "Creator (first month 50% off)",
       "amount": 11.0
+    },
+    {
+      "date": "2026-03-16",
+      "tool": "OpenAI",
+      "description": "ChatGPT Plus",
+      "amount": 20.0
     },
     {
       "date": "2026-03-15",
@@ -86,6 +110,18 @@
       "amount": 20.79
     },
     {
+      "date": "2026-03-02",
+      "tool": "Lovable",
+      "description": "Cloud & AI Balance Top-up",
+      "amount": 10.0
+    },
+    {
+      "date": "2026-03-01",
+      "tool": "Lovable",
+      "description": "Cloud & AI Balance Top-up",
+      "amount": 10.0
+    },
+    {
       "date": "2026-03-01",
       "tool": "Timeless",
       "description": "Pro monthly (50% off)",
@@ -98,16 +134,22 @@
       "amount": 5.0
     },
     {
-      "date": "2026-02-25",
-      "tool": "Meta (Ads)",
-      "description": "Facebook Ads",
-      "amount": 51.0
+      "date": "2026-02-28",
+      "tool": "Lovable",
+      "description": "Cloud & AI Balance Top-up",
+      "amount": 10.0
     },
     {
       "date": "2026-02-25",
       "tool": "Lovable",
       "description": "Pro2 monthly",
       "amount": 50.0
+    },
+    {
+      "date": "2026-02-25",
+      "tool": "Meta (Ads)",
+      "description": "Facebook Ads",
+      "amount": 51.0
     },
     {
       "date": "2026-02-24",
@@ -122,16 +164,34 @@
       "amount": 5.0
     },
     {
+      "date": "2026-02-16",
+      "tool": "OpenAI",
+      "description": "ChatGPT Plus",
+      "amount": 20.0
+    },
+    {
       "date": "2026-02-15",
       "tool": "Anthropic",
       "description": "Claude Pro",
       "amount": 20.0
     },
     {
+      "date": "2026-02-12",
+      "tool": "Meta (Ads)",
+      "description": "Facebook Ads",
+      "amount": 47.0
+    },
+    {
       "date": "2026-02-10",
       "tool": "CapCut",
       "description": "Pro – Feb 2026 (₪49.90)",
       "amount": 13.67
+    },
+    {
+      "date": "2026-02-03",
+      "tool": "Meta (Ads)",
+      "description": "Facebook Ads",
+      "amount": 31.42
     },
     {
       "date": "2026-02-02",
@@ -147,15 +207,39 @@
     },
     {
       "date": "2026-01-30",
+      "tool": "Eleven Labs",
+      "description": "Starter monthly",
+      "amount": 5.0
+    },
+    {
+      "date": "2026-01-30",
       "tool": "Timeless",
       "description": "Pro monthly (50% off)",
       "amount": 14.5
     },
     {
-      "date": "2026-01-30",
-      "tool": "Eleven Labs",
-      "description": "Starter monthly",
-      "amount": 5.0
+      "date": "2026-01-27",
+      "tool": "Meta (Ads)",
+      "description": "Facebook Ads",
+      "amount": 43.0
+    },
+    {
+      "date": "2026-01-25",
+      "tool": "Lovable",
+      "description": "Pro 1 monthly",
+      "amount": 25.0
+    },
+    {
+      "date": "2026-01-19",
+      "tool": "Meta (Ads)",
+      "description": "Facebook Ads",
+      "amount": 39.0
+    },
+    {
+      "date": "2026-01-16",
+      "tool": "OpenAI",
+      "description": "ChatGPT Plus",
+      "amount": 20.0
     },
     {
       "date": "2026-01-10",
@@ -188,6 +272,12 @@
       "amount": 15.0
     },
     {
+      "date": "2026-01-03",
+      "tool": "Meta (Ads)",
+      "description": "Facebook Ads",
+      "amount": 19.43
+    },
+    {
       "date": "2026-01-01",
       "tool": "Google Workspace",
       "description": "Business Plus – Dec 2025 (₪75.90)",
@@ -200,10 +290,40 @@
       "amount": 5.0
     },
     {
+      "date": "2025-12-29",
+      "tool": "Meta (Ads)",
+      "description": "Facebook Ads",
+      "amount": 36.0
+    },
+    {
+      "date": "2025-12-16",
+      "tool": "Meta (Ads)",
+      "description": "Facebook Ads",
+      "amount": 33.0
+    },
+    {
+      "date": "2025-12-16",
+      "tool": "OpenAI",
+      "description": "ChatGPT Plus",
+      "amount": 20.0
+    },
+    {
+      "date": "2025-12-08",
+      "tool": "Meta (Ads)",
+      "description": "Facebook Ads",
+      "amount": 30.0
+    },
+    {
       "date": "2025-12-03",
       "tool": "Manychat",
       "description": "Pro monthly",
       "amount": 15.0
+    },
+    {
+      "date": "2025-12-03",
+      "tool": "Meta (Ads)",
+      "description": "Facebook Ads",
+      "amount": 9.72
     },
     {
       "date": "2025-12-01",
@@ -221,6 +341,12 @@
       "date": "2025-11-24",
       "tool": "Anthropic",
       "description": "Claude Pro",
+      "amount": 20.0
+    },
+    {
+      "date": "2025-11-16",
+      "tool": "OpenAI",
+      "description": "ChatGPT Plus",
       "amount": 20.0
     },
     {
@@ -260,6 +386,12 @@
       "amount": 20.0
     },
     {
+      "date": "2025-10-16",
+      "tool": "OpenAI",
+      "description": "ChatGPT Plus",
+      "amount": 20.0
+    },
+    {
       "date": "2025-10-02",
       "tool": "Google Workspace",
       "description": "Business Plus – Sep 2025 (₪56.93)",
@@ -275,6 +407,12 @@
       "date": "2025-09-24",
       "tool": "Anthropic",
       "description": "Claude Pro",
+      "amount": 20.0
+    },
+    {
+      "date": "2025-09-16",
+      "tool": "OpenAI",
+      "description": "ChatGPT Plus",
       "amount": 20.0
     },
     {
@@ -297,15 +435,21 @@
     },
     {
       "date": "2025-08-30",
+      "tool": "Eleven Labs",
+      "description": "Starter monthly",
+      "amount": 5.0
+    },
+    {
+      "date": "2025-08-30",
       "tool": "Runway ML",
       "description": "Standard (25% off)",
       "amount": 11.25
     },
     {
-      "date": "2025-08-30",
-      "tool": "Eleven Labs",
-      "description": "Starter monthly",
-      "amount": 5.0
+      "date": "2025-08-16",
+      "tool": "OpenAI",
+      "description": "ChatGPT Plus",
+      "amount": 20.0
     },
     {
       "date": "2025-08-11",
@@ -351,21 +495,27 @@
     },
     {
       "date": "2025-07-30",
-      "tool": "Replicate",
-      "description": "Early card charge",
-      "amount": 10.0
-    },
-    {
-      "date": "2025-07-30",
       "tool": "Ideogram AI",
       "description": "Upgrade -> Plus Annual",
       "amount": 113.14
+    },
+    {
+      "date": "2025-07-30",
+      "tool": "Replicate",
+      "description": "Early card charge",
+      "amount": 10.0
     },
     {
       "date": "2025-07-20",
       "tool": "Runway ML",
       "description": "Standard (10% affiliate off)",
       "amount": 13.5
+    },
+    {
+      "date": "2025-07-16",
+      "tool": "OpenAI",
+      "description": "ChatGPT Plus",
+      "amount": 20.0
     },
     {
       "date": "2025-07-11",
@@ -393,24 +543,26 @@
     }
   ],
   "monthly": {
-    "2025-07": 240.23,
-    "2025-08": 109.34,
-    "2025-09": 53.98,
-    "2025-10": 40.6,
-    "2025-11": 73.8,
-    "2025-12": 40.79,
-    "2026-01": 248.88,
-    "2026-02": 210.46,
-    "2026-03": 186.07,
-    "2026-04": 68.04
+    "2025-07": 260.23,
+    "2025-08": 129.34,
+    "2025-09": 73.98,
+    "2025-10": 60.6,
+    "2025-11": 93.8,
+    "2025-12": 169.51,
+    "2026-01": 395.31,
+    "2026-02": 318.88,
+    "2026-03": 226.07,
+    "2026-04": 139.04,
+    "2026-05": 20.0
   },
   "by_tool": {
+    "Meta (Ads)": 483.93,
+    "OpenAI": 220.0,
     "Ideogram AI": 185.14,
     "Anthropic": 180.0,
     "Genspark": 179.92,
     "Google Workspace": 150.75,
-    "Meta (Ads)": 144.36,
-    "Lovable": 80.0,
+    "Lovable": 135.0,
     "Runway ML": 54.75,
     "Eleven Labs": 46.0,
     "CapCut": 41.01,

@@ -2,3 +2,8 @@
 *.json
 !docs/data.json
 !docs/manifest.json
+__pycache__/
+*.pyc
+*.log
+~$*.xlsx
+tmp/

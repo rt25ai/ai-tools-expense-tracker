@@ -48,7 +48,7 @@ def left_al():
     return Alignment(horizontal="left", vertical="center", wrap_text=True)
 
 # ── All transactions data ────────────────────────────────────────────────────
-TRANSACTIONS = [
+MANUAL_TRANSACTIONS = [
     # (date, tool, description, usd_amount)
     ("2025-07-04", "Recraft",       "Basic – first month promo",         1.00),
     ("2025-07-09", "Ideogram AI",   "Ideogram Basic – annual",          72.00),
@@ -82,33 +82,47 @@ TRANSACTIONS = [
     ("2025-11-30", "Eleven Labs",   "Starter monthly",                   5.00),
     ("2025-12-01", "Google Workspace", "Business Plus – Nov 2025 (₪75.90)",  20.79),
     ("2025-12-03", "Manychat",      "Pro monthly",                      15.00),
+    ("2025-12-03", "Meta (Ads)",    "Facebook Ads",                      9.72),
+    ("2025-12-08", "Meta (Ads)",    "Facebook Ads",                     30.00),
+    ("2025-12-16", "Meta (Ads)",    "Facebook Ads",                     33.00),
+    ("2025-12-29", "Meta (Ads)",    "Facebook Ads",                     36.00),
     ("2025-12-30", "Eleven Labs",   "Starter monthly",                   5.00),
     ("2026-01-01", "Google Workspace", "Business Plus – Dec 2025 (₪75.90)",  20.79),
     ("2026-01-03", "Genspark",      "Plus Annual (happynewyear26 promo)", 139.92),
     ("2026-01-03", "Manychat",      "Pro monthly",                      15.00),
+    ("2026-01-03", "Meta (Ads)",    "Facebook Ads",                     19.43),
     ("2026-01-05", "Genspark",      "Credits Pack",                     20.00),
     ("2026-01-08", "Genspark",      "Credits Pack",                     20.00),
     ("2026-01-10", "CapCut",        "Pro – Jan 2026 (₪49.90)",          13.67),
+    ("2026-01-19", "Meta (Ads)",    "Facebook Ads",                     39.00),
+    ("2026-01-25", "Lovable",       "Pro 1 monthly",                    25.00),
+    ("2026-01-27", "Meta (Ads)",    "Facebook Ads",                     43.00),
     ("2026-01-30", "Timeless",      "Pro monthly (50% off)",            14.50),
     ("2026-01-30", "Eleven Labs",   "Starter monthly",                   5.00),
     ("2026-02-01", "Lovable",       "Upgrade Pro1 -> Pro2 (prorated)",  25.00),
     ("2026-02-02", "Google Workspace", "Business Plus – Jan 2026 (₪75.90)",  20.79),
+    ("2026-02-03", "Meta (Ads)",    "Facebook Ads",                     31.42),
     ("2026-02-10", "CapCut",        "Pro – Feb 2026 (₪49.90)",          13.67),
+    ("2026-02-12", "Meta (Ads)",    "Facebook Ads",                     47.00),
     ("2026-02-15", "Anthropic",     "Claude Pro",                       20.00),
     ("2026-02-16", "Anthropic",     "Credit purchase",                   5.00),
     ("2026-02-24", "Higgsfield",    "On-Demand credits 500",            20.00),
     ("2026-02-25", "Meta (Ads)",    "Facebook Ads",                     51.00),
     ("2026-02-25", "Lovable",       "Pro2 monthly",                     50.00),
     ("2026-02-28", "Eleven Labs",   "Starter monthly",                   5.00),
+    ("2026-02-28", "Lovable",       "Cloud & AI Balance Top-up",        10.00),
+    ("2026-03-01", "Lovable",       "Cloud & AI Balance Top-up",        10.00),
     ("2026-03-01", "Timeless",      "Pro monthly (50% off)",            14.50),
+    ("2026-03-02", "Lovable",       "Cloud & AI Balance Top-up",        10.00),
     ("2026-03-02", "Google Workspace", "Business Plus – Feb 2026 (₪75.90)",  20.79),
     ("2026-03-03", "Meta (Ads)",    "Facebook Ads",                     40.11),
+    ("2026-03-10", "CapCut",        "Pro – Mar 2026 (₪49.90)",          13.67),
     ("2026-03-12", "Meta (Ads)",    "Facebook Ads",                     51.00),
     ("2026-03-15", "Anthropic",     "Claude Pro",                       20.00),
     ("2026-03-19", "Anthropic",     "Credit purchase",                  10.00),
     ("2026-03-19", "Eleven Labs",   "Creator (first month 50% off)",    11.00),
-    ("2026-03-10", "CapCut",        "Pro – Mar 2026 (₪49.90)",          13.67),
     ("2026-03-25", "Lovable",       "Lite plan",                         5.00),
+    ("2026-04-01", "Meta (Ads)",    "Facebook Ads",                     51.00),
     ("2026-04-01", "Anthropic",     "Claude Pro",                       20.00),
     ("2026-04-01", "Anthropic",     "Credit purchase",                   5.00),
     ("2026-04-01", "Google Workspace", "Business Plus – Mar 2026 (₪75.90)",  20.79),
@@ -116,20 +130,115 @@ TRANSACTIONS = [
     ("2026-04-05", "IONOS",         "Instant Domain",                   20.00),
 ]
 
-MONTHS = [
-    ("2025-07", "\u05d9\u05d5\u05dc\u05d9 2025",    "July 2025"),
-    ("2025-08", "\u05d0\u05d5\u05d2\u05d5\u05e1\u05d8 2025",  "August 2025"),
-    ("2025-09", "\u05e1\u05e4\u05d8\u05de\u05d1\u05e8 2025",  "September 2025"),
-    ("2025-10", "\u05d0\u05d5\u05e7\u05d8\u05d5\u05d1\u05e8 2025", "October 2025"),
-    ("2025-11", "\u05e0\u05d5\u05d1\u05de\u05d1\u05e8 2025",  "November 2025"),
-    ("2025-12", "\u05d3\u05e6\u05de\u05d1\u05e8 2025",   "December 2025"),
-    ("2026-01", "\u05d9\u05e0\u05d5\u05d0\u05e8 2026",   "January 2026"),
-    ("2026-02", "\u05e4\u05d1\u05e8\u05d5\u05d0\u05e8 2026",  "February 2026"),
-    ("2026-03", "\u05de\u05e8\u05e5 2026",     "March 2026"),
-    ("2026-04", "\u05d0\u05e4\u05e8\u05d9\u05dc 2026",   "April 2026"),
+TRACKING_START = datetime.date(2025, 7, 1)
+MONTHS_AHEAD = 1
+
+HE_MONTH_NAMES = {
+    1: "ינואר",
+    2: "פברואר",
+    3: "מרץ",
+    4: "אפריל",
+    5: "מאי",
+    6: "יוני",
+    7: "יולי",
+    8: "אוגוסט",
+    9: "ספטמבר",
+    10: "אוקטובר",
+    11: "נובמבר",
+    12: "דצמבר",
+}
+
+EN_MONTH_NAMES = {
+    1: "January",
+    2: "February",
+    3: "March",
+    4: "April",
+    5: "May",
+    6: "June",
+    7: "July",
+    8: "August",
+    9: "September",
+    10: "October",
+    11: "November",
+    12: "December",
+}
+
+RECURRING_RULES = [
+    {
+        "tool": "OpenAI",
+        "description": "ChatGPT Plus",
+        "amount_usd": 20.00,
+        "day": 16,
+        "start_month": "2025-07",
+        "notes": "Automatic recurring charge every month on the 16th.",
+    },
 ]
 
+
+def first_day_of_month(d):
+    return d.replace(day=1)
+
+
+def add_months(d, months):
+    year = d.year + (d.month - 1 + months) // 12
+    month = (d.month - 1 + months) % 12 + 1
+    return d.replace(year=year, month=month, day=1)
+
+
+def build_months():
+    months = []
+    current = first_day_of_month(TRACKING_START)
+    end = add_months(first_day_of_month(datetime.date.today()), MONTHS_AHEAD)
+    while current <= end:
+        month_key = current.strftime("%Y-%m")
+        months.append(
+            (
+                month_key,
+                f"{HE_MONTH_NAMES[current.month]} {current.year}",
+                f"{EN_MONTH_NAMES[current.month]} {current.year}",
+            )
+        )
+        current = add_months(current, 1)
+    return months
+
+
+def build_recurring_transactions(months):
+    month_keys = [month_key for month_key, _, _ in months]
+    recurring = []
+    for rule in RECURRING_RULES:
+        for month_key in month_keys:
+            if month_key < rule["start_month"]:
+                continue
+            recurring.append(
+                (
+                    f"{month_key}-{rule['day']:02d}",
+                    rule["tool"],
+                    rule["description"],
+                    rule["amount_usd"],
+                )
+            )
+    return recurring
+
+
+def combine_transactions():
+    manual = list(MANUAL_TRANSACTIONS)
+    recurring = build_recurring_transactions(MONTHS)
+    manual_month_tool = {(date[:7], tool) for date, tool, _, _ in manual}
+
+    for txn in recurring:
+        month_key = txn[0][:7]
+        if (month_key, txn[1]) in manual_month_tool:
+            continue
+        manual.append(txn)
+
+    return sorted(manual, key=lambda item: (item[0], item[1], item[2]))
+
+
+MONTHS = build_months()
+TRANSACTIONS = combine_transactions()
 ALL_TOOLS = sorted(set(t[1] for t in TRANSACTIONS))
+REPORT_RANGE_HE = f"{MONTHS[0][1]} – {MONTHS[-1][1]}"
+REPORT_RANGE_EN = f"{MONTHS[0][2]} – {MONTHS[-1][2]}"
 
 # Sheet name for each month (short, safe for Excel tab)
 MONTH_SHEET_NAMES = {mk: mname_he for mk, mname_he, _ in MONTHS}
@@ -218,6 +327,17 @@ def build_settings(wb):
     ws["B6"].font = Font(italic=True, size=9, color=C_DARKGRAY, name="Arial")
     ws["B6"].alignment = Alignment(wrap_text=True, vertical="top")
 
+    ws["A10"].value = "חיובים קבועים:"
+    ws["A10"].font = Font(bold=True, size=10, name="Arial")
+    ws.merge_cells("B10:E12")
+    ws["B10"].value = (
+        'OpenAI / ChatGPT Plus – $20 בכל 16 לחודש. '
+        "החיוב מתווסף אוטומטית לכל חודש בדוחות, בגליונות ובדשבורד, "
+        "וכאשר תגיע חשבונית OpenAI במייל היא אמורה להיות מזוהה תחת אותו כלי."
+    )
+    ws["B10"].font = Font(italic=True, size=9, color=C_DARKGRAY, name="Arial")
+    ws["B10"].alignment = Alignment(wrap_text=True, vertical="top")
+
     set_col_width(ws, 1, 35)
     set_col_width(ws, 2, 18)
     set_col_width(ws, 3, 45)
@@ -236,7 +356,7 @@ def build_transactions(wb):
 
     ws.merge_cells("A1:F1")
     c = ws["A1"]
-    c.value = "\u05db\u05dc \u05d4\u05d4\u05d5\u05e6\u05d0\u05d5\u05ea \u2013 \u05db\u05dc\u05d9 AI  |  \u05d9\u05d5\u05dc\u05d9 2025 \u2013 \u05d0\u05e4\u05e8\u05d9\u05dc 2026"
+    c.value = f"\u05db\u05dc \u05d4\u05d4\u05d5\u05e6\u05d0\u05d5\u05ea \u2013 \u05db\u05dc\u05d9 AI  |  {REPORT_RANGE_HE}"
     c.font = Font(bold=True, color=C_WHITE, size=14, name="Arial")
     c.fill = fill(C_NAVY)
     c.alignment = center()
@@ -455,7 +575,7 @@ def build_monthly_summary(wb, month_sheet_names):
     num_months = len(MONTHS)
     ws.merge_cells(f"A1:{get_column_letter(num_months * 2 + 2)}1")
     c = ws["A1"]
-    c.value = "\u05e1\u05d9\u05db\u05d5\u05dd \u05d7\u05d5\u05d3\u05e9\u05d9 \u05dc\u05e4\u05d9 \u05db\u05dc\u05d9  |  \u05d9\u05d5\u05dc\u05d9 2025 \u2013 \u05d0\u05e4\u05e8\u05d9\u05dc 2026"
+    c.value = f"\u05e1\u05d9\u05db\u05d5\u05dd \u05d7\u05d5\u05d3\u05e9\u05d9 \u05dc\u05e4\u05d9 \u05db\u05dc\u05d9  |  {REPORT_RANGE_HE}"
     c.font = Font(bold=True, color=C_WHITE, size=14, name="Arial")
     c.fill = fill(C_NAVY)
     c.alignment = center()
@@ -464,7 +584,11 @@ def build_monthly_summary(wb, month_sheet_names):
     # Instruction row
     ws.merge_cells(f"A2:{get_column_letter(num_months * 2 + 2)}2")
     c = ws["A2"]
-    c.value = "\u05dc\u05d7\u05e5 \u05e2\u05dc \u05e9\u05dd \u05d7\u05d5\u05d3\u05e9 \u05db\u05d3\u05d9 \u05dc\u05e6\u05e4\u05d9\u05d9\u05d4 \u05d1\u05d2\u05dc\u05d9\u05d5\u05df \u05d4\u05de\u05e4\u05d5\u05e8\u05d8 \u2193"
+    c.value = (
+        "\u05dc\u05d7\u05e5 \u05e2\u05dc \u05e9\u05dd \u05d7\u05d5\u05d3\u05e9 \u05db\u05d3\u05d9 \u05dc\u05e6\u05e4\u05d9\u05d9\u05d4 "
+        "\u05d1\u05d2\u05dc\u05d9\u05d5\u05df \u05d4\u05de\u05e4\u05d5\u05e8\u05d8 \u2193  |  OpenAI / ChatGPT Plus \u05de\u05ea\u05d5\u05d5\u05e1\u05e3 "
+        "\u05d0\u05d5\u05d8\u05d5\u05de\u05d8\u05d9\u05ea \u05d1-16 \u05dc\u05db\u05dc \u05d7\u05d5\u05d3\u05e9"
+    )
     c.font = Font(italic=True, size=9, color=C_DARKGRAY, name="Arial")
     c.fill = fill("F2F2F2")
     c.alignment = center()
@@ -650,7 +774,7 @@ def build_annual_report(wb, month_sheet_names):
 
     ws.merge_cells("A2:F2")
     c = ws["A2"]
-    c.value = "\u05e1\u05d9\u05db\u05d5\u05dd \u05d4\u05d5\u05e6\u05d0\u05d5\u05ea \u05dc\u05e4\u05d9 \u05d7\u05d5\u05d3\u05e9 \u2013 \u05d9\u05d5\u05dc\u05d9 2025 \u05e2\u05d3 \u05d0\u05e4\u05e8\u05d9\u05dc 2026"
+    c.value = f"\u05e1\u05d9\u05db\u05d5\u05dd \u05d4\u05d5\u05e6\u05d0\u05d5\u05ea \u05dc\u05e4\u05d9 \u05d7\u05d5\u05d3\u05e9 \u2013 {REPORT_RANGE_HE}"
     c.font = Font(bold=False, color=C_WHITE, size=11, italic=True, name="Arial")
     c.fill = fill(C_BLUE)
     c.alignment = center()
