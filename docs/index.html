@@ -304,13 +304,29 @@ td { padding:11px 16px; font-size:.83rem; text-align:right; }
 .month-detail-title { font-family:var(--ff-display); font-size:2rem; letter-spacing:.06em; }
 .month-detail-total { font-family:var(--ff-mono); font-size:1.4rem; color:var(--gold); }
 
-.month-tools-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:8px; margin-bottom:20px; }
-.month-tool-item {
+/* expandable tool accordion in month detail */
+.md-tools { display:flex; flex-direction:column; gap:6px; margin-bottom:20px; }
+.md-tool {
   background:var(--surface); border:1px solid var(--border); border-radius:var(--r);
-  padding:11px 14px;
+  overflow:hidden; transition:border-color .2s;
 }
-.month-tool-name { font-size:.8rem; font-weight:600; color:var(--text); margin-bottom:4px; }
-.month-tool-amount { font-family:var(--ff-mono); font-size:.95rem; }
+.md-tool.open { border-color:var(--border-hi); }
+.md-tool-header {
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:12px 16px; cursor:pointer; user-select:none;
+}
+.md-tool-header:hover { background:rgba(255,255,255,.03); }
+.md-tool-name { font-size:.85rem; font-weight:600; }
+.md-tool-right { display:flex; align-items:center; gap:12px; }
+.md-tool-amount { font-family:var(--ff-mono); font-size:.92rem; font-weight:500; }
+.md-tool-count { font-family:var(--ff-mono); font-size:.65rem; color:var(--dim); }
+.md-tool-chevron { font-size:.75rem; color:var(--dim); transition:transform .25s; width:12px; text-align:center; }
+.md-tool.open .md-tool-chevron { transform:rotate(90deg); color:var(--gold); }
+.md-tool-txns { display:none; border-top:1px solid var(--border); }
+.md-tool.open .md-tool-txns { display:block; }
+.md-tool-txns table { width:100%; border-collapse:collapse; }
+.md-tool-txns td { padding:9px 16px; font-size:.8rem; border-top:1px solid var(--border); }
+.md-tool-txns tr:first-child td { border-top:none; }
 
 /* ── ANNUAL VIEW ─────────────────────────────────────────── */
 .annual-view { padding:28px 0 40px; }
@@ -851,21 +867,30 @@ function toggleMonth(ym){
   const sortedTools=Object.entries(byTool).sort((a,b)=>b[1]-a[1]);
   const maxTool=sortedTools.length?sortedTools[0][1]:1;
 
-  const toolsHtml=sortedTools.map(([tool,amt])=>`
-    <div class="month-tool-item">
-      <div class="month-tool-name" style="color:${toolColor(tool)}">${tool}</div>
-      <div class="month-tool-amount" style="color:${toolColor(tool)}">${ils(amt)}</div>
-      <div style="font-family:var(--ff-mono);font-size:.62rem;color:var(--dim)">${txns.filter(t=>t.tool===tool).length} תשלומים</div>
-    </div>`).join('');
-
-  const txHtml=txns.sort((a,b)=>b.date.localeCompare(a.date)).map(t=>`
-    <tr>
-      <td class="date-cell">${t.date}</td>
-      <td><span class="tool-badge" style="background:${toolColor(t.tool)}18;color:${toolColor(t.tool)}">
-        <span class="tool-badge-dot" style="background:${toolColor(t.tool)}"></span>${t.tool}</span></td>
-      <td class="desc-cell" style="max-width:none">${t.description}</td>
-      <td class="amount-cell">${ils(t.amount,2)}</td>
-    </tr>`).join('');
+  const toolsHtml=sortedTools.map(([tool,amt],idx)=>{
+    const col=toolColor(tool);
+    const toolTxns=txns.filter(t=>t.tool===tool).sort((a,b)=>b.date.localeCompare(a.date));
+    const rows=toolTxns.map(t=>`
+      <tr>
+        <td class="date-cell">${t.date}</td>
+        <td class="desc-cell" style="max-width:none;color:var(--text)">${t.description}</td>
+        <td class="amount-cell">${ils(t.amount,2)}</td>
+      </tr>`).join('');
+    return `
+    <div class="md-tool" id="mdt-${ym}-${idx}">
+      <div class="md-tool-header" onclick="toggleToolDetail('${ym}',${idx})">
+        <div class="md-tool-name" style="color:${col}">${tool}</div>
+        <div class="md-tool-right">
+          <div class="md-tool-amount" style="color:${col}">${ils(amt)}</div>
+          <div class="md-tool-count">${toolTxns.length} תשלומים</div>
+          <div class="md-tool-chevron">▸</div>
+        </div>
+      </div>
+      <div class="md-tool-txns">
+        <div class="table-scroll"><table><tbody>${rows}</tbody></table></div>
+      </div>
+    </div>`;
+  }).join('');
 
   const detail=document.createElement('div');
   detail.className='month-detail open';
@@ -876,13 +901,9 @@ function toggleMonth(ym){
       <div class="month-detail-title">${monthLabelFull(ym)}</div>
       <div class="month-detail-total">${ils(total)} <span style="font-size:.8em;color:var(--mid)">($${total.toFixed(2)})</span></div>
     </div>
-    <div class="month-tools-grid">${toolsHtml}</div>
-    <div class="table-wrap"><div class="table-scroll"><table>
-      <thead><tr><th>תאריך</th><th>כלי</th><th>תיאור</th><th style="text-align:left">סכום</th></tr></thead>
-      <tbody>${txHtml}</tbody>
-    </table></div></div>`;
+    <div class="md-tools">${toolsHtml}</div>`;
 
-  card.insertAdjacentElement('afterend',detail);
+  card.closest('.months-grid').insertAdjacentElement('afterend',detail);
 
   // animate bars in detail
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
@@ -896,6 +917,11 @@ function closeMonthDetail(){
     document.getElementById('detail-'+openMonth)?.remove();
     openMonth=null;
   }
+}
+
+function toggleToolDetail(ym, idx){
+  const el=document.getElementById('mdt-'+ym+'-'+idx);
+  if(el) el.classList.toggle('open');
 }
 
 /* ══════════════════════════════════════════════════════════
