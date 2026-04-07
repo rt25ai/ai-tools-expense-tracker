@@ -3,411 +3,1064 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RT-AI | לוח הוצאות כלי AI</title>
+<title>RT-AI | AI Expense Command Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
-  :root {
-    --cyan: #00e5cc;
-    --cyan2: #00b4d8;
-    --bg: #0a0e1a;
-    --card: #111827;
-    --card2: #1a2235;
-    --border: #1e2d45;
-    --text: #e2e8f0;
-    --muted: #64748b;
-    --green: #10b981;
-    --orange: #f59e0b;
-    --red: #ef4444;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,sans-serif; min-height:100vh; }
+/* ──────────────────────────────────────────────────────────
+   DESIGN TOKENS
+────────────────────────────────────────────────────────── */
+:root {
+  --gold:       #F4C54A;
+  --gold-dim:   #C89D2A;
+  --gold-glow:  rgba(244,197,74,0.18);
+  --gold-edge:  rgba(244,197,74,0.35);
+  --blue:       #3D7EFF;
+  --blue-dim:   rgba(61,126,255,0.15);
+  --green:      #35E07A;
+  --red:        #FF5C5C;
 
-  /* HEADER */
-  header {
-    background: linear-gradient(135deg, #0d1b2e 0%, #111827 100%);
-    border-bottom: 1px solid var(--border);
-    padding: 16px 24px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    backdrop-filter: blur(12px);
-  }
-  header img { height: 44px; width: auto; }
-  header h1 { font-size: 1.25rem; font-weight: 700; color: var(--text); }
-  header h1 span { color: var(--cyan); }
-  .header-right { margin-right: auto; display:flex; align-items:center; gap:10px; }
-  .live-badge {
-    background: rgba(16,185,129,0.15);
-    border: 1px solid var(--green);
-    color: var(--green);
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-  .live-dot { width:6px; height:6px; background:var(--green); border-radius:50%; animation: pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-  .updated { color: var(--muted); font-size: 0.75rem; }
+  --bg:         #07090F;
+  --bg2:        #0D1017;
+  --surface:    #111620;
+  --surface2:   #161C2C;
+  --border:     rgba(255,255,255,0.065);
+  --border-hi:  rgba(244,197,74,0.3);
 
-  /* LAYOUT */
-  main { padding: 24px; max-width: 1400px; margin: 0 auto; }
+  --text:       #E8EDF5;
+  --text-mid:   #8A95B0;
+  --text-dim:   #4A5568;
 
-  /* STAT CARDS */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-  .stat-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.2s, border-color 0.2s;
-  }
-  .stat-card:hover { transform: translateY(-2px); border-color: var(--cyan); }
-  .stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--cyan), var(--cyan2));
-  }
-  .stat-label { color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
-  .stat-value { font-size: 1.8rem; font-weight: 800; color: var(--cyan); line-height: 1; }
-  .stat-sub { color: var(--muted); font-size: 0.75rem; margin-top: 6px; }
-  .stat-icon { position:absolute; top:16px; left:16px; font-size:1.5rem; opacity:0.15; }
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-mono:    'DM Mono', monospace;
+  --font-body:    'Heebo', sans-serif;
 
-  /* CHARTS ROW */
-  .charts-row {
-    display: grid;
-    grid-template-columns: 1.6fr 1fr;
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-  @media(max-width: 768px) { .charts-row { grid-template-columns: 1fr; } }
+  --radius:     12px;
+  --radius-lg:  18px;
+  --shadow:     0 4px 32px rgba(0,0,0,0.5);
+  --shadow-gold: 0 0 30px rgba(244,197,74,0.12);
+}
 
-  .chart-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
-  }
-  .chart-title {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .chart-title::before {
-    content: '';
-    width: 3px; height: 14px;
-    background: var(--cyan);
-    border-radius: 2px;
-    display: inline-block;
-  }
-  .chart-wrap { position: relative; height: 260px; }
+/* ──────────────────────────────────────────────────────────
+   RESET & BASE
+────────────────────────────────────────────────────────── */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
-  /* TABLE */
-  .table-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 24px;
-  }
-  .table-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  .search-box {
-    background: var(--card2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 8px 14px;
-    color: var(--text);
-    font-size: 0.85rem;
-    outline: none;
-    width: 200px;
-    transition: border-color 0.2s;
-  }
-  .search-box:focus { border-color: var(--cyan); }
-  .search-box::placeholder { color: var(--muted); }
+html { scroll-behavior: smooth; }
 
-  table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-  th {
-    text-align: right;
-    padding: 10px 12px;
-    color: var(--muted);
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    border-bottom: 1px solid var(--border);
-    cursor: pointer;
-    white-space: nowrap;
-    user-select: none;
-  }
-  th:hover { color: var(--cyan); }
-  td {
-    padding: 12px;
-    border-bottom: 1px solid rgba(30,45,69,0.5);
-    vertical-align: middle;
-  }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: rgba(0,229,204,0.03); }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
 
-  .tool-badge {
-    display: inline-block;
-    padding: 3px 9px;
-    border-radius: 20px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    white-space: nowrap;
-  }
-  .amount-cell { font-weight: 700; color: var(--cyan); font-family: monospace; font-size: 0.9rem; }
-  .date-cell { color: var(--muted); font-size: 0.8rem; font-family: monospace; }
+/* Noise texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.4;
+}
 
-  .pagination {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    margin-top: 16px;
-    flex-wrap: wrap;
-  }
-  .page-btn {
-    background: var(--card2);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 6px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.8rem;
-    transition: all 0.15s;
-  }
-  .page-btn:hover, .page-btn.active { background: var(--cyan); color: #000; border-color: var(--cyan); font-weight: 600; }
+/* Grid lines background */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+  z-index: 0;
+}
 
-  /* TOP TOOLS */
-  .top-tools {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 10px;
-    margin-bottom: 24px;
-  }
-  .tool-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px;
-    text-align: center;
-    transition: all 0.2s;
-  }
-  .tool-card:hover { border-color: var(--cyan); transform: translateY(-2px); }
-  .tool-name { font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; color: var(--text); }
-  .tool-amount { font-size: 1.1rem; font-weight: 800; color: var(--cyan); }
-  .tool-count { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
-  .tool-bar { height: 3px; border-radius: 2px; margin-top: 8px; background: linear-gradient(90deg, var(--cyan), var(--cyan2)); }
+/* ──────────────────────────────────────────────────────────
+   SCROLLBAR
+────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold-dim); }
 
-  /* FOOTER */
-  footer {
-    text-align: center;
-    padding: 20px;
-    color: var(--muted);
-    font-size: 0.75rem;
-    border-top: 1px solid var(--border);
-  }
-  footer a { color: var(--cyan); text-decoration: none; }
+/* ──────────────────────────────────────────────────────────
+   LAYOUT WRAPPER
+────────────────────────────────────────────────────────── */
+.shell {
+  position: relative;
+  z-index: 1;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
 
-  /* MOBILE */
-  @media(max-width: 600px) {
-    main { padding: 12px; }
-    .stat-value { font-size: 1.4rem; }
-    table { font-size: 0.78rem; }
-    td, th { padding: 8px 6px; }
-    .search-box { width: 150px; }
-    header h1 { font-size: 1rem; }
-  }
+/* ──────────────────────────────────────────────────────────
+   HEADER
+────────────────────────────────────────────────────────── */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: rgba(7,9,15,0.88);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+}
 
-  .loading { text-align:center; padding:60px; color:var(--muted); }
-  .spinner { display:inline-block; width:32px; height:32px; border:3px solid var(--border); border-top-color:var(--cyan); border-radius:50%; animation:spin 0.8s linear infinite; margin-bottom:12px; }
-  @keyframes spin { to { transform:rotate(360deg); } }
+.header-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.logo-wrap img {
+  height: 36px;
+  width: auto;
+  filter: drop-shadow(0 0 8px rgba(244,197,74,0.3));
+}
+
+.logo-divider {
+  width: 1px;
+  height: 28px;
+  background: var(--border);
+}
+
+.header-title {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  letter-spacing: 0.08em;
+  color: var(--text);
+  line-height: 1;
+}
+
+.header-title em {
+  font-style: normal;
+  color: var(--gold);
+}
+
+.header-right {
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.live-dot {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  color: var(--green);
+  letter-spacing: 0.06em;
+}
+
+.live-dot::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse-dot 2s ease-in-out infinite;
+  box-shadow: 0 0 6px var(--green);
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.7); }
+}
+
+.updated-tag {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  letter-spacing: 0.03em;
+}
+
+/* ──────────────────────────────────────────────────────────
+   HERO BAND
+────────────────────────────────────────────────────────── */
+.hero {
+  padding: 48px 0 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-glow {
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 300px;
+  background: radial-gradient(ellipse, rgba(244,197,74,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.hero-total {
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 10vw, 8rem);
+  line-height: 0.9;
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, #F4C54A 0%, #FDEAA0 40%, #C89D2A 80%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 40px rgba(244,197,74,0.2));
+  animation: reveal-up 0.8s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero-sub {
+  margin-top: 12px;
+  font-size: 0.88rem;
+  color: var(--text-mid);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.hero-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 4px 14px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-mid);
+}
+
+.hero-pill b { color: var(--text); font-weight: 500; }
+
+/* ──────────────────────────────────────────────────────────
+   STAT CARDS ROW
+────────────────────────────────────────────────────────── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+@media (max-width: 900px) { .stats-row { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .stats-row { grid-template-columns: 1fr 1fr; } }
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 20px 18px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+  animation: fade-in 0.6s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+.stat-card:nth-child(1) { animation-delay: 0.1s; }
+.stat-card:nth-child(2) { animation-delay: 0.2s; }
+.stat-card:nth-child(3) { animation-delay: 0.3s; }
+.stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.stat-card:hover {
+  border-color: var(--border-hi);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-gold);
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 60px; height: 60px;
+  background: var(--gold-glow);
+  filter: blur(30px);
+  pointer-events: none;
+}
+
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  letter-spacing: 0.04em;
+  color: var(--text);
+  line-height: 1;
+}
+
+.stat-value.gold { color: var(--gold); }
+
+.stat-sub {
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: var(--text-mid);
+  font-family: var(--font-mono);
+}
+
+/* ──────────────────────────────────────────────────────────
+   CHARTS SECTION
+────────────────────────────────────────────────────────── */
+.charts-row {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+@media (max-width: 1024px) { .charts-row { grid-template-columns: 1fr; } }
+
+.chart-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  animation: fade-in 0.7s cubic-bezier(0.16,1,0.3,1) 0.3s both;
+}
+
+.card-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.card-title {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  letter-spacing: 0.08em;
+  color: var(--text);
+}
+
+.card-title span {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.chart-wrap {
+  position: relative;
+  height: 240px;
+}
+
+.chart-wrap-donut {
+  position: relative;
+  height: 240px;
+}
+
+/* ──────────────────────────────────────────────────────────
+   TOOLS GRID
+────────────────────────────────────────────────────────── */
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  letter-spacing: 0.08em;
+}
+
+.section-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  margin-bottom: 28px;
+  animation: fade-in 0.7s cubic-bezier(0.16,1,0.3,1) 0.4s both;
+}
+
+.tool-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s;
+  cursor: default;
+}
+
+.tool-card:hover {
+  transform: translateY(-2px);
+}
+
+.tool-card-accent {
+  position: absolute;
+  top: 0; right: 0;
+  width: 3px;
+  height: 100%;
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.tool-card-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tool-card-amount {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.tool-card-meta {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+
+.tool-bar-track {
+  margin-top: 10px;
+  height: 2px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.tool-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 1.2s cubic-bezier(0.16,1,0.3,1);
+  width: 0;
+}
+
+/* ──────────────────────────────────────────────────────────
+   TRANSACTIONS TABLE
+────────────────────────────────────────────────────────── */
+.table-section {
+  animation: fade-in 0.7s cubic-bezier(0.16,1,0.3,1) 0.5s both;
+  margin-bottom: 40px;
+}
+
+.table-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.search-wrap {
+  flex: 1;
+  min-width: 200px;
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  top: 50%; right: 14px;
+  transform: translateY(-50%);
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 38px 10px 16px;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+  text-align: right;
+  direction: rtl;
+}
+
+.search-input::placeholder { color: var(--text-dim); }
+.search-input:focus { border-color: var(--border-hi); }
+
+.filter-select {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  color: var(--text-mid);
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  direction: rtl;
+}
+
+.filter-select:focus { border-color: var(--border-hi); }
+
+.table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.table-scroll { overflow-x: auto; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  padding: 13px 18px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  text-align: right;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+
+th:hover { color: var(--gold); }
+th.sort-active { color: var(--gold); }
+
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: rgba(244,197,74,0.03); }
+
+td {
+  padding: 12px 18px;
+  font-size: 0.84rem;
+  text-align: right;
+}
+
+.date-cell {
+  font-family: var(--font-mono);
+  font-size: 0.77rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.tool-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tool-badge-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.desc-cell {
+  color: var(--text-mid);
+  font-size: 0.78rem;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.amount-cell {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--text);
+  text-align: left !important;
+  white-space: nowrap;
+}
+
+/* ──────────────────────────────────────────────────────────
+   PAGINATION
+────────────────────────────────────────────────────────── */
+.table-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.row-count {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+}
+
+.pagination {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.page-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  width: 30px; height: 30px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-btn:hover { border-color: var(--gold); color: var(--gold); }
+.page-btn.active { background: var(--gold); border-color: var(--gold); color: var(--bg); font-weight: 600; }
+
+/* ──────────────────────────────────────────────────────────
+   FOOTER
+────────────────────────────────────────────────────────── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 24px 0;
+  text-align: center;
+}
+
+.footer-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+footer p {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+}
+
+footer a {
+  color: var(--gold);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+footer a:hover { opacity: 0.7; }
+
+/* ──────────────────────────────────────────────────────────
+   LOADING
+────────────────────────────────────────────────────────── */
+#loading {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.loading-ring {
+  width: 48px; height: 48px;
+  border: 2px solid var(--border);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-text {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+/* ──────────────────────────────────────────────────────────
+   RESPONSIVE ADJUSTMENTS
+────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .shell { padding: 0 16px; }
+  .header-inner { padding: 0 16px; }
+  .hero { padding: 32px 0 28px; }
+  .hero-total { font-size: 4.5rem; }
+  .stats-row { gap: 10px; }
+  .stat-card { padding: 16px; }
+  .stat-value { font-size: 1.5rem; }
+  .tools-grid { grid-template-columns: repeat(2, 1fr); }
+  .chart-card { padding: 18px; }
+  .chart-wrap, .chart-wrap-donut { height: 200px; }
+}
+
+@media (max-width: 380px) {
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .tools-grid { grid-template-columns: 1fr 1fr; }
+}
 </style>
 </head>
 <body>
 
+<!-- ── LOADING ─────────────────────────────────────────────── -->
+<div id="loading">
+  <div class="loading-ring"></div>
+  <div class="loading-text">טוען נתונים</div>
+</div>
+
+<!-- ── HEADER ──────────────────────────────────────────────── -->
 <header>
-  <img src="logo.png" alt="RT-AI Logo" onerror="this.style.display='none'">
-  <div>
-    <h1>RT-AI | <span>לוח הוצאות כלי AI</span></h1>
-    <div class="updated" id="updated-text">טוען...</div>
-  </div>
-  <div class="header-right">
-    <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+  <div class="header-inner">
+    <div class="logo-wrap">
+      <img src="logo.png" alt="RT-AI" onerror="this.style.display='none'">
+      <div class="logo-divider"></div>
+      <div class="header-title"><em>AI</em> EXPENSE DECK</div>
+    </div>
+    <div class="header-right">
+      <div class="live-dot">LIVE</div>
+      <div class="updated-tag" id="updated-tag">—</div>
+    </div>
   </div>
 </header>
 
-<main>
-  <div id="loading" class="loading">
-    <div><div class="spinner"></div></div>
-    <div>טוען נתונים...</div>
+<!-- ── MAIN ────────────────────────────────────────────────── -->
+<main id="content" style="display:none">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-glow"></div>
+    <div class="shell">
+      <div class="hero-label">// סה&quot;כ הוצאות כלי AI</div>
+      <div class="hero-total" id="hero-total">$0</div>
+      <div class="hero-sub" id="hero-sub"></div>
+    </div>
   </div>
-  <div id="content" style="display:none">
+
+  <div class="shell">
+
     <!-- STAT CARDS -->
-    <div class="stats-grid" id="stats-grid"></div>
+    <div class="stats-row" id="stats-row"></div>
 
     <!-- CHARTS -->
     <div class="charts-row">
       <div class="chart-card">
-        <div class="chart-title">הוצאות חודשיות</div>
+        <div class="card-header">
+          <div class="card-title">
+            <span>// monthly</span>
+            הוצאות חודשיות
+          </div>
+        </div>
         <div class="chart-wrap"><canvas id="monthlyChart"></canvas></div>
       </div>
       <div class="chart-card">
-        <div class="chart-title">פיזור לפי כלי</div>
-        <div class="chart-wrap"><canvas id="toolChart"></canvas></div>
+        <div class="card-header">
+          <div class="card-title">
+            <span>// by tool</span>
+            פיזור לפי כלי
+          </div>
+        </div>
+        <div class="chart-wrap-donut"><canvas id="toolChart"></canvas></div>
       </div>
     </div>
 
-    <!-- TOP TOOLS -->
-    <div class="chart-card" style="margin-bottom:24px">
-      <div class="chart-title">הוצאות לפי כלי</div>
-      <div class="top-tools" id="top-tools"></div>
+    <!-- TOOLS GRID -->
+    <div class="section-head">
+      <div class="section-title">כלים</div>
+      <div class="section-line"></div>
     </div>
+    <div class="tools-grid" id="tools-grid"></div>
 
     <!-- TRANSACTIONS TABLE -->
-    <div class="table-card">
-      <div class="table-header">
-        <div class="chart-title" style="margin-bottom:0">כל הטרנזקציות</div>
-        <input type="text" class="search-box" id="search" placeholder="חפש כלי / תיאור..." oninput="filterTable()">
+    <div class="table-section">
+      <div class="section-head">
+        <div class="section-title">טרנזקציות</div>
+        <div class="section-line"></div>
       </div>
-      <div style="overflow-x:auto">
-        <table>
-          <thead>
-            <tr>
-              <th onclick="sortTable('date')">תאריך ↕</th>
-              <th onclick="sortTable('tool')">כלי ↕</th>
-              <th onclick="sortTable('description')">תיאור</th>
-              <th onclick="sortTable('amount')" style="text-align:left">סכום ↕</th>
-            </tr>
-          </thead>
-          <tbody id="table-body"></tbody>
-        </table>
+      <div class="table-controls">
+        <div class="search-wrap">
+          <span class="search-icon">⌕</span>
+          <input class="search-input" id="search-input" type="text" placeholder="חיפוש…" oninput="onSearch()">
+        </div>
+        <select class="filter-select" id="tool-filter" onchange="onFilter()">
+          <option value="">כל הכלים</option>
+        </select>
       </div>
-      <div class="pagination" id="pagination"></div>
-      <div style="text-align:center; color:var(--muted); font-size:0.75rem; margin-top:8px" id="row-count"></div>
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th onclick="sortTable('date')" id="th-date">תאריך</th>
+                <th onclick="sortTable('tool')" id="th-tool">כלי</th>
+                <th>תיאור</th>
+                <th onclick="sortTable('amount')" id="th-amount" style="text-align:left">סכום</th>
+              </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+        <div class="table-footer">
+          <div class="row-count" id="row-count"></div>
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </div>
     </div>
-  </div>
+
+  </div><!-- /.shell -->
 </main>
 
+<!-- ── FOOTER ──────────────────────────────────────────────── -->
 <footer>
-  <p>RT-AI Expense Dashboard · נבנה אוטומטית מ-Gmail → Excel → GitHub · <a href="https://rt-ai.co.il" target="_blank">rt-ai.co.il</a></p>
+  <div class="footer-inner">
+    <p>RT-AI EXPENSE DECK · נבנה אוטומטית מ-Gmail → Excel → GitHub Pages · <a href="https://rt-ai.co.il" target="_blank">rt-ai.co.il</a></p>
+  </div>
 </footer>
 
 <script>
-// ── Tool colors ────────────────────────────────────────────────
-const TOOL_COLORS = {
-  'Anthropic':        '#7c3aed',
-  'Google Workspace': '#4285f4',
-  'Eleven Labs':      '#f59e0b',
-  'Runway ML':        '#ec4899',
-  'Make':             '#6366f1',
-  'CapCut':           '#000000',
-  'Manychat':         '#00b4d8',
-  'Ideogram AI':      '#10b981',
-  'Recraft':          '#e11d48',
-  'Replicate':        '#64748b',
-  'Genspark':         '#f97316',
-  'Higgsfield':       '#8b5cf6',
-  'Manus AI':         '#06b6d4',
-  'Meta (Ads)':       '#1877f2',
-  'Lovable':          '#e879f9',
-  'Timeless':         '#34d399',
-  'Astria':           '#fbbf24',
-  'Hedra':            '#fb923c',
-  'IONOS':            '#ef4444',
+/* ──────────────────────────────────────────────────────────
+   TOOL COLORS
+────────────────────────────────────────────────────────── */
+const COLORS = {
+  'Anthropic':        '#A78BFA',
+  'Google Workspace': '#4285F4',
+  'Eleven Labs':      '#F59E0B',
+  'Runway ML':        '#F472B6',
+  'Make':             '#6366F1',
+  'CapCut':           '#FFFFFF',
+  'Manychat':         '#22D3EE',
+  'Ideogram AI':      '#34D399',
+  'Recraft':          '#FB7185',
+  'Replicate':        '#94A3B8',
+  'Genspark':         '#FB923C',
+  'Higgsfield':       '#C084FC',
+  'Manus AI':         '#06B6D4',
+  'Meta (Ads)':       '#60A5FA',
+  'Lovable':          '#E879F9',
+  'Timeless':         '#6EE7B7',
+  'Astria':           '#FCD34D',
+  'Hedra':            '#FDBA74',
+  'IONOS':            '#F87171',
 };
+
 function toolColor(name) {
-  return TOOL_COLORS[name] || '#' + Math.abs(hashStr(name)).toString(16).padStart(6,'0').slice(0,6);
-}
-function hashStr(s) {
+  if (COLORS[name]) return COLORS[name];
   let h = 0;
-  for(let c of s) h = (Math.imul(31,h) + c.charCodeAt(0)) | 0;
-  return h;
+  for (let c of name) h = (Math.imul(31, h) + c.charCodeAt(0)) | 0;
+  const hue = Math.abs(h) % 360;
+  return `hsl(${hue}, 70%, 65%)`;
 }
 
-// ── State ──────────────────────────────────────────────────────
+/* ──────────────────────────────────────────────────────────
+   STATE
+────────────────────────────────────────────────────────── */
 let allTxns = [], filtered = [], sortKey = 'date', sortDir = -1;
 let page = 1;
 const PER_PAGE = 20;
 
-// ── Load data ──────────────────────────────────────────────────
+/* ──────────────────────────────────────────────────────────
+   COUNTER ANIMATION
+────────────────────────────────────────────────────────── */
+function animateCounter(el, target, prefix = '', decimals = 2, duration = 1200) {
+  const start = performance.now();
+  function step(now) {
+    const p = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - p, 4);
+    const val = (target * ease).toFixed(decimals);
+    el.textContent = prefix + Number(val).toLocaleString('en', {
+      minimumFractionDigits: decimals, maximumFractionDigits: decimals
+    });
+    if (p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* ──────────────────────────────────────────────────────────
+   LOAD DATA
+────────────────────────────────────────────────────────── */
 fetch('data.json?v=' + Date.now())
   .then(r => r.json())
-  .then(data => {
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('content').style.display = 'block';
-    document.getElementById('updated-text').textContent = 'עודכן לאחרונה: ' + data.generated;
-
-    allTxns = data.transactions;
-    filtered = [...allTxns];
-
-    renderStats(data);
-    renderMonthlyChart(data.monthly);
-    renderToolChart(data.by_tool);
-    renderTopTools(data.by_tool);
-    renderTable();
-  })
-  .catch(e => {
-    document.getElementById('loading').innerHTML = '<p style="color:#ef4444">שגיאה בטעינת הנתונים</p>';
+  .then(init)
+  .catch(() => {
+    document.getElementById('loading').innerHTML =
+      '<div style="color:#FF5C5C;font-family:\'DM Mono\',monospace;font-size:0.8rem">שגיאה בטעינת הנתונים</div>';
   });
 
-// ── Stats ──────────────────────────────────────────────────────
+function init(data) {
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('content').style.display = 'block';
+  document.getElementById('updated-tag').textContent = data.generated;
+
+  allTxns = data.transactions;
+  filtered = [...allTxns];
+
+  renderHero(data);
+  renderStats(data);
+  renderMonthlyChart(data.monthly);
+  renderToolChart(data.by_tool);
+  renderToolsGrid(data.by_tool);
+  populateFilter();
+  renderTable();
+
+  // Animate tool bars after DOM ready
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      document.querySelectorAll('.tool-bar-fill[data-pct]').forEach(el => {
+        el.style.width = el.dataset.pct + '%';
+      });
+    });
+  });
+}
+
+/* ──────────────────────────────────────────────────────────
+   HERO
+────────────────────────────────────────────────────────── */
+function renderHero(data) {
+  const heroEl = document.getElementById('hero-total');
+  animateCounter(heroEl, data.grand_total, '$', 2, 1400);
+
+  const months = Object.values(data.monthly);
+  const avg = months.reduce((a,b)=>a+b,0) / months.length;
+  const txCount = data.transactions.length;
+  const topTool = Object.entries(data.by_tool)[0];
+
+  document.getElementById('hero-sub').innerHTML = [
+    `<span class="hero-pill"><b>${txCount}</b> טרנזקציות</span>`,
+    `<span class="hero-pill"><b>${months.length}</b> חודשים</span>`,
+    topTool ? `<span class="hero-pill">הכי יקר: <b>${topTool[0]}</b></span>` : '',
+    `<span class="hero-pill">ממוצע חודשי: <b>$${avg.toFixed(0)}</b></span>`,
+  ].join('');
+}
+
+/* ──────────────────────────────────────────────────────────
+   STAT CARDS
+────────────────────────────────────────────────────────── */
 function renderStats(data) {
   const months = Object.values(data.monthly);
   const avg = months.reduce((a,b)=>a+b,0) / months.length;
-  const lastMonth = Object.entries(data.monthly).sort().slice(-1)[0];
+  const lastEntry = Object.entries(data.monthly).sort().slice(-1)[0];
   const topTool = Object.entries(data.by_tool)[0];
   const txCount = data.transactions.length;
 
-  const stats = [
-    { label: 'סה"כ הוצאות', value: '$' + data.grand_total.toLocaleString('en', {minimumFractionDigits:2, maximumFractionDigits:2}), sub: txCount + ' טרנזקציות', icon: '💰' },
-    { label: 'חודש אחרון', value: '$' + (lastMonth?lastMonth[1]:0).toFixed(2), sub: lastMonth?lastMonth[0]:'', icon: '📅' },
-    { label: 'ממוצע חודשי', value: '$' + avg.toFixed(2), sub: months.length + ' חודשים', icon: '📊' },
-    { label: 'הכלי היקר ביותר', value: topTool?topTool[0]:'', sub: topTool?'$'+topTool[1].toFixed(2):'', icon: '🏆' },
+  const cards = [
+    { label: 'חודש אחרון', key: lastEntry?[1]:0, fmt: v => '$'+v.toFixed(2), sub: lastEntry?lastEntry[0]:'', gold: true },
+    { label: 'ממוצע חודשי', key: avg, fmt: v => '$'+v.toFixed(2), sub: months.length + ' חודשים' },
+    { label: 'טרנזקציות', key: txCount, fmt: v => Math.round(v), sub: 'סה"כ' },
+    { label: 'כלי מוביל', key: topTool?topTool[1]:0, fmt: v => topTool?topTool[0]:'—', sub: topTool?'$'+topTool[1].toFixed(2):'' },
   ];
 
-  document.getElementById('stats-grid').innerHTML = stats.map(s => `
+  document.getElementById('stats-row').innerHTML = cards.map((c, i) => `
     <div class="stat-card">
-      <div class="stat-icon">${s.icon}</div>
-      <div class="stat-label">${s.label}</div>
-      <div class="stat-value">${s.value}</div>
-      <div class="stat-sub">${s.sub}</div>
+      <div class="stat-label">${c.label}</div>
+      <div class="stat-value${c.gold?' gold':''}" id="stat-val-${i}">${c.fmt(0)}</div>
+      <div class="stat-sub">${c.sub}</div>
     </div>
   `).join('');
+
+  // Animate numeric cards
+  cards.forEach((c, i) => {
+    const el = document.getElementById(`stat-val-${i}`);
+    if (i === 0) animateCounter(el, c.key, '$', 2, 1000);
+    else if (i === 1) animateCounter(el, c.key, '$', 2, 1000);
+    else if (i === 2) {
+      let start = performance.now();
+      function step(now) {
+        const p = Math.min((now - start) / 800, 1);
+        el.textContent = Math.round(c.key * (1 - Math.pow(1-p,3)));
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    } else {
+      el.textContent = c.fmt(c.key);
+    }
+  });
 }
 
-// ── Monthly Chart ──────────────────────────────────────────────
+/* ──────────────────────────────────────────────────────────
+   MONTHLY CHART
+────────────────────────────────────────────────────────── */
 function renderMonthlyChart(monthly) {
-  const months = { '2025-07':'יול','2025-08':'אוג','2025-09':'ספט','2025-10':'אוק','2025-11':'נוב','2025-12':'דצמ','2026-01':'ינו','2026-02':'פבר','2026-03':'מרץ','2026-04':'אפר','2026-05':'מאי','2026-06':'יונ' };
-  const labels = Object.keys(monthly).map(k => (months[k]||k) + "'" + k.slice(2,4));
-  const values = Object.values(monthly);
+  const HE_MONTHS = {
+    '01':'ינו','02':'פבר','03':'מרץ','04':'אפר','05':'מאי','06':'יונ',
+    '07':'יול','08':'אוג','09':'ספט','10':'אוק','11':'נוב','12':'דצמ'
+  };
+  const entries = Object.entries(monthly).sort();
+  const labels = entries.map(([k]) => (HE_MONTHS[k.slice(5)] || k.slice(5)) + "''" + k.slice(2,4));
+  const values = entries.map(([,v]) => v);
   const maxVal = Math.max(...values);
 
   new Chart(document.getElementById('monthlyChart'), {
@@ -416,109 +1069,230 @@ function renderMonthlyChart(monthly) {
       labels,
       datasets: [{
         data: values,
-        backgroundColor: values.map(v => v === maxVal ? 'rgba(0,229,204,0.9)' : 'rgba(0,180,216,0.55)'),
-        borderColor: values.map(v => v === maxVal ? '#00e5cc' : '#00b4d8'),
+        backgroundColor: values.map(v =>
+          v === maxVal ? 'rgba(244,197,74,0.85)' : 'rgba(61,126,255,0.45)'
+        ),
+        borderColor: values.map(v =>
+          v === maxVal ? '#F4C54A' : '#3D7EFF'
+        ),
         borderWidth: 1,
-        borderRadius: 6,
+        borderRadius: 5,
+        borderSkipped: false,
       }]
     },
     options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => '$' + c.raw.toFixed(2) } } },
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 1200, easing: 'easeOutQuart' },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#111620',
+          borderColor: 'rgba(244,197,74,0.25)',
+          borderWidth: 1,
+          titleColor: '#8A95B0',
+          bodyColor: '#F4C54A',
+          titleFont: { family: 'DM Mono', size: 10 },
+          bodyFont: { family: 'DM Mono', size: 13 },
+          callbacks: { label: c => ' $' + c.raw.toFixed(2) }
+        }
+      },
       scales: {
-        x: { ticks: { color: '#64748b', font:{size:10} }, grid: { color: 'rgba(255,255,255,0.03)' } },
-        y: { ticks: { color: '#64748b', callback: v => '$'+v }, grid: { color: 'rgba(255,255,255,0.05)' } }
+        x: {
+          ticks: { color: '#4A5568', font: { family: 'DM Mono', size: 9 } },
+          grid: { color: 'rgba(255,255,255,0.025)', drawBorder: false }
+        },
+        y: {
+          ticks: { color: '#4A5568', font: { family: 'DM Mono', size: 9 }, callback: v => '$' + v },
+          grid: { color: 'rgba(255,255,255,0.035)', drawBorder: false }
+        }
       }
     }
   });
 }
 
-// ── Tool Donut ─────────────────────────────────────────────────
+/* ──────────────────────────────────────────────────────────
+   TOOL DONUT
+────────────────────────────────────────────────────────── */
 function renderToolChart(byTool) {
-  const top10 = Object.entries(byTool).slice(0, 10);
+  const top = Object.entries(byTool).slice(0, 10);
   new Chart(document.getElementById('toolChart'), {
     type: 'doughnut',
     data: {
-      labels: top10.map(([k])=>k),
-      datasets: [{ data: top10.map(([,v])=>v), backgroundColor: top10.map(([k])=>toolColor(k)), borderWidth: 2, borderColor: '#111827' }]
+      labels: top.map(([k]) => k),
+      datasets: [{
+        data: top.map(([,v]) => v),
+        backgroundColor: top.map(([k]) => toolColor(k) + 'CC'),
+        borderColor: '#111620',
+        borderWidth: 3,
+        hoverBorderWidth: 0,
+        hoverOffset: 6,
+      }]
     },
     options: {
-      responsive: true, maintainAspectRatio: false,
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 1200, easing: 'easeOutQuart' },
+      cutout: '65%',
       plugins: {
-        legend: { position: 'right', labels: { color: '#e2e8f0', font:{size:10}, padding:8, boxWidth:10 } },
-        tooltip: { callbacks: { label: c => c.label + ': $' + c.raw.toFixed(2) } }
-      },
-      cutout: '62%'
+        legend: {
+          position: 'right',
+          rtl: true,
+          labels: {
+            color: '#8A95B0',
+            font: { family: 'Heebo', size: 10 },
+            padding: 10,
+            boxWidth: 8,
+            boxHeight: 8,
+            borderRadius: 2,
+          }
+        },
+        tooltip: {
+          backgroundColor: '#111620',
+          borderColor: 'rgba(244,197,74,0.25)',
+          borderWidth: 1,
+          titleColor: '#8A95B0',
+          bodyColor: '#E8EDF5',
+          titleFont: { family: 'DM Mono', size: 10 },
+          bodyFont: { family: 'DM Mono', size: 12 },
+          callbacks: {
+            label: c => ' ' + c.label + ': $' + c.raw.toFixed(2)
+          }
+        }
+      }
     }
   });
 }
 
-// ── Top Tools ─────────────────────────────────────────────────
-function renderTopTools(byTool) {
+/* ──────────────────────────────────────────────────────────
+   TOOLS GRID
+────────────────────────────────────────────────────────── */
+function renderToolsGrid(byTool) {
   const maxAmt = Math.max(...Object.values(byTool));
   const counts = {};
-  allTxns.forEach(t => { counts[t.tool] = (counts[t.tool]||0)+1; });
+  allTxns.forEach(t => { counts[t.tool] = (counts[t.tool] || 0) + 1; });
 
-  document.getElementById('top-tools').innerHTML = Object.entries(byTool).map(([tool, amt]) => {
-    const pct = (amt/maxAmt*100).toFixed(0);
-    return `<div class="tool-card">
-      <div class="tool-name">${tool}</div>
-      <div class="tool-amount">$${amt.toFixed(2)}</div>
-      <div class="tool-count">${counts[tool]||0} תשלומים</div>
-      <div class="tool-bar" style="width:${pct}%"></div>
-    </div>`;
+  document.getElementById('tools-grid').innerHTML = Object.entries(byTool).map(([tool, amt]) => {
+    const pct = (amt / maxAmt * 100).toFixed(1);
+    const col = toolColor(tool);
+    return `
+      <div class="tool-card" style="border-color:${col}22">
+        <div class="tool-card-accent" style="background:${col}"></div>
+        <div class="tool-card-name">${tool}</div>
+        <div class="tool-card-amount" style="color:${col}">$${amt.toFixed(2)}</div>
+        <div class="tool-card-meta">${counts[tool] || 0} תשלומים</div>
+        <div class="tool-bar-track">
+          <div class="tool-bar-fill" data-pct="${pct}" style="background:${col}; width:0%"></div>
+        </div>
+      </div>`;
   }).join('');
 }
 
-// ── Table ──────────────────────────────────────────────────────
-function renderTable() {
-  const start = (page-1)*PER_PAGE;
-  const rows = filtered.slice(start, start+PER_PAGE);
-
-  document.getElementById('table-body').innerHTML = rows.map(t => `
-    <tr>
-      <td class="date-cell">${t.date}</td>
-      <td><span class="tool-badge" style="background:${toolColor(t.tool)}22;color:${toolColor(t.tool)};border:1px solid ${toolColor(t.tool)}44">${t.tool}</span></td>
-      <td style="color:#94a3b8;font-size:0.82rem">${t.description}</td>
-      <td class="amount-cell" style="text-align:left">$${t.amount.toFixed(2)}</td>
-    </tr>
-  `).join('');
-
-  const total = filtered.length;
-  const pages = Math.ceil(total/PER_PAGE);
-  document.getElementById('row-count').textContent = `מציג ${Math.min(start+1,total)}–${Math.min(start+PER_PAGE,total)} מתוך ${total} טרנזקציות`;
-
-  const pag = document.getElementById('pagination');
-  pag.innerHTML = '';
-  for(let i=1; i<=pages; i++) {
-    const btn = document.createElement('button');
-    btn.className = 'page-btn' + (i===page?' active':'');
-    btn.textContent = i;
-    btn.onclick = () => { page=i; renderTable(); };
-    pag.appendChild(btn);
-  }
+/* ──────────────────────────────────────────────────────────
+   FILTER & SEARCH
+────────────────────────────────────────────────────────── */
+function populateFilter() {
+  const tools = [...new Set(allTxns.map(t => t.tool))].sort();
+  const sel = document.getElementById('tool-filter');
+  tools.forEach(t => {
+    const o = document.createElement('option');
+    o.value = t; o.textContent = t;
+    sel.appendChild(o);
+  });
 }
 
-function filterTable() {
-  const q = document.getElementById('search').value.toLowerCase();
-  filtered = q ? allTxns.filter(t => t.tool.toLowerCase().includes(q) || t.description.toLowerCase().includes(q)) : [...allTxns];
-  sortFiltered();
+function getFiltered() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  const tool = document.getElementById('tool-filter').value;
+  return allTxns.filter(t =>
+    (!tool || t.tool === tool) &&
+    (!q || t.tool.toLowerCase().includes(q) || t.description.toLowerCase().includes(q) || t.date.includes(q))
+  );
+}
+
+function onSearch() { page = 1; filtered = getFiltered(); renderTable(); }
+function onFilter() { page = 1; filtered = getFiltered(); renderTable(); }
+
+/* ──────────────────────────────────────────────────────────
+   SORT
+────────────────────────────────────────────────────────── */
+function sortTable(key) {
+  if (sortKey === key) sortDir *= -1;
+  else { sortKey = key; sortDir = -1; }
+
+  document.querySelectorAll('th').forEach(th => th.classList.remove('sort-active'));
+  const thEl = document.getElementById('th-' + key);
+  if (thEl) thEl.classList.add('sort-active');
+
+  filtered.sort((a, b) => {
+    const av = a[key], bv = b[key];
+    if (typeof av === 'number') return (av - bv) * sortDir;
+    return av.localeCompare(bv, 'he') * sortDir;
+  });
   page = 1;
   renderTable();
 }
 
-function sortTable(key) {
-  if(sortKey===key) sortDir *= -1; else { sortKey=key; sortDir=-1; }
-  sortFiltered();
-  renderTable();
-}
+/* ──────────────────────────────────────────────────────────
+   TABLE RENDER
+────────────────────────────────────────────────────────── */
+function renderTable() {
+  const start = (page - 1) * PER_PAGE;
+  const rows = filtered.slice(start, start + PER_PAGE);
+  const col = name => toolColor(name);
 
-function sortFiltered() {
-  filtered.sort((a,b) => {
-    let va=a[sortKey], vb=b[sortKey];
-    if(typeof va==='string') return va.localeCompare(vb) * sortDir;
-    return (va-vb)*sortDir;
+  document.getElementById('table-body').innerHTML = rows.map(t => `
+    <tr>
+      <td class="date-cell">${t.date}</td>
+      <td>
+        <span class="tool-badge" style="background:${col(t.tool)}18;color:${col(t.tool)};">
+          <span class="tool-badge-dot" style="background:${col(t.tool)}"></span>
+          ${t.tool}
+        </span>
+      </td>
+      <td class="desc-cell">${t.description}</td>
+      <td class="amount-cell">$${t.amount.toFixed(2)}</td>
+    </tr>
+  `).join('');
+
+  const total = filtered.length;
+  const pages = Math.ceil(total / PER_PAGE);
+  const s = Math.min(start + 1, total);
+  const e = Math.min(start + PER_PAGE, total);
+  document.getElementById('row-count').textContent =
+    total > 0 ? `מציג ${s}–${e} מתוך ${total}` : 'אין תוצאות';
+
+  const pag = document.getElementById('pagination');
+  pag.innerHTML = '';
+
+  // Previous
+  if (page > 1) {
+    const btn = document.createElement('button');
+    btn.className = 'page-btn';
+    btn.textContent = '‹';
+    btn.onclick = () => { page--; renderTable(); };
+    pag.appendChild(btn);
+  }
+
+  // Page range
+  const range = [];
+  for (let i = Math.max(1, page - 2); i <= Math.min(pages, page + 2); i++) range.push(i);
+  range.forEach(i => {
+    const btn = document.createElement('button');
+    btn.className = 'page-btn' + (i === page ? ' active' : '');
+    btn.textContent = i;
+    btn.onclick = () => { page = i; renderTable(); };
+    pag.appendChild(btn);
   });
+
+  // Next
+  if (page < pages) {
+    const btn = document.createElement('button');
+    btn.className = 'page-btn';
+    btn.textContent = '›';
+    btn.onclick = () => { page++; renderTable(); };
+    pag.appendChild(btn);
+  }
 }
 </script>
 </body>
