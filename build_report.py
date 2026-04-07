@@ -826,6 +826,39 @@ def main():
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     wb.save(OUTPUT_PATH)
     print(f"Saved: {OUTPUT_PATH}")
+    generate_dashboard_json()
+
+
+def generate_dashboard_json():
+    """Generate data.json for GitHub Pages dashboard."""
+    import json
+    from pathlib import Path
+    from collections import defaultdict
+    import datetime as dt
+
+    docs_dir = Path(r"C:\Users\roita\מעקב הוצאות כלים\docs")
+    docs_dir.mkdir(exist_ok=True)
+
+    txns = [{"date": t[0], "tool": t[1], "description": t[2], "amount": t[3]} for t in TRANSACTIONS]
+    monthly = defaultdict(float)
+    by_tool = defaultdict(float)
+    for t in TRANSACTIONS:
+        ym = t[0][:7]
+        monthly[ym] = round(monthly[ym] + t[3], 2)
+        by_tool[t[1]] = round(by_tool[t[1]] + t[3], 2)
+
+    data = {
+        "generated": dt.date.today().isoformat(),
+        "grand_total": round(sum(t[3] for t in TRANSACTIONS), 2),
+        "transactions": sorted(txns, key=lambda x: x["date"], reverse=True),
+        "monthly": dict(sorted(monthly.items())),
+        "by_tool": dict(sorted(by_tool.items(), key=lambda x: -x[1]))
+    }
+
+    (docs_dir / "data.json").write_text(
+        json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    print(f"Generated docs/data.json (grand total: ${data['grand_total']})")
 
 
 if __name__ == "__main__":

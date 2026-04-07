@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RT-AI | לוח הוצאות כלי AI</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --cyan: #00e5cc;
+    --cyan2: #00b4d8;
+    --bg: #0a0e1a;
+    --card: #111827;
+    --card2: #1a2235;
+    --border: #1e2d45;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --green: #10b981;
+    --orange: #f59e0b;
+    --red: #ef4444;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,sans-serif; min-height:100vh; }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, #0d1b2e 0%, #111827 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+  }
+  header img { height: 44px; width: auto; }
+  header h1 { font-size: 1.25rem; font-weight: 700; color: var(--text); }
+  header h1 span { color: var(--cyan); }
+  .header-right { margin-right: auto; display:flex; align-items:center; gap:10px; }
+  .live-badge {
+    background: rgba(16,185,129,0.15);
+    border: 1px solid var(--green);
+    color: var(--green);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .live-dot { width:6px; height:6px; background:var(--green); border-radius:50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .updated { color: var(--muted); font-size: 0.75rem; }
+
+  /* LAYOUT */
+  main { padding: 24px; max-width: 1400px; margin: 0 auto; }
+
+  /* STAT CARDS */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .stat-card:hover { transform: translateY(-2px); border-color: var(--cyan); }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--cyan), var(--cyan2));
+  }
+  .stat-label { color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+  .stat-value { font-size: 1.8rem; font-weight: 800; color: var(--cyan); line-height: 1; }
+  .stat-sub { color: var(--muted); font-size: 0.75rem; margin-top: 6px; }
+  .stat-icon { position:absolute; top:16px; left:16px; font-size:1.5rem; opacity:0.15; }
+
+  /* CHARTS ROW */
+  .charts-row {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  @media(max-width: 768px) { .charts-row { grid-template-columns: 1fr; } }
+
+  .chart-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+  }
+  .chart-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .chart-title::before {
+    content: '';
+    width: 3px; height: 14px;
+    background: var(--cyan);
+    border-radius: 2px;
+    display: inline-block;
+  }
+  .chart-wrap { position: relative; height: 260px; }
+
+  /* TABLE */
+  .table-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+  .table-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .search-box {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    color: var(--text);
+    font-size: 0.85rem;
+    outline: none;
+    width: 200px;
+    transition: border-color 0.2s;
+  }
+  .search-box:focus { border-color: var(--cyan); }
+  .search-box::placeholder { color: var(--muted); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+  th {
+    text-align: right;
+    padding: 10px 12px;
+    color: var(--muted);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+  }
+  th:hover { color: var(--cyan); }
+  td {
+    padding: 12px;
+    border-bottom: 1px solid rgba(30,45,69,0.5);
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(0,229,204,0.03); }
+
+  .tool-badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .amount-cell { font-weight: 700; color: var(--cyan); font-family: monospace; font-size: 0.9rem; }
+  .date-cell { color: var(--muted); font-size: 0.8rem; font-family: monospace; }
+
+  .pagination {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .page-btn {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.15s;
+  }
+  .page-btn:hover, .page-btn.active { background: var(--cyan); color: #000; border-color: var(--cyan); font-weight: 600; }
+
+  /* TOP TOOLS */
+  .top-tools {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .tool-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .tool-card:hover { border-color: var(--cyan); transform: translateY(-2px); }
+  .tool-name { font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; color: var(--text); }
+  .tool-amount { font-size: 1.1rem; font-weight: 800; color: var(--cyan); }
+  .tool-count { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
+  .tool-bar { height: 3px; border-radius: 2px; margin-top: 8px; background: linear-gradient(90deg, var(--cyan), var(--cyan2)); }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 20px;
+    color: var(--muted);
+    font-size: 0.75rem;
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--cyan); text-decoration: none; }
+
+  /* MOBILE */
+  @media(max-width: 600px) {
+    main { padding: 12px; }
+    .stat-value { font-size: 1.4rem; }
+    table { font-size: 0.78rem; }
+    td, th { padding: 8px 6px; }
+    .search-box { width: 150px; }
+    header h1 { font-size: 1rem; }
+  }
+
+  .loading { text-align:center; padding:60px; color:var(--muted); }
+  .spinner { display:inline-block; width:32px; height:32px; border:3px solid var(--border); border-top-color:var(--cyan); border-radius:50%; animation:spin 0.8s linear infinite; margin-bottom:12px; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="logo.png" alt="RT-AI Logo" onerror="this.style.display='none'">
+  <div>
+    <h1>RT-AI | <span>לוח הוצאות כלי AI</span></h1>
+    <div class="updated" id="updated-text">טוען...</div>
+  </div>
+  <div class="header-right">
+    <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+  </div>
+</header>
+
+<main>
+  <div id="loading" class="loading">
+    <div><div class="spinner"></div></div>
+    <div>טוען נתונים...</div>
+  </div>
+  <div id="content" style="display:none">
+    <!-- STAT CARDS -->
+    <div class="stats-grid" id="stats-grid"></div>
+
+    <!-- CHARTS -->
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-title">הוצאות חודשיות</div>
+        <div class="chart-wrap"><canvas id="monthlyChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">פיזור לפי כלי</div>
+        <div class="chart-wrap"><canvas id="toolChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- TOP TOOLS -->
+    <div class="chart-card" style="margin-bottom:24px">
+      <div class="chart-title">הוצאות לפי כלי</div>
+      <div class="top-tools" id="top-tools"></div>
+    </div>
+
+    <!-- TRANSACTIONS TABLE -->
+    <div class="table-card">
+      <div class="table-header">
+        <div class="chart-title" style="margin-bottom:0">כל הטרנזקציות</div>
+        <input type="text" class="search-box" id="search" placeholder="חפש כלי / תיאור..." oninput="filterTable()">
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th onclick="sortTable('date')">תאריך ↕</th>
+              <th onclick="sortTable('tool')">כלי ↕</th>
+              <th onclick="sortTable('description')">תיאור</th>
+              <th onclick="sortTable('amount')" style="text-align:left">סכום ↕</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+      <div class="pagination" id="pagination"></div>
+      <div style="text-align:center; color:var(--muted); font-size:0.75rem; margin-top:8px" id="row-count"></div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>RT-AI Expense Dashboard · נבנה אוטומטית מ-Gmail → Excel → GitHub · <a href="https://rt-ai.co.il" target="_blank">rt-ai.co.il</a></p>
+</footer>
+
+<script>
+// ── Tool colors ────────────────────────────────────────────────
+const TOOL_COLORS = {
+  'Anthropic':        '#7c3aed',
+  'Google Workspace': '#4285f4',
+  'Eleven Labs':      '#f59e0b',
+  'Runway ML':        '#ec4899',
+  'Make':             '#6366f1',
+  'CapCut':           '#000000',
+  'Manychat':         '#00b4d8',
+  'Ideogram AI':      '#10b981',
+  'Recraft':          '#e11d48',
+  'Replicate':        '#64748b',
+  'Genspark':         '#f97316',
+  'Higgsfield':       '#8b5cf6',
+  'Manus AI':         '#06b6d4',
+  'Meta (Ads)':       '#1877f2',
+  'Lovable':          '#e879f9',
+  'Timeless':         '#34d399',
+  'Astria':           '#fbbf24',
+  'Hedra':            '#fb923c',
+  'IONOS':            '#ef4444',
+};
+function toolColor(name) {
+  return TOOL_COLORS[name] || '#' + Math.abs(hashStr(name)).toString(16).padStart(6,'0').slice(0,6);
+}
+function hashStr(s) {
+  let h = 0;
+  for(let c of s) h = (Math.imul(31,h) + c.charCodeAt(0)) | 0;
+  return h;
+}
+
+// ── State ──────────────────────────────────────────────────────
+let allTxns = [], filtered = [], sortKey = 'date', sortDir = -1;
+let page = 1;
+const PER_PAGE = 20;
+
+// ── Load data ──────────────────────────────────────────────────
+fetch('data.json?v=' + Date.now())
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('content').style.display = 'block';
+    document.getElementById('updated-text').textContent = 'עודכן לאחרונה: ' + data.generated;
+
+    allTxns = data.transactions;
+    filtered = [...allTxns];
+
+    renderStats(data);
+    renderMonthlyChart(data.monthly);
+    renderToolChart(data.by_tool);
+    renderTopTools(data.by_tool);
+    renderTable();
+  })
+  .catch(e => {
+    document.getElementById('loading').innerHTML = '<p style="color:#ef4444">שגיאה בטעינת הנתונים</p>';
+  });
+
+// ── Stats ──────────────────────────────────────────────────────
+function renderStats(data) {
+  const months = Object.values(data.monthly);
+  const avg = months.reduce((a,b)=>a+b,0) / months.length;
+  const lastMonth = Object.entries(data.monthly).sort().slice(-1)[0];
+  const topTool = Object.entries(data.by_tool)[0];
+  const txCount = data.transactions.length;
+
+  const stats = [
+    { label: 'סה"כ הוצאות', value: '$' + data.grand_total.toLocaleString('en', {minimumFractionDigits:2, maximumFractionDigits:2}), sub: txCount + ' טרנזקציות', icon: '💰' },
+    { label: 'חודש אחרון', value: '$' + (lastMonth?lastMonth[1]:0).toFixed(2), sub: lastMonth?lastMonth[0]:'', icon: '📅' },
+    { label: 'ממוצע חודשי', value: '$' + avg.toFixed(2), sub: months.length + ' חודשים', icon: '📊' },
+    { label: 'הכלי היקר ביותר', value: topTool?topTool[0]:'', sub: topTool?'$'+topTool[1].toFixed(2):'', icon: '🏆' },
+  ];
+
+  document.getElementById('stats-grid').innerHTML = stats.map(s => `
+    <div class="stat-card">
+      <div class="stat-icon">${s.icon}</div>
+      <div class="stat-label">${s.label}</div>
+      <div class="stat-value">${s.value}</div>
+      <div class="stat-sub">${s.sub}</div>
+    </div>
+  `).join('');
+}
+
+// ── Monthly Chart ──────────────────────────────────────────────
+function renderMonthlyChart(monthly) {
+  const months = { '2025-07':'יול','2025-08':'אוג','2025-09':'ספט','2025-10':'אוק','2025-11':'נוב','2025-12':'דצמ','2026-01':'ינו','2026-02':'פבר','2026-03':'מרץ','2026-04':'אפר','2026-05':'מאי','2026-06':'יונ' };
+  const labels = Object.keys(monthly).map(k => (months[k]||k) + "'" + k.slice(2,4));
+  const values = Object.values(monthly);
+  const maxVal = Math.max(...values);
+
+  new Chart(document.getElementById('monthlyChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: values.map(v => v === maxVal ? 'rgba(0,229,204,0.9)' : 'rgba(0,180,216,0.55)'),
+        borderColor: values.map(v => v === maxVal ? '#00e5cc' : '#00b4d8'),
+        borderWidth: 1,
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => '$' + c.raw.toFixed(2) } } },
+      scales: {
+        x: { ticks: { color: '#64748b', font:{size:10} }, grid: { color: 'rgba(255,255,255,0.03)' } },
+        y: { ticks: { color: '#64748b', callback: v => '$'+v }, grid: { color: 'rgba(255,255,255,0.05)' } }
+      }
+    }
+  });
+}
+
+// ── Tool Donut ─────────────────────────────────────────────────
+function renderToolChart(byTool) {
+  const top10 = Object.entries(byTool).slice(0, 10);
+  new Chart(document.getElementById('toolChart'), {
+    type: 'doughnut',
+    data: {
+      labels: top10.map(([k])=>k),
+      datasets: [{ data: top10.map(([,v])=>v), backgroundColor: top10.map(([k])=>toolColor(k)), borderWidth: 2, borderColor: '#111827' }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'right', labels: { color: '#e2e8f0', font:{size:10}, padding:8, boxWidth:10 } },
+        tooltip: { callbacks: { label: c => c.label + ': $' + c.raw.toFixed(2) } }
+      },
+      cutout: '62%'
+    }
+  });
+}
+
+// ── Top Tools ─────────────────────────────────────────────────
+function renderTopTools(byTool) {
+  const maxAmt = Math.max(...Object.values(byTool));
+  const counts = {};
+  allTxns.forEach(t => { counts[t.tool] = (counts[t.tool]||0)+1; });
+
+  document.getElementById('top-tools').innerHTML = Object.entries(byTool).map(([tool, amt]) => {
+    const pct = (amt/maxAmt*100).toFixed(0);
+    return `<div class="tool-card">
+      <div class="tool-name">${tool}</div>
+      <div class="tool-amount">$${amt.toFixed(2)}</div>
+      <div class="tool-count">${counts[tool]||0} תשלומים</div>
+      <div class="tool-bar" style="width:${pct}%"></div>
+    </div>`;
+  }).join('');
+}
+
+// ── Table ──────────────────────────────────────────────────────
+function renderTable() {
+  const start = (page-1)*PER_PAGE;
+  const rows = filtered.slice(start, start+PER_PAGE);
+
+  document.getElementById('table-body').innerHTML = rows.map(t => `
+    <tr>
+      <td class="date-cell">${t.date}</td>
+      <td><span class="tool-badge" style="background:${toolColor(t.tool)}22;color:${toolColor(t.tool)};border:1px solid ${toolColor(t.tool)}44">${t.tool}</span></td>
+      <td style="color:#94a3b8;font-size:0.82rem">${t.description}</td>
+      <td class="amount-cell" style="text-align:left">$${t.amount.toFixed(2)}</td>
+    </tr>
+  `).join('');
+
+  const total = filtered.length;
+  const pages = Math.ceil(total/PER_PAGE);
+  document.getElementById('row-count').textContent = `מציג ${Math.min(start+1,total)}–${Math.min(start+PER_PAGE,total)} מתוך ${total} טרנזקציות`;
+
+  const pag = document.getElementById('pagination');
+  pag.innerHTML = '';
+  for(let i=1; i<=pages; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'page-btn' + (i===page?' active':'');
+    btn.textContent = i;
+    btn.onclick = () => { page=i; renderTable(); };
+    pag.appendChild(btn);
+  }
+}
+
+function filterTable() {
+  const q = document.getElementById('search').value.toLowerCase();
+  filtered = q ? allTxns.filter(t => t.tool.toLowerCase().includes(q) || t.description.toLowerCase().includes(q)) : [...allTxns];
+  sortFiltered();
+  page = 1;
+  renderTable();
+}
+
+function sortTable(key) {
+  if(sortKey===key) sortDir *= -1; else { sortKey=key; sortDir=-1; }
+  sortFiltered();
+  renderTable();
+}
+
+function sortFiltered() {
+  filtered.sort((a,b) => {
+    let va=a[sortKey], vb=b[sortKey];
+    if(typeof va==='string') return va.localeCompare(vb) * sortDir;
+    return (va-vb)*sortDir;
+  });
+}
+</script>
+</body>
+</html>
