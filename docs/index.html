@@ -828,8 +828,8 @@ footer a:hover { opacity: 0.7; }
   <div class="hero">
     <div class="hero-glow"></div>
     <div class="shell">
-      <div class="hero-label">// סה&quot;כ הוצאות כלי AI</div>
-      <div class="hero-total" id="hero-total">$0</div>
+      <div class="hero-label" id="hero-label">// הוצאות חודש נוכחי</div>
+      <div class="hero-total" id="hero-total">₪0</div>
       <div class="hero-sub" id="hero-sub"></div>
     </div>
   </div>
@@ -954,6 +954,21 @@ function toolColor(name) {
 let allTxns = [], filtered = [], sortKey = 'date', sortDir = -1;
 let page = 1;
 const PER_PAGE = 20;
+let RATE = 3.65;
+
+const HE_MONTH_NAMES = {
+  '01':'ינואר','02':'פברואר','03':'מרץ','04':'אפריל','05':'מאי','06':'יוני',
+  '07':'יולי','08':'אוגוסט','09':'ספטמבר','10':'אוקטובר','11':'נובמבר','12':'דצמבר'
+};
+
+function ils(usd, decimals = 0) {
+  const v = usd * RATE;
+  return '₪' + v.toLocaleString('he-IL', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+}
+
+function monthLabel(ym) {  // "2026-04" → "אפריל 2026"
+  return (HE_MONTH_NAMES[ym.slice(5)] || ym.slice(5)) + ' ' + ym.slice(0,4);
+}
 
 /* ──────────────────────────────────────────────────────────
    COUNTER ANIMATION
@@ -987,6 +1002,7 @@ function init(data) {
   document.getElementById('loading').style.display = 'none';
   document.getElementById('content').style.display = 'block';
   document.getElementById('updated-tag').textContent = data.generated;
+  if (data.usd_rate) RATE = data.usd_rate;
 
   allTxns = data.transactions;
   filtered = [...allTxns];
@@ -1010,66 +1026,80 @@ function init(data) {
 }
 
 /* ──────────────────────────────────────────────────────────
-   HERO
+   HERO  — shows current month in ILS
 ────────────────────────────────────────────────────────── */
 function renderHero(data) {
-  const heroEl = document.getElementById('hero-total');
-  animateCounter(heroEl, data.grand_total, '$', 2, 1400);
-
-  const months = Object.values(data.monthly);
-  const avg = months.reduce((a,b)=>a+b,0) / months.length;
+  const curUsd  = data.current_month_total || 0;
+  const curIls  = curUsd * RATE;
+  const curName = data.current_month ? monthLabel(data.current_month) : '';
   const txCount = data.transactions.length;
-  const topTool = Object.entries(data.by_tool)[0];
+  const months  = Object.values(data.monthly);
+  const avg     = months.reduce((a,b)=>a+b,0) / months.length;
+
+  document.getElementById('hero-label').textContent = `// הוצאות ${curName}`;
+
+  const heroEl = document.getElementById('hero-total');
+  animateCounter(heroEl, curIls, '₪', 0, 1400);
 
   document.getElementById('hero-sub').innerHTML = [
+    `<span class="hero-pill">סה"כ מתחילת המעקב: <b>${ils(data.grand_total)}</b></span>`,
+    `<span class="hero-pill">ממוצע חודשי: <b>${ils(avg)}</b></span>`,
     `<span class="hero-pill"><b>${txCount}</b> טרנזקציות</span>`,
-    `<span class="hero-pill"><b>${months.length}</b> חודשים</span>`,
-    topTool ? `<span class="hero-pill">הכי יקר: <b>${topTool[0]}</b></span>` : '',
-    `<span class="hero-pill">ממוצע חודשי: <b>$${avg.toFixed(0)}</b></span>`,
   ].join('');
 }
 
 /* ──────────────────────────────────────────────────────────
-   STAT CARDS
+   STAT CARDS  — all in ILS
 ────────────────────────────────────────────────────────── */
 function renderStats(data) {
-  const months = Object.values(data.monthly);
-  const avg = months.reduce((a,b)=>a+b,0) / months.length;
-  const lastEntry = Object.entries(data.monthly).sort().slice(-1)[0];
-  const topTool = Object.entries(data.by_tool)[0];
-  const txCount = data.transactions.length;
+  const months   = Object.values(data.monthly);
+  const avgUsd   = months.reduce((a,b)=>a+b,0) / months.length;
+  const topTool  = Object.entries(data.by_tool)[0];
+  const txCount  = data.transactions.length;
+
+  // prev month = second-to-last entry (last = current partial month)
+  const sortedMonths = Object.entries(data.monthly).sort();
+  const prevEntry = sortedMonths.length >= 2 ? sortedMonths[sortedMonths.length - 2] : sortedMonths[sortedMonths.length - 1];
 
   const cards = [
-    { label: 'חודש אחרון', key: lastEntry?[1]:0, fmt: v => '$'+v.toFixed(2), sub: lastEntry?lastEntry[0]:'', gold: true },
-    { label: 'ממוצע חודשי', key: avg, fmt: v => '$'+v.toFixed(2), sub: months.length + ' חודשים' },
-    { label: 'טרנזקציות', key: txCount, fmt: v => Math.round(v), sub: 'סה"כ' },
-    { label: 'כלי מוביל', key: topTool?topTool[1]:0, fmt: v => topTool?topTool[0]:'—', sub: topTool?'$'+topTool[1].toFixed(2):'' },
+    {
+      label: 'חודש קודם',
+      valIls: (prevEntry ? prevEntry[1] : 0) * RATE,
+      sub: prevEntry ? monthLabel(prevEntry[0]) : '',
+      gold: false,
+    },
+    {
+      label: 'ממוצע חודשי',
+      valIls: avgUsd * RATE,
+      sub: months.length + ' חודשים',
+      gold: false,
+    },
+    {
+      label: 'סה"כ מתחילת המעקב',
+      valIls: data.grand_total * RATE,
+      sub: 'יול׳ 2025 – היום',
+      gold: true,
+    },
+    {
+      label: 'כלי מוביל',
+      display: topTool ? topTool[0] : '—',
+      sub: topTool ? ils(topTool[1]) : '',
+      isText: true,
+    },
   ];
 
   document.getElementById('stats-row').innerHTML = cards.map((c, i) => `
     <div class="stat-card">
       <div class="stat-label">${c.label}</div>
-      <div class="stat-value${c.gold?' gold':''}" id="stat-val-${i}">${c.fmt(0)}</div>
+      <div class="stat-value${c.gold?' gold':''}" id="stat-val-${i}">${c.isText ? c.display : '₪0'}</div>
       <div class="stat-sub">${c.sub}</div>
     </div>
   `).join('');
 
-  // Animate numeric cards
   cards.forEach((c, i) => {
+    if (c.isText) return;
     const el = document.getElementById(`stat-val-${i}`);
-    if (i === 0) animateCounter(el, c.key, '$', 2, 1000);
-    else if (i === 1) animateCounter(el, c.key, '$', 2, 1000);
-    else if (i === 2) {
-      let start = performance.now();
-      function step(now) {
-        const p = Math.min((now - start) / 800, 1);
-        el.textContent = Math.round(c.key * (1 - Math.pow(1-p,3)));
-        if (p < 1) requestAnimationFrame(step);
-      }
-      requestAnimationFrame(step);
-    } else {
-      el.textContent = c.fmt(c.key);
-    }
+    animateCounter(el, c.valIls, '₪', 0, 1000);
   });
 }
 
@@ -1083,7 +1113,7 @@ function renderMonthlyChart(monthly) {
   };
   const entries = Object.entries(monthly).sort();
   const labels = entries.map(([k]) => (HE_MONTHS[k.slice(5)] || k.slice(5)) + "''" + k.slice(2,4));
-  const values = entries.map(([,v]) => v);
+  const values = entries.map(([,v]) => Math.round(v * RATE));   // ILS
   const maxVal = Math.max(...values);
 
   new Chart(document.getElementById('monthlyChart'), {
@@ -1117,7 +1147,7 @@ function renderMonthlyChart(monthly) {
           bodyColor: '#F4C54A',
           titleFont: { family: 'DM Mono', size: 10 },
           bodyFont: { family: 'DM Mono', size: 13 },
-          callbacks: { label: c => ' $' + c.raw.toFixed(2) }
+          callbacks: { label: c => ' ₪' + c.raw.toLocaleString('he-IL') }
         }
       },
       scales: {
@@ -1126,7 +1156,7 @@ function renderMonthlyChart(monthly) {
           grid: { color: 'rgba(255,255,255,0.025)', drawBorder: false }
         },
         y: {
-          ticks: { color: '#4A5568', font: { family: 'DM Mono', size: 9 }, callback: v => '$' + v },
+          ticks: { color: '#4A5568', font: { family: 'DM Mono', size: 9 }, callback: v => '₪' + v.toLocaleString('he-IL') },
           grid: { color: 'rgba(255,255,255,0.035)', drawBorder: false }
         }
       }
@@ -1179,7 +1209,7 @@ function renderToolChart(byTool) {
           titleFont: { family: 'DM Mono', size: 10 },
           bodyFont: { family: 'DM Mono', size: 12 },
           callbacks: {
-            label: c => ' ' + c.label + ': $' + c.raw.toFixed(2)
+            label: c => ' ' + c.label + ': ' + ils(c.raw)
           }
         }
       }
@@ -1202,7 +1232,7 @@ function renderToolsGrid(byTool) {
       <div class="tool-card" style="border-color:${col}22">
         <div class="tool-card-accent" style="background:${col}"></div>
         <div class="tool-card-name">${tool}</div>
-        <div class="tool-card-amount" style="color:${col}">$${amt.toFixed(2)}</div>
+        <div class="tool-card-amount" style="color:${col}">${ils(amt)}</div>
         <div class="tool-card-meta">${counts[tool] || 0} תשלומים</div>
         <div class="tool-bar-track">
           <div class="tool-bar-fill" data-pct="${pct}" style="background:${col}; width:0%"></div>
@@ -1274,7 +1304,7 @@ function renderTable() {
         </span>
       </td>
       <td class="desc-cell">${t.description}</td>
-      <td class="amount-cell">$${t.amount.toFixed(2)}</td>
+      <td class="amount-cell">${ils(t.amount, 2)}</td>
     </tr>
   `).join('');
 

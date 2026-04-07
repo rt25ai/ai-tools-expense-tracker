@@ -1,6 +1,11 @@
 {
   "generated": "2026-04-07",
+  "usd_rate": 3.65,
   "grand_total": 1272.19,
+  "grand_total_ils": 4643.49,
+  "current_month": "2026-04",
+  "current_month_total": 68.04,
+  "current_month_total_ils": 248.35,
   "transactions": [
     {
       "date": "2026-04-05",

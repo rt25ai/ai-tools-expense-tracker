@@ -847,9 +847,19 @@ def generate_dashboard_json():
         monthly[ym] = round(monthly[ym] + t[3], 2)
         by_tool[t[1]] = round(by_tool[t[1]] + t[3], 2)
 
+    USD_RATE = 3.65   # USD → ILS
+    grand_usd = round(sum(t[3] for t in TRANSACTIONS), 2)
+    cur_month  = dt.date.today().strftime("%Y-%m")
+    cur_usd    = round(monthly.get(cur_month, 0.0), 2)
+
     data = {
-        "generated": dt.date.today().isoformat(),
-        "grand_total": round(sum(t[3] for t in TRANSACTIONS), 2),
+        "generated":              dt.date.today().isoformat(),
+        "usd_rate":               USD_RATE,
+        "grand_total":            grand_usd,
+        "grand_total_ils":        round(grand_usd  * USD_RATE, 2),
+        "current_month":          cur_month,
+        "current_month_total":    cur_usd,
+        "current_month_total_ils": round(cur_usd   * USD_RATE, 2),
         "transactions": sorted(txns, key=lambda x: x["date"], reverse=True),
         "monthly": dict(sorted(monthly.items())),
         "by_tool": dict(sorted(by_tool.items(), key=lambda x: -x[1]))
@@ -858,7 +868,7 @@ def generate_dashboard_json():
     (docs_dir / "data.json").write_text(
         json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8"
     )
-    print(f"Generated docs/data.json (grand total: ${data['grand_total']})")
+    print(f"Generated docs/data.json (grand total: ${data['grand_total']} / ₪{data['grand_total_ils']})")
 
 
 if __name__ == "__main__":
