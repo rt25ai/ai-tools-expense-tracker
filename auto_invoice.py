@@ -343,7 +343,8 @@ def rebuild_and_push(new_txns):
     git("add", "invoices/")
     git("add", "docs/data.json")   # ← update live dashboard
     git("commit", "-m", f"Auto: add invoices – {summary}\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>")
-    git("push", "origin", "master:main")
+    git("push", "origin", "master:master")  # ← GitHub Pages builds from master
+    git("push", "origin", "master:main")    # ← keep main in sync
     log.info(f"Pushed: {summary}")
 
 
