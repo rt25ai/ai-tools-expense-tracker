@@ -97,8 +97,11 @@ TRANSACTIONS = [
     ("2026-03-15", "Anthropic",     "Claude Pro",                       20.00),
     ("2026-03-19", "Anthropic",     "Credit purchase",                  10.00),
     ("2026-03-19", "Eleven Labs",   "Creator (first month 50% off)",    11.00),
+    ("2026-03-25", "Lovable",       "Lite plan",                         5.00),
     ("2026-04-01", "Anthropic",     "Claude Pro",                       20.00),
     ("2026-04-01", "Anthropic",     "Credit purchase",                   5.00),
+    ("2026-04-03", "Meta (Ads)",    "Facebook Ads",                      2.25),
+    ("2026-04-05", "IONOS",         "Instant Domain",                   20.00),
 ]
 
 MONTHS = [
@@ -334,7 +337,7 @@ def build_month_sheets(wb):
         # Back-link row
         back_cell = ws["A2"]
         back_cell.value = f"\u2190 \u05d7\u05d6\u05e8\u05d4 \u05dc\u05e1\u05d9\u05db\u05d5\u05dd \u05d7\u05d5\u05d3\u05e9\u05d9"
-        back_cell.hyperlink = f"#{summary_sheet}!A1"
+        back_cell.hyperlink = f"#'{summary_sheet}'!A1"
         back_cell.font = Font(bold=False, color="0000FF", size=9, underline="single", name="Arial")
         back_cell.fill = fill(C_LTBLUE)
         back_cell.alignment = left_al()
@@ -468,9 +471,9 @@ def build_monthly_summary(wb, month_sheet_names):
         cell.alignment = center()
         cell.border = border_thin()
 
-        # Hyperlink to the individual month sheet
+        # Hyperlink to the individual month sheet (single quotes required for Hebrew sheet names)
         target_sheet = month_sheet_names.get(mk, mname_he)
-        cell.hyperlink = f"#{target_sheet}!A1"
+        cell.hyperlink = f"#'{target_sheet}'!A1"
         cell.font = Font(bold=True, color=C_WHITE, size=9, underline="single", name="Arial")
 
         month_start_cols[mk] = col
@@ -657,7 +660,7 @@ def build_annual_report(wb, month_sheet_names):
         month_cell.border = border_thin()
         month_cell.alignment = left_al()
         target_sheet = month_sheet_names.get(mk, mname_he)
-        month_cell.hyperlink = f"#{target_sheet}!A1"
+        month_cell.hyperlink = f"#'{target_sheet}'!A1"
 
         apply_data(ws, row, 2, mname_en, bg=bg, align=left_al())
 
