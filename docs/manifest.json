@@ -1,0 +1,28 @@
+{
+  "name": "מעקב הוצאות כלי AI",
+  "short_name": "AI Expenses",
+  "description": "מעקב הוצאות כלי AI – RT-AI",
+  "start_url": "/ai-tools-expense-tracker/",
+  "scope": "/ai-tools-expense-tracker/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#07090F",
+  "theme_color": "#07090F",
+  "lang": "he",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "productivity"]
+}

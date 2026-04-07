@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>מעקב הוצאות כלי AI | RT-AI</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#07090F">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AI Expenses">
+<link rel="apple-touch-icon" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400;500&family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -1059,6 +1066,12 @@ function renderAnnualView(containerId, year, data){
         y:{ticks:{color:'#4A5568',font:{family:'DM Mono',size:9},callback:v=>'₪'+v.toLocaleString('he-IL')},grid:{color:'rgba(255,255,255,.03)',drawBorder:false}}
       }
     }
+  });
+}
+// register service worker for PWA install
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
   });
 }
 </script>
