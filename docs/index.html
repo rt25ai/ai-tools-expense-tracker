@@ -757,21 +757,44 @@ footer a:hover { opacity: 0.7; }
    RESPONSIVE ADJUSTMENTS
 ────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .shell { padding: 0 16px; }
-  .header-inner { padding: 0 16px; }
-  .hero { padding: 32px 0 28px; }
-  .hero-total { font-size: 4.5rem; }
+  .shell { padding: 0 14px; }
+  .header-inner { padding: 0 14px; height: 56px; }
+  .logo-wrap img { height: 28px; }
+  .header-title { font-size: 1.1rem; }
+  .updated-tag { display: none; }
+  .hero { padding: 28px 0 22px; }
+  .hero-total { font-size: clamp(3rem, 14vw, 5rem); }
+  .hero-sub { gap: 8px; }
+  .hero-pill { font-size: 0.68rem; padding: 3px 10px; }
   .stats-row { gap: 10px; }
-  .stat-card { padding: 16px; }
-  .stat-value { font-size: 1.5rem; }
+  .stat-card { padding: 14px; }
+  .stat-value { font-size: 1.4rem; }
+  .stat-label { font-size: 0.62rem; }
   .tools-grid { grid-template-columns: repeat(2, 1fr); }
-  .chart-card { padding: 18px; }
-  .chart-wrap, .chart-wrap-donut { height: 200px; }
+  .chart-card { padding: 16px; }
+  .chart-wrap, .chart-wrap-donut { height: 180px; }
+  .section-title { font-size: 1.1rem; }
+  td { padding: 10px 12px; }
+  th { padding: 11px 12px; }
+  .desc-cell { max-width: 120px; }
+  .table-footer { padding: 12px 14px; }
 }
 
-@media (max-width: 380px) {
-  .stats-row { grid-template-columns: 1fr 1fr; }
-  .tools-grid { grid-template-columns: 1fr 1fr; }
+@media (max-width: 480px) {
+  .header-title { font-size: 0.95rem; letter-spacing: 0.04em; }
+  .logo-divider { display: none; }
+  .hero-total { font-size: clamp(2.8rem, 16vw, 4rem); }
+  .stats-row { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-card { padding: 12px 10px; }
+  .stat-value { font-size: 1.2rem; }
+  .tools-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .tool-card { padding: 12px; }
+  .tool-card-amount { font-size: 0.95rem; }
+  .chart-wrap, .chart-wrap-donut { height: 160px; }
+  .table-controls { flex-direction: column; }
+  .search-wrap { min-width: 0; width: 100%; }
+  .filter-select { width: 100%; }
+  .pagination { flex-wrap: wrap; }
 }
 </style>
 </head>

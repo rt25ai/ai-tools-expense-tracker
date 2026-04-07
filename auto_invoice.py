@@ -341,6 +341,7 @@ def rebuild_and_push(new_txns):
     summary = ", ".join(f"{t['tool']} {t['date']}" for t in new_txns)
     git("add", "build_report.py", "AI_Tools_Expenses_2025_2026.xlsx")
     git("add", "invoices/")
+    git("add", "docs/data.json")   # ← update live dashboard
     git("commit", "-m", f"Auto: add invoices – {summary}\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>")
     git("push", "origin", "master:main")
     log.info(f"Pushed: {summary}")
