@@ -285,24 +285,38 @@ td { padding:11px 16px; font-size:.83rem; text-align:right; }
 .month-card-bar { margin-top:12px; height:2px; background:var(--border); border-radius:2px; overflow:hidden; }
 .month-card-bar-fill { height:100%; background:var(--gold); border-radius:2px; transition:width 1s cubic-bezier(.16,1,.3,1); width:0; }
 
-/* ── MONTH DETAIL PANEL ──────────────────────────────────── */
-.month-detail {
-  display:none; margin-top:16px;
-  background:var(--surface2); border:1px solid var(--border-hi);
-  border-radius:var(--r-lg); padding:24px; position:relative;
-  animation:fade-in .35s cubic-bezier(.16,1,.3,1);
+/* ── MONTH MODAL ─────────────────────────────────────────── */
+.month-modal-overlay {
+  display:none; position:fixed; inset:0; z-index:400;
+  background:rgba(0,0,0,.72); backdrop-filter:blur(6px);
+  align-items:center; justify-content:center; padding:16px;
 }
-.month-detail.open { display:block; }
-.month-detail-close {
+.month-modal-overlay.open { display:flex; animation:overlay-in .2s ease; }
+@keyframes overlay-in { from{opacity:0} to{opacity:1} }
+
+.month-modal {
+  background:var(--surface2); border:1px solid var(--border-hi);
+  border-radius:var(--r-lg); padding:28px;
+  width:100%; max-width:640px; max-height:85vh;
+  display:flex; flex-direction:column;
+  animation:modal-in .3s cubic-bezier(.16,1,.3,1);
+  position:relative;
+}
+@keyframes modal-in { from{opacity:0;transform:translateY(24px) scale(.97)} to{opacity:1;transform:none} }
+
+.month-modal-close {
   position:absolute; top:16px; left:16px;
   background:none; border:1px solid var(--border); border-radius:8px;
-  width:30px; height:30px; color:var(--mid); cursor:pointer; font-size:1rem;
+  width:32px; height:32px; color:var(--mid); cursor:pointer; font-size:1.1rem;
   display:flex; align-items:center; justify-content:center; transition:all .2s;
 }
-.month-detail-close:hover { border-color:var(--gold); color:var(--gold); }
-.month-detail-header { margin-bottom:20px; }
-.month-detail-title { font-family:var(--ff-display); font-size:2rem; letter-spacing:.06em; }
-.month-detail-total { font-family:var(--ff-mono); font-size:1.4rem; color:var(--gold); }
+.month-modal-close:hover { border-color:var(--gold); color:var(--gold); }
+.month-modal-header { margin-bottom:20px; padding-left:40px; }
+.month-modal-title { font-family:var(--ff-display); font-size:2.2rem; letter-spacing:.06em; }
+.month-modal-total { font-family:var(--ff-mono); font-size:1.4rem; color:var(--gold); margin-top:2px; }
+.month-modal-body { overflow-y:auto; flex:1; scrollbar-width:thin; }
+.month-modal-body::-webkit-scrollbar { width:4px; }
+.month-modal-body::-webkit-scrollbar-thumb { background:var(--surface2); border-radius:2px; }
 
 /* expandable tool accordion in month detail */
 .md-tools { display:flex; flex-direction:column; gap:6px; margin-bottom:20px; }
@@ -526,6 +540,18 @@ footer a:hover { opacity:.7; }
 </div>
 
 </div><!-- #app -->
+
+<!-- MONTH MODAL -->
+<div class="month-modal-overlay" id="month-modal-overlay" onclick="if(event.target===this)closeMonthDetail()">
+  <div class="month-modal" id="month-modal">
+    <button class="month-modal-close" onclick="closeMonthDetail()">✕</button>
+    <div class="month-modal-header">
+      <div class="month-modal-title" id="modal-title"></div>
+      <div class="month-modal-total" id="modal-total"></div>
+    </div>
+    <div class="month-modal-body" id="modal-body"></div>
+  </div>
+</div>
 
 <footer>
   <p>מעקב הוצאות כלי AI · RT-AI · נבנה אוטומטית מ-Gmail → Excel → GitHub Pages · <a href="https://rt-ai.co.il" target="_blank">rt-ai.co.il</a></p>
@@ -849,23 +875,16 @@ function renderMonthsView(data){
 
 let openMonth=null;
 function toggleMonth(ym){
-  const card=document.getElementById('mc-'+ym);
-  // close if same
-  if(openMonth===ym){
-    closeMonthDetail();
-    return;
-  }
+  if(openMonth===ym){ closeMonthDetail(); return; }
   closeMonthDetail();
   openMonth=ym;
-  card.classList.add('active');
+  document.getElementById('mc-'+ym)?.classList.add('active');
 
-  // build detail
   const txns=allTxns.filter(t=>t.date.startsWith(ym));
   const total=txns.reduce((a,t)=>a+t.amount,0);
   const byTool={};
   txns.forEach(t=>{byTool[t.tool]=(byTool[t.tool]||0)+t.amount;});
   const sortedTools=Object.entries(byTool).sort((a,b)=>b[1]-a[1]);
-  const maxTool=sortedTools.length?sortedTools[0][1]:1;
 
   const toolsHtml=sortedTools.map(([tool,amt],idx)=>{
     const col=toolColor(tool);
@@ -892,31 +911,18 @@ function toggleMonth(ym){
     </div>`;
   }).join('');
 
-  const detail=document.createElement('div');
-  detail.className='month-detail open';
-  detail.id='detail-'+ym;
-  detail.innerHTML=`
-    <button class="month-detail-close" onclick="closeMonthDetail()">✕</button>
-    <div class="month-detail-header">
-      <div class="month-detail-title">${monthLabelFull(ym)}</div>
-      <div class="month-detail-total">${ils(total)} <span style="font-size:.8em;color:var(--mid)">($${total.toFixed(2)})</span></div>
-    </div>
-    <div class="md-tools">${toolsHtml}</div>`;
-
-  card.closest('.months-grid').insertAdjacentElement('afterend',detail);
-
-  // animate bars in detail
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    document.querySelectorAll('[data-pct]').forEach(el=>{ el.style.width=el.dataset.pct+'%'; });
-  }));
+  document.getElementById('modal-title').textContent=monthLabelFull(ym);
+  document.getElementById('modal-total').innerHTML=`${ils(total)} <span style="font-size:.8em;color:var(--mid)">($${total.toFixed(2)})</span>`;
+  document.getElementById('modal-body').innerHTML=`<div class="md-tools">${toolsHtml}</div>`;
+  document.getElementById('month-modal-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
 }
 
 function closeMonthDetail(){
-  if(openMonth){
-    document.getElementById('mc-'+openMonth)?.classList.remove('active');
-    document.getElementById('detail-'+openMonth)?.remove();
-    openMonth=null;
-  }
+  document.getElementById('mc-'+openMonth)?.classList.remove('active');
+  document.getElementById('month-modal-overlay').classList.remove('open');
+  document.body.style.overflow='';
+  openMonth=null;
 }
 
 function toggleToolDetail(ym, idx){
