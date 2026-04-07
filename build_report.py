@@ -131,7 +131,6 @@ MANUAL_TRANSACTIONS = [
 ]
 
 TRACKING_START = datetime.date(2025, 7, 1)
-MONTHS_AHEAD = 1
 
 HE_MONTH_NAMES = {
     1: "ינואר",
@@ -188,7 +187,8 @@ def add_months(d, months):
 def build_months():
     months = []
     current = first_day_of_month(TRACKING_START)
-    end = add_months(first_day_of_month(datetime.date.today()), MONTHS_AHEAD)
+    today = datetime.date.today()
+    end = datetime.date(today.year, 12, 1)
     while current <= end:
         month_key = current.strftime("%Y-%m")
         months.append(

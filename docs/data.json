@@ -1,12 +1,54 @@
 {
   "generated": "2026-04-08",
   "usd_rate": 3.65,
-  "grand_total": 1886.76,
-  "grand_total_ils": 6886.67,
+  "grand_total": 2026.76,
+  "grand_total_ils": 7397.67,
   "current_month": "2026-04",
   "current_month_total": 139.04,
   "current_month_total_ils": 507.5,
   "transactions": [
+    {
+      "date": "2026-12-16",
+      "tool": "OpenAI",
+      "description": "ChatGPT Plus",
+      "amount": 20.0
+    },
+    {
+      "date": "2026-11-16",
+      "tool": "OpenAI",
+      "description": "ChatGPT Plus",
+      "amount": 20.0
+    },
+    {
+      "date": "2026-10-16",
+      "tool": "OpenAI",
+      "description": "ChatGPT Plus",
+      "amount": 20.0
+    },
+    {
+      "date": "2026-09-16",
+      "tool": "OpenAI",
+      "description": "ChatGPT Plus",
+      "amount": 20.0
+    },
+    {
+      "date": "2026-08-16",
+      "tool": "OpenAI",
+      "description": "ChatGPT Plus",
+      "amount": 20.0
+    },
+    {
+      "date": "2026-07-16",
+      "tool": "OpenAI",
+      "description": "ChatGPT Plus",
+      "amount": 20.0
+    },
+    {
+      "date": "2026-06-16",
+      "tool": "OpenAI",
+      "description": "ChatGPT Plus",
+      "amount": 20.0
+    },
     {
       "date": "2026-05-16",
       "tool": "OpenAI",
@@ -553,11 +595,18 @@
     "2026-02": 318.88,
     "2026-03": 226.07,
     "2026-04": 139.04,
-    "2026-05": 20.0
+    "2026-05": 20.0,
+    "2026-06": 20.0,
+    "2026-07": 20.0,
+    "2026-08": 20.0,
+    "2026-09": 20.0,
+    "2026-10": 20.0,
+    "2026-11": 20.0,
+    "2026-12": 20.0
   },
   "by_tool": {
     "Meta (Ads)": 483.93,
-    "OpenAI": 220.0,
+    "OpenAI": 360.0,
     "Ideogram AI": 185.14,
     "Anthropic": 180.0,
     "Genspark": 179.92,
