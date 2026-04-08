@@ -1,4 +1,4 @@
-import { ArrowRight, BadgeCheck, Clock3, Workflow } from "lucide-react";
+import { ArrowLeft, BadgeCheck, Clock3, Workflow } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,10 +11,10 @@ export default function AutomationsPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Automations"
-        title="Active rules and pipeline health"
-        description="This turns the dashboard into an operations console: you can see what rules exist, when they run, which parts are stable, and where the workflow still depends on a person."
-        actions={<Button className="bg-emerald-500 text-black hover:bg-emerald-400">Audit pipeline</Button>}
+        eyebrow="אוטומציות"
+        title="כללים פעילים ובריאות הצינור"
+        description="הדשבורד הופך למסוף תפעולי: ניתן לראות אילו כללים קיימים, מתי הם רצים, אילו חלקים יציבים ואיפה תהליך העבודה עדיין תלוי בבן-אדם."
+        actions={<Button className="bg-emerald-500 text-black hover:bg-emerald-400">ביקורת צינור</Button>}
       />
 
       <section className="grid gap-4 lg:grid-cols-2">
@@ -35,17 +35,17 @@ export default function AutomationsPage() {
                       : "border-white/10 bg-white/[0.05] text-zinc-300"
                 }
               >
-                {automation.status}
+                {automation.status === "active" ? "פעיל" : automation.status === "watch" ? "במעקב" : "ידני"}
               </Badge>
             </div>
             <p className="mt-4 text-sm leading-6 text-zinc-400">{automation.description}</p>
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               <div className="rounded-2xl border border-white/8 bg-black/20 p-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">Last run</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">ריצה אחרונה</p>
                 <p className="mt-2 text-sm text-zinc-100">{automation.lastRun}</p>
               </div>
               <div className="rounded-2xl border border-white/8 bg-black/20 p-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">Next run</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">ריצה הבאה</p>
                 <p className="mt-2 text-sm text-zinc-100">{automation.nextRun}</p>
               </div>
             </div>
@@ -55,16 +55,16 @@ export default function AutomationsPage() {
 
       <section className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
         <Card className="border-white/8 bg-white/[0.03] p-6 shadow-none">
-          <p className="text-[11px] uppercase tracking-[0.24em] text-zinc-500">Pipeline stages</p>
-          <h2 className="mt-2 text-2xl font-semibold text-white">Current workflow map</h2>
+          <p className="text-[11px] uppercase tracking-[0.24em] text-zinc-500">שלבי צינור</p>
+          <h2 className="mt-2 text-2xl font-semibold text-white">מפת תהליך עבודה נוכחית</h2>
           <div className="mt-6 space-y-4">
             {[
-              "Inbox source scan",
-              "Attachment and body parsing",
-              "Recurring rules injection",
-              "Workbook rebuild",
-              "Static export to docs",
-              "GitHub Pages publish",
+              "סריקת תיבת דואר נכנס",
+              "פרסור קבצים מצורפים וגוף ההודעה",
+              "הזרקת כללי חיוב חוזר",
+              "בניית ספר העבודה מחדש",
+              "ייצוא סטטי למסמכים",
+              "פרסום ב-GitHub Pages",
             ].map((step, index, steps) => (
               <div key={step} className="flex items-center gap-4 rounded-[22px] border border-white/8 bg-black/20 p-4">
                 <div className="rounded-full border border-emerald-400/15 bg-emerald-400/8 p-2 text-emerald-300">
@@ -72,9 +72,9 @@ export default function AutomationsPage() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="font-medium text-white">{step}</p>
-                  <p className="mt-1 text-sm text-zinc-500">Stage {index + 1}</p>
+                  <p className="mt-1 text-sm text-zinc-500">שלב {index + 1}</p>
                 </div>
-                {index < steps.length - 1 ? <ArrowRight className="size-4 text-zinc-600" /> : null}
+                {index < steps.length - 1 ? <ArrowLeft className="size-4 text-zinc-600" /> : null}
               </div>
             ))}
           </div>
@@ -84,23 +84,23 @@ export default function AutomationsPage() {
           <Card className="border-white/8 bg-white/[0.03] p-6 shadow-none">
             <div className="flex items-center gap-3">
               <Clock3 className="size-4 text-zinc-300" />
-              <h2 className="text-xl font-semibold text-white">What this page solves</h2>
+              <h2 className="text-xl font-semibold text-white">מה הדף הזה פותר</h2>
             </div>
             <p className="mt-4 text-sm leading-6 text-zinc-400">
-              Instead of hiding automation inside scripts, the console now documents the rules, cadence, and operating status. That makes future upgrades much easier to reason about.
+              במקום להסתיר אוטומציה בתוך סקריפטים, המסוף מתעד כעת את הכללים, המחזוריות והסטטוס התפעולי. כך שדרגות עתידיות יהיו קלות הרבה יותר לניתוח.
             </p>
           </Card>
 
           <Card className="border-white/8 bg-white/[0.03] p-6 shadow-none">
             <div className="flex items-center gap-3">
               <Workflow className="size-4 text-emerald-300" />
-              <h2 className="text-xl font-semibold text-white">Next automation layer</h2>
+              <h2 className="text-xl font-semibold text-white">שכבת האוטומציה הבאה</h2>
             </div>
             <ul className="mt-4 space-y-3 text-sm leading-6 text-zinc-400">
-              <li>Gmail push instead of broad polling</li>
-              <li>AI-assisted extraction for low-confidence invoices</li>
-              <li>Vendor APIs for ads and subscriptions</li>
-              <li>Review approvals and audit history in a real datastore</li>
+              <li>Push של Gmail במקום סקירה רחבה</li>
+              <li>חילוץ בסיוע AI לחשבוניות עם ביטחון נמוך</li>
+              <li>API של ספקים לפרסום ומנויים</li>
+              <li>אישורי בדיקה והיסטוריית ביקורת במאגר נתונים אמיתי</li>
             </ul>
           </Card>
         </div>

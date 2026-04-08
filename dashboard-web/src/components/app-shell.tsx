@@ -12,14 +12,14 @@ export function AppShell({ children }: { children: ReactNode }) {
             <div className="mx-auto flex w-full max-w-[1120px] items-center justify-between gap-3">
               <div>
                 <p className="text-[11px] font-medium uppercase tracking-[0.26em] text-emerald-300/70">
-                  RT-AI operations console
+                  מסוף תפעולי RT-AI
                 </p>
                 <p className="text-sm text-zinc-400">
-                  Finance, vendors, imports, review, and reporting in one surface.
+                  פיננסים, ספקים, ייבוא, סקירה ודיווח במשטח אחד.
                 </p>
               </div>
               <div className="rounded-full border border-emerald-400/15 bg-emerald-400/8 px-3 py-1 text-xs text-emerald-200">
-                Live static export
+                ייצוא סטטי חי
               </div>
             </div>
           </div>

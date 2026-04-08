@@ -24,8 +24,8 @@ export function BudgetBars({
               </div>
             </div>
             <div className="relative h-3 rounded-full bg-white/[0.05]">
-              <div className="absolute inset-y-0 left-0 rounded-full bg-zinc-700/70" style={{ width: budgetWidth }} />
-              <div className="absolute inset-y-0 left-0 rounded-full bg-emerald-400" style={{ width: totalWidth }} />
+              <div className="absolute inset-y-0 start-0 rounded-full bg-zinc-700/70" style={{ width: budgetWidth }} />
+              <div className="absolute inset-y-0 start-0 rounded-full bg-emerald-400" style={{ width: totalWidth }} />
             </div>
           </div>
         );
