@@ -11,7 +11,10 @@ type RawTransaction = {
   date: string;
   tool: string;
   description: string;
-  amount: number;
+  currency?: "USD" | "ILS";
+  original_amount?: number;
+  amount_usd?: number;
+  amount_ils?: number;
 };
 
 type RawDashboardData = {
@@ -26,7 +29,9 @@ type RawDashboardData = {
   current_month_total_ils: number;
   transactions: RawTransaction[];
   monthly: Record<string, number>;
+  monthly_ils?: Record<string, number>;
   by_tool: Record<string, number>;
+  by_tool_ils?: Record<string, number>;
 };
 
 type VendorConfig = {
@@ -35,6 +40,7 @@ type VendorConfig = {
   recurring: boolean;
   billingDay?: number;
   expectedAmount?: number;
+  billingCurrency?: "USD" | "ILS";
   confidence: number;
   owner: string;
   notes: string;
@@ -47,6 +53,7 @@ export type EnrichedTransaction = RawTransaction & {
   type: ChargeType;
   category: string;
   confidence: number;
+  amountUsd: number;
   amountIls: number;
 };
 
@@ -161,20 +168,22 @@ const vendorCatalog: Record<string, VendorConfig> = {
     source: "email-imported",
     recurring: true,
     billingDay: 2,
-    expectedAmount: 20.79,
+    expectedAmount: 75.9,
+    billingCurrency: "ILS",
     confidence: 0.97,
     owner: "תפעול",
-    notes: "מיובא מ־Gmail ומוצג בממשק בשקלים לפי שער דולר רשמי.",
+    notes: "מחויב ישירות בשקלים, ולכן נשמר ומוצג לפי הסכום המקורי שבקבלה.",
   },
   CapCut: {
     category: "וידאו",
     source: "email-imported",
     recurring: true,
     billingDay: 10,
-    expectedAmount: 13.67,
+    expectedAmount: 49.9,
+    billingCurrency: "ILS",
     confidence: 0.89,
     owner: "קריאייטיב",
-    notes: "נשלף מקישורי חשבוניות בגוף המייל.",
+    notes: "מחויב בשקלים ומוצג לפי הסכום המדויק מהחשבונית של CapCut.",
   },
   "Eleven Labs": {
     category: "קול",
@@ -384,6 +393,8 @@ export const getDashboardModel = cache((): DashboardModel => {
 
   const transactions = raw.transactions.map((transaction, index) => {
     const config = vendorCatalog[transaction.tool] ?? vendorFallback(transaction.tool);
+    const amountUsd = transaction.amount_usd ?? 0;
+    const amountIls = transaction.amount_ils ?? convertUsdToIls(amountUsd, raw.usd_rate);
     return {
       ...transaction,
       id: `${transaction.date}-${transaction.tool}-${index}`,
@@ -393,16 +404,21 @@ export const getDashboardModel = cache((): DashboardModel => {
       type: config.recurring ? "recurring" : "one-time",
       category: config.category,
       confidence: config.confidence,
-      amountIls: convertUsdToIls(transaction.amount, raw.usd_rate),
+      amountUsd,
+      amountIls,
     } satisfies EnrichedTransaction;
   });
 
-  const recurringTotal = transactions
+  const recurringTotalUsd = transactions
     .filter((transaction) => transaction.type === "recurring")
-    .reduce((sum, transaction) => sum + transaction.amount, 0);
-  const oneTimeTotal = Math.max(raw.grand_total - recurringTotal, 0);
-  const recurringBaseline = Object.values(vendorCatalog).reduce((sum, vendor) => {
-    return sum + (vendor.recurring && vendor.expectedAmount ? vendor.expectedAmount : 0);
+    .reduce((sum, transaction) => sum + transaction.amountUsd, 0);
+  const recurringTotalIls = transactions
+    .filter((transaction) => transaction.type === "recurring")
+    .reduce((sum, transaction) => sum + transaction.amountIls, 0);
+  const oneTimeTotalIls = Math.max(raw.grand_total_ils - recurringTotalIls, 0);
+  const recurringBaselineIls = Object.values(vendorCatalog).reduce((sum, vendor) => {
+    if (!vendor.recurring || !vendor.expectedAmount) return sum;
+    return sum + (vendor.billingCurrency === "ILS" ? vendor.expectedAmount : convertUsdToIls(vendor.expectedAmount, raw.usd_rate));
   }, 0);
 
   const currentMonthTransactions = transactions.filter(
@@ -414,15 +430,23 @@ export const getDashboardModel = cache((): DashboardModel => {
     return (
       transaction.type === "one-time" ||
       transaction.source === "manual" ||
-      (vendor.expectedAmount ? transaction.amount > vendor.expectedAmount * 1.35 : false)
+      (vendor.expectedAmount
+        ? vendor.billingCurrency === "ILS"
+          ? transaction.amountIls > vendor.expectedAmount * 1.35
+          : transaction.amountUsd > vendor.expectedAmount * 1.35
+        : false)
     );
   }).length;
 
-  const monthlySeries = Object.entries(raw.monthly).map(([key, total]) => ({
+  const monthlyIls = raw.monthly_ils ?? Object.fromEntries(
+    Object.entries(raw.monthly).map(([key, total]) => [key, convertUsdToIls(total, raw.usd_rate)]),
+  );
+
+  const monthlySeries = Object.entries(monthlyIls).map(([key, total]) => ({
     key,
     label: monthLabel(key),
-    total: convertUsdToIls(total, raw.usd_rate),
-    budget: convertUsdToIls(recurringBaseline + (key >= raw.current_month ? 36 : 88), raw.usd_rate),
+    total,
+    budget: recurringBaselineIls + convertUsdToIls(key >= raw.current_month ? 36 : 88, raw.usd_rate),
     intensity: 0,
   }));
 
@@ -431,13 +455,15 @@ export const getDashboardModel = cache((): DashboardModel => {
     month.intensity = month.total / maxMonthlyTotal;
   }
 
-  const vendors = Object.entries(raw.by_tool)
-    .map(([name, totalSpend]) => {
+  const vendorKeys = Object.keys(raw.by_tool_ils ?? raw.by_tool);
+  const vendors = vendorKeys
+    .map((name) => {
       const config = vendorCatalog[name] ?? vendorFallback(name);
       const vendorTransactions = transactions.filter((transaction) => transaction.tool === name);
+      const totalSpend = vendorTransactions.reduce((sum, transaction) => sum + transaction.amountIls, 0);
       return {
         name,
-        totalSpend: convertUsdToIls(totalSpend, raw.usd_rate),
+        totalSpend,
         currentMonthSpend: vendorTransactions
           .filter((transaction) => transaction.monthKey === raw.current_month)
           .reduce((sum, transaction) => sum + transaction.amountIls, 0),
@@ -446,7 +472,11 @@ export const getDashboardModel = cache((): DashboardModel => {
           config.recurring && config.billingDay
             ? nextExpectedDate(raw.current_month, config.billingDay)
             : null,
-        expectedAmount: config.expectedAmount ? convertUsdToIls(config.expectedAmount, raw.usd_rate) : null,
+        expectedAmount: config.expectedAmount
+          ? config.billingCurrency === "ILS"
+            ? config.expectedAmount
+            : convertUsdToIls(config.expectedAmount, raw.usd_rate)
+          : null,
         recurring: config.recurring,
         source: config.source,
         category: config.category,
@@ -557,7 +587,7 @@ export const getDashboardModel = cache((): DashboardModel => {
       exchangeRateUpdatedAt: raw.exchange_rate_updated_at ?? null,
       exchangeRateSource: raw.exchange_rate_source ?? "Bank of Israel Public API",
       defaultBillingDay: 16,
-      monthlyBudget: Math.round(convertUsdToIls(recurringBaseline + 90, raw.usd_rate)),
+      monthlyBudget: Math.round(recurringBaselineIls + convertUsdToIls(90, raw.usd_rate)),
     },
     detection: {
       scanWindowDays: 90,
@@ -580,8 +610,8 @@ export const getDashboardModel = cache((): DashboardModel => {
     transactions,
     monthlySeries,
     recurringSeries: [
-      { label: "חוזר", value: convertUsdToIls(recurringTotal, raw.usd_rate), share: recurringTotal / raw.grand_total },
-      { label: "חד־פעמי", value: convertUsdToIls(oneTimeTotal, raw.usd_rate), share: oneTimeTotal / raw.grand_total },
+      { label: "חוזר", value: recurringTotalIls, share: recurringTotalUsd / raw.grand_total },
+      { label: "חד־פעמי", value: oneTimeTotalIls, share: 1 - recurringTotalUsd / raw.grand_total },
     ],
     vendors,
     automations,
@@ -591,9 +621,9 @@ export const getDashboardModel = cache((): DashboardModel => {
     stats: {
       totalYtd,
       currentMonth: raw.current_month_total_ils,
-      recurringBaseline: convertUsdToIls(recurringBaseline, raw.usd_rate),
+      recurringBaseline: recurringBaselineIls,
       unexpectedCharges,
-      recurringShare: recurringTotal / raw.grand_total,
+      recurringShare: recurringTotalUsd / raw.grand_total,
     },
   };
 });

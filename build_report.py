@@ -9,7 +9,7 @@ from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.chart import BarChart, Reference
 from openpyxl.worksheet.hyperlink import Hyperlink
-import datetime, os
+import datetime, os, re
 from exchange_rate import fetch_usd_to_ils_rate
 
 OUTPUT_PATH = r"C:\Users\roita\מעקב הוצאות כלים\AI_Tools_Expenses_2025_2026.xlsx"
@@ -183,6 +183,46 @@ RECURRING_RULES = [
 ]
 
 
+def parse_ils_amount(description):
+    match = re.search(r"₪\s*([0-9][0-9,]*(?:\.[0-9]+)?)", description)
+    return float(match.group(1).replace(",", "")) if match else None
+
+
+def normalize_transaction(txn):
+    usd_rate, _, _ = get_current_usd_to_ils_rate()
+
+    if len(txn) >= 5:
+        date, tool, description, original_amount, currency = txn[:5]
+        original_amount = float(original_amount)
+    else:
+        date, tool, description, amount_usd = txn
+        inferred_ils = parse_ils_amount(description)
+        if inferred_ils is not None:
+            original_amount = inferred_ils
+            currency = "ILS"
+        else:
+            original_amount = float(amount_usd)
+            currency = "USD"
+
+    if currency == "ILS":
+        amount_ils = round(original_amount, 2)
+        amount_usd = float(txn[3]) if len(txn) == 4 else round(original_amount / usd_rate, 6)
+    else:
+        amount_usd = float(original_amount)
+        amount_ils = round(amount_usd * usd_rate, 2)
+
+    return {
+        "date": date,
+        "tool": tool,
+        "description": description,
+        "currency": currency,
+        "original_amount": round(original_amount, 2),
+        "amount_usd": amount_usd,
+        "amount_ils": amount_ils,
+        "month_key": date[:7],
+    }
+
+
 def first_day_of_month(d):
     return d.replace(day=1)
 
@@ -232,7 +272,7 @@ def build_recurring_transactions(months):
 def combine_transactions():
     manual = list(MANUAL_TRANSACTIONS)
     recurring = build_recurring_transactions(MONTHS)
-    manual_month_tool = {(date[:7], tool) for date, tool, _, _ in manual}
+    manual_month_tool = {(txn[0][:7], txn[1]) for txn in manual}
 
     for txn in recurring:
         month_key = txn[0][:7]
@@ -245,7 +285,8 @@ def combine_transactions():
 
 MONTHS = build_months()
 TRANSACTIONS = combine_transactions()
-ALL_TOOLS = sorted(set(t[1] for t in TRANSACTIONS))
+TRANSACTION_RECORDS = [normalize_transaction(txn) for txn in TRANSACTIONS]
+ALL_TOOLS = sorted({transaction["tool"] for transaction in TRANSACTION_RECORDS})
 REPORT_RANGE_HE = f"{MONTHS[0][1]} – {MONTHS[-1][1]}"
 REPORT_RANGE_EN = f"{MONTHS[0][2]} – {MONTHS[-1][2]}"
 
@@ -380,27 +421,24 @@ def build_transactions(wb):
         apply_header(ws, 2, ci, h, bg=C_BLUE)
     ws.row_dimensions[2].height = 22
 
-    txns = sorted(TRANSACTIONS, key=lambda x: x[0])
-    rate_ref = "\u05d4\u05d2\u05d3\u05e8\u05d5\u05ea!$B$4"
+    txns = sorted(TRANSACTION_RECORDS, key=lambda transaction: transaction["date"])
 
-    for ri, (date, tool, desc, usd) in enumerate(txns, 3):
+    for ri, transaction in enumerate(txns, 3):
         bg = C_LTBLUE if ri % 2 == 0 else C_WHITE
-        month_key = date[:7]
-        month_name = next((m[1] for m in MONTHS if m[0] == month_key), month_key)
+        month_name = next((m[1] for m in MONTHS if m[0] == transaction["month_key"]), transaction["month_key"])
 
-        apply_data(ws, ri, 1, date, bg=bg, align=center())
-        apply_data(ws, ri, 2, tool, bg=bg, align=left_al())
-        apply_data(ws, ri, 3, desc, bg=bg, align=left_al())
+        apply_data(ws, ri, 1, transaction["date"], bg=bg, align=center())
+        apply_data(ws, ri, 2, transaction["tool"], bg=bg, align=left_al())
+        apply_data(ws, ri, 3, transaction["description"], bg=bg, align=left_al())
 
-        usd_cell = ws.cell(row=ri, column=4, value=usd)
+        usd_cell = ws.cell(row=ri, column=4, value=transaction["amount_usd"])
         usd_cell.font = Font(size=10, name="Arial", color=C_BLACK)
         usd_cell.fill = fill(bg)
         usd_cell.border = border_thin()
         usd_cell.number_format = '[$$-en-US]#,##0.00'
         usd_cell.alignment = right()
 
-        ils_cell = ws.cell(row=ri, column=5)
-        ils_cell.value = f"=D{ri}*{rate_ref}"
+        ils_cell = ws.cell(row=ri, column=5, value=transaction["amount_ils"])
         ils_cell.font = Font(size=10, name="Arial", color=C_BLACK)
         ils_cell.fill = fill(bg)
         ils_cell.border = border_thin()
@@ -460,8 +498,8 @@ def build_month_sheets(wb):
 
     for mk, mname_he, mname_en in MONTHS:
         month_txns = sorted(
-            [(d, tool, desc, usd) for d, tool, desc, usd in TRANSACTIONS if d[:7] == mk],
-            key=lambda x: x[0]
+            [transaction for transaction in TRANSACTION_RECORDS if transaction["month_key"] == mk],
+            key=lambda transaction: transaction["date"]
         )
 
         ws = wb.create_sheet(mname_he)
@@ -500,21 +538,20 @@ def build_month_sheets(wb):
         ws.row_dimensions[3].height = 22
 
         if month_txns:
-            for ri, (date, tool, desc, usd) in enumerate(month_txns, 4):
+            for ri, transaction in enumerate(month_txns, 4):
                 bg = C_LTBLUE if ri % 2 == 0 else C_WHITE
-                apply_data(ws, ri, 1, date, bg=bg, align=center())
-                apply_data(ws, ri, 2, tool, bg=bg, align=left_al())
-                apply_data(ws, ri, 3, desc, bg=bg, align=left_al())
+                apply_data(ws, ri, 1, transaction["date"], bg=bg, align=center())
+                apply_data(ws, ri, 2, transaction["tool"], bg=bg, align=left_al())
+                apply_data(ws, ri, 3, transaction["description"], bg=bg, align=left_al())
 
-                c_usd = ws.cell(row=ri, column=4, value=usd)
+                c_usd = ws.cell(row=ri, column=4, value=transaction["amount_usd"])
                 c_usd.font = Font(size=10, name="Arial")
                 c_usd.fill = fill(bg)
                 c_usd.border = border_thin()
                 c_usd.number_format = '[$$-en-US]#,##0.00'
                 c_usd.alignment = right()
 
-                c_ils = ws.cell(row=ri, column=5)
-                c_ils.value = f"=D{ri}*{rate_ref}"
+                c_ils = ws.cell(row=ri, column=5, value=transaction["amount_ils"])
                 c_ils.font = Font(size=10, name="Arial")
                 c_ils.fill = fill(bg)
                 c_ils.border = border_thin()
@@ -687,8 +724,15 @@ def build_monthly_summary(wb, month_sheet_names):
             c_usd.border = border_thin()
             usd_sum_parts.append(f"{get_column_letter(sc)}{row}")
 
-            c_ils = ws.cell(row=row, column=sc + 1)
-            c_ils.value = f"=IF({get_column_letter(sc)}{row}>0,{get_column_letter(sc)}{row}*{rate_ref},\"\")"
+            c_ils = ws.cell(
+                row=row,
+                column=sc + 1,
+                value=(
+                    f"=SUMIFS('{txns_sheet}'!$E:$E,"
+                    f"'{txns_sheet}'!$B:$B,\"{tool}\","
+                    f"'{txns_sheet}'!$F:$F,\"{mname_he}\")"
+                ),
+            )
             c_ils.font = Font(size=10, name="Arial")
             c_ils.fill = fill(bg)
             c_ils.number_format = '#,##0.00" \u20aa";(#,##0.00" \u20aa");"-"'
@@ -705,7 +749,7 @@ def build_monthly_summary(wb, month_sheet_names):
         t_usd.border = border_thin()
 
         t_ils = ws.cell(row=row, column=total_ils_col)
-        t_ils.value = f"=IF({get_column_letter(total_usd_col)}{row}>0,{get_column_letter(total_usd_col)}{row}*{rate_ref},\"\")"
+        t_ils.value = f"=SUM({','.join(get_column_letter(sc + 1) + str(row) for _, sc in month_start_cols.items())})"
         t_ils.font = Font(bold=True, size=10, name="Arial")
         t_ils.fill = fill(C_LTBLUE)
         t_ils.number_format = '#,##0.00" \u20aa";(#,##0.00" \u20aa");"-"'
@@ -824,8 +868,7 @@ def build_annual_report(wb, month_sheet_names):
         c_usd.number_format = '[$$-en-US]#,##0.00'
         c_usd.alignment = right()
 
-        c_ils = ws.cell(row=row, column=4)
-        c_ils.value = f"=C{row}*{rate_ref}"
+        c_ils = ws.cell(row=row, column=4, value=f"=SUMIF('{txns_sheet}'!$F:$F,\"{mname_he}\",'{txns_sheet}'!$E:$E)")
         c_ils.font = Font(bold=True, size=11, name="Arial")
         c_ils.fill = fill(bg)
         c_ils.border = border_thin()
@@ -870,7 +913,7 @@ def build_annual_report(wb, month_sheet_names):
     gt_usd.number_format = '[$$-en-US]#,##0.00'
     gt_usd.alignment = right()
 
-    gt_ils = ws.cell(row=row, column=4, value=f"=C{row}*{rate_ref}")
+    gt_ils = ws.cell(row=row, column=4, value=f"=SUM(D4:D{row-2})")
     gt_ils.font = Font(bold=True, color=C_WHITE, size=13, name="Arial")
     gt_ils.fill = fill(C_NAVY)
     gt_ils.border = border_medium()
@@ -978,22 +1021,39 @@ def generate_dashboard_json():
 
     today = dt.date.today()
     dashboard_transactions = [
-        t for t in TRANSACTIONS
-        if dt.date.fromisoformat(t[0]) <= today
+        transaction for transaction in TRANSACTION_RECORDS
+        if dt.date.fromisoformat(transaction["date"]) <= today
     ]
 
-    txns = [{"date": t[0], "tool": t[1], "description": t[2], "amount": t[3]} for t in dashboard_transactions]
+    txns = [
+        {
+            "date": transaction["date"],
+            "tool": transaction["tool"],
+            "description": transaction["description"],
+            "currency": transaction["currency"],
+            "original_amount": transaction["original_amount"],
+            "amount_usd": round(transaction["amount_usd"], 6),
+            "amount_ils": transaction["amount_ils"],
+        }
+        for transaction in dashboard_transactions
+    ]
     monthly = defaultdict(float)
+    monthly_ils = defaultdict(float)
     by_tool = defaultdict(float)
-    for t in dashboard_transactions:
-        ym = t[0][:7]
-        monthly[ym] = round(monthly[ym] + t[3], 2)
-        by_tool[t[1]] = round(by_tool[t[1]] + t[3], 2)
+    by_tool_ils = defaultdict(float)
+    for transaction in dashboard_transactions:
+        ym = transaction["month_key"]
+        monthly[ym] = round(monthly[ym] + transaction["amount_usd"], 6)
+        monthly_ils[ym] = round(monthly_ils[ym] + transaction["amount_ils"], 2)
+        by_tool[transaction["tool"]] = round(by_tool[transaction["tool"]] + transaction["amount_usd"], 6)
+        by_tool_ils[transaction["tool"]] = round(by_tool_ils[transaction["tool"]] + transaction["amount_ils"], 2)
 
     usd_rate, last_update, source = get_current_usd_to_ils_rate()
-    grand_usd = round(sum(t[3] for t in dashboard_transactions), 2)
+    grand_usd = round(sum(transaction["amount_usd"] for transaction in dashboard_transactions), 2)
+    grand_ils = round(sum(transaction["amount_ils"] for transaction in dashboard_transactions), 2)
     cur_month  = today.strftime("%Y-%m")
     cur_usd    = round(monthly.get(cur_month, 0.0), 2)
+    cur_ils    = round(monthly_ils.get(cur_month, 0.0), 2)
 
     data = {
         "generated":              today.isoformat(),
@@ -1001,13 +1061,15 @@ def generate_dashboard_json():
         "exchange_rate_updated_at": last_update,
         "exchange_rate_source":   source,
         "grand_total":            grand_usd,
-        "grand_total_ils":        round(grand_usd  * usd_rate, 2),
+        "grand_total_ils":        grand_ils,
         "current_month":          cur_month,
         "current_month_total":    cur_usd,
-        "current_month_total_ils": round(cur_usd   * usd_rate, 2),
+        "current_month_total_ils": cur_ils,
         "transactions": sorted(txns, key=lambda x: x["date"], reverse=True),
-        "monthly": dict(sorted(monthly.items())),
-        "by_tool": dict(sorted(by_tool.items(), key=lambda x: -x[1]))
+        "monthly": dict(sorted((key, round(value, 2)) for key, value in monthly.items())),
+        "monthly_ils": dict(sorted(monthly_ils.items())),
+        "by_tool": dict(sorted(((key, round(value, 2)) for key, value in by_tool.items()), key=lambda x: -x[1])),
+        "by_tool_ils": dict(sorted(by_tool_ils.items(), key=lambda x: -x[1]))
     }
 
     (docs_dir / "data.json").write_text(

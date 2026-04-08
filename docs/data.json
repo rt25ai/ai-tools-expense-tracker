@@ -4,532 +4,793 @@
   "exchange_rate_updated_at": "2026-04-07T09:23:02.983381Z",
   "exchange_rate_source": "Bank of Israel Public API",
   "grand_total": 1846.76,
-  "grand_total_ils": 5802.52,
+  "grand_total_ils": 5900,
   "current_month": "2026-04",
   "current_month_total": 119.04,
-  "current_month_total_ils": 374.02,
+  "current_month_total_ils": 384.6,
   "transactions": [
     {
       "date": "2026-04-05",
       "tool": "IONOS",
       "description": "Instant Domain",
-      "amount": 20
+      "currency": "USD",
+      "original_amount": 20,
+      "amount_usd": 20,
+      "amount_ils": 62.84
     },
     {
       "date": "2026-04-03",
       "tool": "Meta (Ads)",
       "description": "Facebook Ads",
-      "amount": 2.25
+      "currency": "USD",
+      "original_amount": 2.25,
+      "amount_usd": 2.25,
+      "amount_ils": 7.07
     },
     {
       "date": "2026-04-01",
       "tool": "Anthropic",
       "description": "Claude Pro",
-      "amount": 20
+      "currency": "USD",
+      "original_amount": 20,
+      "amount_usd": 20,
+      "amount_ils": 62.84
     },
     {
       "date": "2026-04-01",
       "tool": "Anthropic",
       "description": "Credit purchase",
-      "amount": 5
+      "currency": "USD",
+      "original_amount": 5,
+      "amount_usd": 5,
+      "amount_ils": 15.71
     },
     {
       "date": "2026-04-01",
       "tool": "Google Workspace",
       "description": "Business Plus – Mar 2026 (₪75.90)",
-      "amount": 20.79
+      "currency": "ILS",
+      "original_amount": 75.9,
+      "amount_usd": 20.79,
+      "amount_ils": 75.9
     },
     {
       "date": "2026-04-01",
       "tool": "Meta (Ads)",
       "description": "Facebook Ads",
-      "amount": 51
+      "currency": "USD",
+      "original_amount": 51,
+      "amount_usd": 51,
+      "amount_ils": 160.24
     },
     {
       "date": "2026-03-25",
       "tool": "Lovable",
       "description": "Lite plan",
-      "amount": 5
+      "currency": "USD",
+      "original_amount": 5,
+      "amount_usd": 5,
+      "amount_ils": 15.71
     },
     {
       "date": "2026-03-19",
       "tool": "Anthropic",
       "description": "Credit purchase",
-      "amount": 10
+      "currency": "USD",
+      "original_amount": 10,
+      "amount_usd": 10,
+      "amount_ils": 31.42
     },
     {
       "date": "2026-03-19",
       "tool": "Eleven Labs",
       "description": "Creator (first month 50% off)",
-      "amount": 11
+      "currency": "USD",
+      "original_amount": 11,
+      "amount_usd": 11,
+      "amount_ils": 34.56
     },
     {
       "date": "2026-03-16",
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
-      "amount": 20
+      "currency": "USD",
+      "original_amount": 20,
+      "amount_usd": 20,
+      "amount_ils": 62.84
     },
     {
       "date": "2026-03-15",
       "tool": "Anthropic",
       "description": "Claude Pro",
-      "amount": 20
+      "currency": "USD",
+      "original_amount": 20,
+      "amount_usd": 20,
+      "amount_ils": 62.84
     },
     {
       "date": "2026-03-12",
       "tool": "Meta (Ads)",
       "description": "Facebook Ads",
-      "amount": 51
+      "currency": "USD",
+      "original_amount": 51,
+      "amount_usd": 51,
+      "amount_ils": 160.24
     },
     {
       "date": "2026-03-10",
       "tool": "CapCut",
       "description": "Pro – Mar 2026 (₪49.90)",
-      "amount": 13.67
+      "currency": "ILS",
+      "original_amount": 49.9,
+      "amount_usd": 13.67,
+      "amount_ils": 49.9
     },
     {
       "date": "2026-03-03",
       "tool": "Meta (Ads)",
       "description": "Facebook Ads",
-      "amount": 40.11
+      "currency": "USD",
+      "original_amount": 40.11,
+      "amount_usd": 40.11,
+      "amount_ils": 126.03
     },
     {
       "date": "2026-03-02",
       "tool": "Google Workspace",
       "description": "Business Plus – Feb 2026 (₪75.90)",
-      "amount": 20.79
+      "currency": "ILS",
+      "original_amount": 75.9,
+      "amount_usd": 20.79,
+      "amount_ils": 75.9
     },
     {
       "date": "2026-03-02",
       "tool": "Lovable",
       "description": "Cloud & AI Balance Top-up",
-      "amount": 10
+      "currency": "USD",
+      "original_amount": 10,
+      "amount_usd": 10,
+      "amount_ils": 31.42
     },
     {
       "date": "2026-03-01",
       "tool": "Lovable",
       "description": "Cloud & AI Balance Top-up",
-      "amount": 10
+      "currency": "USD",
+      "original_amount": 10,
+      "amount_usd": 10,
+      "amount_ils": 31.42
     },
     {
       "date": "2026-03-01",
       "tool": "Timeless",
       "description": "Pro monthly (50% off)",
-      "amount": 14.5
+      "currency": "USD",
+      "original_amount": 14.5,
+      "amount_usd": 14.5,
+      "amount_ils": 45.56
     },
     {
       "date": "2026-02-28",
       "tool": "Eleven Labs",
       "description": "Starter monthly",
-      "amount": 5
+      "currency": "USD",
+      "original_amount": 5,
+      "amount_usd": 5,
+      "amount_ils": 15.71
     },
     {
       "date": "2026-02-28",
       "tool": "Lovable",
       "description": "Cloud & AI Balance Top-up",
-      "amount": 10
+      "currency": "USD",
+      "original_amount": 10,
+      "amount_usd": 10,
+      "amount_ils": 31.42
     },
     {
       "date": "2026-02-25",
       "tool": "Lovable",
       "description": "Pro2 monthly",
-      "amount": 50
+      "currency": "USD",
+      "original_amount": 50,
+      "amount_usd": 50,
+      "amount_ils": 157.1
     },
     {
       "date": "2026-02-25",
       "tool": "Meta (Ads)",
       "description": "Facebook Ads",
-      "amount": 51
+      "currency": "USD",
+      "original_amount": 51,
+      "amount_usd": 51,
+      "amount_ils": 160.24
     },
     {
       "date": "2026-02-24",
       "tool": "Higgsfield",
       "description": "On-Demand credits 500",
-      "amount": 20
+      "currency": "USD",
+      "original_amount": 20,
+      "amount_usd": 20,
+      "amount_ils": 62.84
     },
     {
       "date": "2026-02-16",
       "tool": "Anthropic",
       "description": "Credit purchase",
-      "amount": 5
+      "currency": "USD",
+      "original_amount": 5,
+      "amount_usd": 5,
+      "amount_ils": 15.71
     },
     {
       "date": "2026-02-16",
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
-      "amount": 20
+      "currency": "USD",
+      "original_amount": 20,
+      "amount_usd": 20,
+      "amount_ils": 62.84
     },
     {
       "date": "2026-02-15",
       "tool": "Anthropic",
       "description": "Claude Pro",
-      "amount": 20
+      "currency": "USD",
+      "original_amount": 20,
+      "amount_usd": 20,
+      "amount_ils": 62.84
     },
     {
       "date": "2026-02-12",
       "tool": "Meta (Ads)",
       "description": "Facebook Ads",
-      "amount": 47
+      "currency": "USD",
+      "original_amount": 47,
+      "amount_usd": 47,
+      "amount_ils": 147.67
     },
     {
       "date": "2026-02-10",
       "tool": "CapCut",
       "description": "Pro – Feb 2026 (₪49.90)",
-      "amount": 13.67
+      "currency": "ILS",
+      "original_amount": 49.9,
+      "amount_usd": 13.67,
+      "amount_ils": 49.9
     },
     {
       "date": "2026-02-03",
       "tool": "Meta (Ads)",
       "description": "Facebook Ads",
-      "amount": 31.42
+      "currency": "USD",
+      "original_amount": 31.42,
+      "amount_usd": 31.42,
+      "amount_ils": 98.72
     },
     {
       "date": "2026-02-02",
       "tool": "Google Workspace",
       "description": "Business Plus – Jan 2026 (₪75.90)",
-      "amount": 20.79
+      "currency": "ILS",
+      "original_amount": 75.9,
+      "amount_usd": 20.79,
+      "amount_ils": 75.9
     },
     {
       "date": "2026-02-01",
       "tool": "Lovable",
       "description": "Upgrade Pro1 -> Pro2 (prorated)",
-      "amount": 25
+      "currency": "USD",
+      "original_amount": 25,
+      "amount_usd": 25,
+      "amount_ils": 78.55
     },
     {
       "date": "2026-01-30",
       "tool": "Eleven Labs",
       "description": "Starter monthly",
-      "amount": 5
+      "currency": "USD",
+      "original_amount": 5,
+      "amount_usd": 5,
+      "amount_ils": 15.71
     },
     {
       "date": "2026-01-30",
       "tool": "Timeless",
       "description": "Pro monthly (50% off)",
-      "amount": 14.5
+      "currency": "USD",
+      "original_amount": 14.5,
+      "amount_usd": 14.5,
+      "amount_ils": 45.56
     },
     {
       "date": "2026-01-27",
       "tool": "Meta (Ads)",
       "description": "Facebook Ads",
-      "amount": 43
+      "currency": "USD",
+      "original_amount": 43,
+      "amount_usd": 43,
+      "amount_ils": 135.11
     },
     {
       "date": "2026-01-25",
       "tool": "Lovable",
       "description": "Pro 1 monthly",
-      "amount": 25
+      "currency": "USD",
+      "original_amount": 25,
+      "amount_usd": 25,
+      "amount_ils": 78.55
     },
     {
       "date": "2026-01-19",
       "tool": "Meta (Ads)",
       "description": "Facebook Ads",
-      "amount": 39
+      "currency": "USD",
+      "original_amount": 39,
+      "amount_usd": 39,
+      "amount_ils": 122.54
     },
     {
       "date": "2026-01-16",
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
-      "amount": 20
+      "currency": "USD",
+      "original_amount": 20,
+      "amount_usd": 20,
+      "amount_ils": 62.84
     },
     {
       "date": "2026-01-10",
       "tool": "CapCut",
       "description": "Pro – Jan 2026 (₪49.90)",
-      "amount": 13.67
+      "currency": "ILS",
+      "original_amount": 49.9,
+      "amount_usd": 13.67,
+      "amount_ils": 49.9
     },
     {
       "date": "2026-01-08",
       "tool": "Genspark",
       "description": "Credits Pack",
-      "amount": 20
+      "currency": "USD",
+      "original_amount": 20,
+      "amount_usd": 20,
+      "amount_ils": 62.84
     },
     {
       "date": "2026-01-05",
       "tool": "Genspark",
       "description": "Credits Pack",
-      "amount": 20
+      "currency": "USD",
+      "original_amount": 20,
+      "amount_usd": 20,
+      "amount_ils": 62.84
     },
     {
       "date": "2026-01-03",
       "tool": "Genspark",
       "description": "Plus Annual (happynewyear26 promo)",
-      "amount": 139.92
+      "currency": "USD",
+      "original_amount": 139.92,
+      "amount_usd": 139.92,
+      "amount_ils": 439.63
     },
     {
       "date": "2026-01-03",
       "tool": "Manychat",
       "description": "Pro monthly",
-      "amount": 15
+      "currency": "USD",
+      "original_amount": 15,
+      "amount_usd": 15,
+      "amount_ils": 47.13
     },
     {
       "date": "2026-01-03",
       "tool": "Meta (Ads)",
       "description": "Facebook Ads",
-      "amount": 19.43
+      "currency": "USD",
+      "original_amount": 19.43,
+      "amount_usd": 19.43,
+      "amount_ils": 61.05
     },
     {
       "date": "2026-01-01",
       "tool": "Google Workspace",
       "description": "Business Plus – Dec 2025 (₪75.90)",
-      "amount": 20.79
+      "currency": "ILS",
+      "original_amount": 75.9,
+      "amount_usd": 20.79,
+      "amount_ils": 75.9
     },
     {
       "date": "2025-12-30",
       "tool": "Eleven Labs",
       "description": "Starter monthly",
-      "amount": 5
+      "currency": "USD",
+      "original_amount": 5,
+      "amount_usd": 5,
+      "amount_ils": 15.71
     },
     {
       "date": "2025-12-29",
       "tool": "Meta (Ads)",
       "description": "Facebook Ads",
-      "amount": 36
+      "currency": "USD",
+      "original_amount": 36,
+      "amount_usd": 36,
+      "amount_ils": 113.11
     },
     {
       "date": "2025-12-16",
       "tool": "Meta (Ads)",
       "description": "Facebook Ads",
-      "amount": 33
+      "currency": "USD",
+      "original_amount": 33,
+      "amount_usd": 33,
+      "amount_ils": 103.69
     },
     {
       "date": "2025-12-16",
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
-      "amount": 20
+      "currency": "USD",
+      "original_amount": 20,
+      "amount_usd": 20,
+      "amount_ils": 62.84
     },
     {
       "date": "2025-12-08",
       "tool": "Meta (Ads)",
       "description": "Facebook Ads",
-      "amount": 30
+      "currency": "USD",
+      "original_amount": 30,
+      "amount_usd": 30,
+      "amount_ils": 94.26
     },
     {
       "date": "2025-12-03",
       "tool": "Manychat",
       "description": "Pro monthly",
-      "amount": 15
+      "currency": "USD",
+      "original_amount": 15,
+      "amount_usd": 15,
+      "amount_ils": 47.13
     },
     {
       "date": "2025-12-03",
       "tool": "Meta (Ads)",
       "description": "Facebook Ads",
-      "amount": 9.72
+      "currency": "USD",
+      "original_amount": 9.72,
+      "amount_usd": 9.72,
+      "amount_ils": 30.54
     },
     {
       "date": "2025-12-01",
       "tool": "Google Workspace",
       "description": "Business Plus – Nov 2025 (₪75.90)",
-      "amount": 20.79
+      "currency": "ILS",
+      "original_amount": 75.9,
+      "amount_usd": 20.79,
+      "amount_ils": 75.9
     },
     {
       "date": "2025-11-30",
       "tool": "Eleven Labs",
       "description": "Starter monthly",
-      "amount": 5
+      "currency": "USD",
+      "original_amount": 5,
+      "amount_usd": 5,
+      "amount_ils": 15.71
     },
     {
       "date": "2025-11-24",
       "tool": "Anthropic",
       "description": "Claude Pro",
-      "amount": 20
+      "currency": "USD",
+      "original_amount": 20,
+      "amount_usd": 20,
+      "amount_ils": 62.84
     },
     {
       "date": "2025-11-16",
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
-      "amount": 20
+      "currency": "USD",
+      "original_amount": 20,
+      "amount_usd": 20,
+      "amount_ils": 62.84
     },
     {
       "date": "2025-11-13",
       "tool": "Hedra",
       "description": "Extra Small Credit Pack",
-      "amount": 10
+      "currency": "USD",
+      "original_amount": 10,
+      "amount_usd": 10,
+      "amount_ils": 31.42
     },
     {
       "date": "2025-11-11",
       "tool": "Astria",
       "description": "Credits x10 + 18% VAT",
-      "amount": 11.8
+      "currency": "USD",
+      "original_amount": 11.8,
+      "amount_usd": 11.8,
+      "amount_ils": 37.08
     },
     {
       "date": "2025-11-11",
       "tool": "Runway ML",
       "description": "Standard monthly",
-      "amount": 15
+      "currency": "USD",
+      "original_amount": 15,
+      "amount_usd": 15,
+      "amount_ils": 47.13
     },
     {
       "date": "2025-11-09",
       "tool": "Recraft",
       "description": "Pro 1k credits",
-      "amount": 12
+      "currency": "USD",
+      "original_amount": 12,
+      "amount_usd": 12,
+      "amount_ils": 37.7
     },
     {
       "date": "2025-10-30",
       "tool": "Eleven Labs",
       "description": "Starter monthly",
-      "amount": 5
+      "currency": "USD",
+      "original_amount": 5,
+      "amount_usd": 5,
+      "amount_ils": 15.71
     },
     {
       "date": "2025-10-24",
       "tool": "Anthropic",
       "description": "Claude Pro",
-      "amount": 20
+      "currency": "USD",
+      "original_amount": 20,
+      "amount_usd": 20,
+      "amount_ils": 62.84
     },
     {
       "date": "2025-10-16",
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
-      "amount": 20
+      "currency": "USD",
+      "original_amount": 20,
+      "amount_usd": 20,
+      "amount_ils": 62.84
     },
     {
       "date": "2025-10-02",
       "tool": "Google Workspace",
       "description": "Business Plus – Sep 2025 (₪56.93)",
-      "amount": 15.6
+      "currency": "ILS",
+      "original_amount": 56.93,
+      "amount_usd": 15.6,
+      "amount_ils": 56.93
     },
     {
       "date": "2025-09-30",
       "tool": "Eleven Labs",
       "description": "Starter monthly",
-      "amount": 5
+      "currency": "USD",
+      "original_amount": 5,
+      "amount_usd": 5,
+      "amount_ils": 15.71
     },
     {
       "date": "2025-09-24",
       "tool": "Anthropic",
       "description": "Claude Pro",
-      "amount": 20
+      "currency": "USD",
+      "original_amount": 20,
+      "amount_usd": 20,
+      "amount_ils": 62.84
     },
     {
       "date": "2025-09-16",
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
-      "amount": 20
+      "currency": "USD",
+      "original_amount": 20,
+      "amount_usd": 20,
+      "amount_ils": 62.84
     },
     {
       "date": "2025-09-10",
       "tool": "Make",
       "description": "Core plan 10k ops/month",
-      "amount": 10.59
+      "currency": "USD",
+      "original_amount": 10.59,
+      "amount_usd": 10.59,
+      "amount_ils": 33.27
     },
     {
       "date": "2025-09-05",
       "tool": "Replicate",
       "description": "Usage - August",
-      "amount": 2.79
+      "currency": "USD",
+      "original_amount": 2.79,
+      "amount_usd": 2.79,
+      "amount_ils": 8.77
     },
     {
       "date": "2025-09-01",
       "tool": "Google Workspace",
       "description": "Business Plus – Aug 2025 (₪56.93)",
-      "amount": 15.6
+      "currency": "ILS",
+      "original_amount": 56.93,
+      "amount_usd": 15.6,
+      "amount_ils": 56.93
     },
     {
       "date": "2025-08-30",
       "tool": "Eleven Labs",
       "description": "Starter monthly",
-      "amount": 5
+      "currency": "USD",
+      "original_amount": 5,
+      "amount_usd": 5,
+      "amount_ils": 15.71
     },
     {
       "date": "2025-08-30",
       "tool": "Runway ML",
       "description": "Standard (25% off)",
-      "amount": 11.25
+      "currency": "USD",
+      "original_amount": 11.25,
+      "amount_usd": 11.25,
+      "amount_ils": 35.35
     },
     {
       "date": "2025-08-16",
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
-      "amount": 20
+      "currency": "USD",
+      "original_amount": 20,
+      "amount_usd": 20,
+      "amount_ils": 62.84
     },
     {
       "date": "2025-08-11",
       "tool": "Anthropic",
       "description": "Claude Pro",
-      "amount": 20
+      "currency": "USD",
+      "original_amount": 20,
+      "amount_usd": 20,
+      "amount_ils": 62.84
     },
     {
       "date": "2025-08-10",
       "tool": "Make",
       "description": "Core plan 10k ops/month",
-      "amount": 10.59
+      "currency": "USD",
+      "original_amount": 10.59,
+      "amount_usd": 10.59,
+      "amount_ils": 33.27
     },
     {
       "date": "2025-08-09",
       "tool": "Manus AI",
       "description": "Basic monthly",
-      "amount": 19
+      "currency": "USD",
+      "original_amount": 19,
+      "amount_usd": 19,
+      "amount_ils": 59.7
     },
     {
       "date": "2025-08-05",
       "tool": "Replicate",
       "description": "Usage - July",
-      "amount": 0.9
+      "currency": "USD",
+      "original_amount": 0.9,
+      "amount_usd": 0.9,
+      "amount_ils": 2.83
     },
     {
       "date": "2025-08-04",
       "tool": "Recraft",
       "description": "Basic monthly",
-      "amount": 12
+      "currency": "USD",
+      "original_amount": 12,
+      "amount_usd": 12,
+      "amount_ils": 37.7
     },
     {
       "date": "2025-08-02",
       "tool": "Runway ML",
       "description": "Credits 1,500",
-      "amount": 15
+      "currency": "USD",
+      "original_amount": 15,
+      "amount_usd": 15,
+      "amount_ils": 47.13
     },
     {
       "date": "2025-08-01",
       "tool": "Google Workspace",
       "description": "Business Plus – Jul 2025 (₪56.93)",
-      "amount": 15.6
+      "currency": "ILS",
+      "original_amount": 56.93,
+      "amount_usd": 15.6,
+      "amount_ils": 56.93
     },
     {
       "date": "2025-07-30",
       "tool": "Ideogram AI",
       "description": "Upgrade -> Plus Annual",
-      "amount": 113.14
+      "currency": "USD",
+      "original_amount": 113.14,
+      "amount_usd": 113.14,
+      "amount_ils": 355.49
     },
     {
       "date": "2025-07-30",
       "tool": "Replicate",
       "description": "Early card charge",
-      "amount": 10
+      "currency": "USD",
+      "original_amount": 10,
+      "amount_usd": 10,
+      "amount_ils": 31.42
     },
     {
       "date": "2025-07-20",
       "tool": "Runway ML",
       "description": "Standard (10% affiliate off)",
-      "amount": 13.5
+      "currency": "USD",
+      "original_amount": 13.5,
+      "amount_usd": 13.5,
+      "amount_ils": 42.42
     },
     {
       "date": "2025-07-16",
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
-      "amount": 20
+      "currency": "USD",
+      "original_amount": 20,
+      "amount_usd": 20,
+      "amount_ils": 62.84
     },
     {
       "date": "2025-07-11",
       "tool": "Anthropic",
       "description": "Claude Pro",
-      "amount": 20
+      "currency": "USD",
+      "original_amount": 20,
+      "amount_usd": 20,
+      "amount_ils": 62.84
     },
     {
       "date": "2025-07-10",
       "tool": "Make",
       "description": "Core plan 10k ops/month",
-      "amount": 10.59
+      "currency": "USD",
+      "original_amount": 10.59,
+      "amount_usd": 10.59,
+      "amount_ils": 33.27
     },
     {
       "date": "2025-07-09",
       "tool": "Ideogram AI",
       "description": "Ideogram Basic – annual",
-      "amount": 72
+      "currency": "USD",
+      "original_amount": 72,
+      "amount_usd": 72,
+      "amount_ils": 226.22
     },
     {
       "date": "2025-07-04",
       "tool": "Recraft",
       "description": "Basic – first month promo",
-      "amount": 1
+      "currency": "USD",
+      "original_amount": 1,
+      "amount_usd": 1,
+      "amount_ils": 3.14
     }
   ],
   "monthly": {
@@ -543,6 +804,18 @@
     "2026-02": 318.88,
     "2026-03": 226.07,
     "2026-04": 119.04
+  },
+  "monthly_ils": {
+    "2026-04": 384.6,
+    "2026-03": 727.84,
+    "2026-02": 1019.44,
+    "2026-01": 1259.6,
+    "2025-12": 543.18,
+    "2025-11": 294.72,
+    "2025-10": 198.32,
+    "2025-09": 240.36,
+    "2025-08": 414.3,
+    "2025-07": 817.64
   },
   "by_tool": {
     "Meta (Ads)": 483.93,
@@ -565,5 +838,27 @@
     "Replicate": 13.69,
     "Astria": 11.8,
     "Hedra": 10
+  },
+  "by_tool_ils": {
+    "Meta (Ads)": 1520.51,
+    "Ideogram AI": 581.71,
+    "Anthropic": 565.56,
+    "OpenAI": 565.56,
+    "Genspark": 565.31,
+    "Google Workspace": 550.29,
+    "Lovable": 424.17,
+    "Runway ML": 172.03,
+    "CapCut": 149.7,
+    "Eleven Labs": 144.53,
+    "Make": 99.81,
+    "Manychat": 94.26,
+    "Timeless": 91.12,
+    "Recraft": 78.54,
+    "IONOS": 62.84,
+    "Higgsfield": 62.84,
+    "Manus AI": 59.7,
+    "Replicate": 43.02,
+    "Astria": 37.08,
+    "Hedra": 31.42
   }
 }

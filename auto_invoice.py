@@ -308,11 +308,13 @@ def process_message(service, msg_id):
         log.warning(f"  Could not extract amount for {tool} ({msg_id})")
         return None
 
-    # Convert ILS → USD
+    # Keep exact ILS amounts for local-currency receipts and convert only for USD-based bookkeeping.
     if currency == "ILS":
-        amount_usd = round(amount_raw / get_exchange_rate(), 2)
+        original_amount = round(amount_raw, 2)
+        amount_usd = round(amount_raw / get_exchange_rate(), 6)
         description = f"{tool} (₪{amount_raw})"
     else:
+        original_amount = round(amount_raw, 2)
         amount_usd  = amount_raw
         if tool == "OpenAI":
             description = "ChatGPT Plus"
@@ -325,6 +327,8 @@ def process_message(service, msg_id):
         "date":        date.strftime("%Y-%m-%d"),
         "tool":        tool,
         "description": description,
+        "currency":    currency,
+        "original_amount": original_amount,
         "amount_usd":  amount_usd,
         "pdf_bytes":   pdf_bytes,
         "pdf_name":    pdf_name,
@@ -336,8 +340,12 @@ def process_message(service, msg_id):
 def already_imported(txn):
     """True if the exact transaction line already exists in MANUAL_TRANSACTIONS."""
     code = REPORT_PY.read_text(encoding="utf-8")
-    exact = (f'("{txn["date"]}", "{txn["tool"]}", '
-             f'"{txn["description"]}", {txn["amount_usd"]:.2f})')
+    if txn["currency"] == "ILS":
+        exact = (f'("{txn["date"]}", "{txn["tool"]}", '
+                 f'"{txn["description"]}", {txn["original_amount"]:.2f}, "ILS")')
+    else:
+        exact = (f'("{txn["date"]}", "{txn["tool"]}", '
+                 f'"{txn["description"]}", {txn["amount_usd"]:.2f})')
     return exact in code
 
 
@@ -345,8 +353,12 @@ def insert_transaction(txn):
     """Insert new line into MANUAL_TRANSACTIONS sorted by date."""
     code   = REPORT_PY.read_text(encoding="utf-8")
     lines  = code.splitlines(keepends=True)
-    new_ln = (f'    ("{txn["date"]}", "{txn["tool"]}", '
-              f'"{txn["description"]}", {txn["amount_usd"]:.2f}),\n')
+    if txn["currency"] == "ILS":
+        new_ln = (f'    ("{txn["date"]}", "{txn["tool"]}", '
+                  f'"{txn["description"]}", {txn["original_amount"]:.2f}, "ILS"),\n')
+    else:
+        new_ln = (f'    ("{txn["date"]}", "{txn["tool"]}", '
+                  f'"{txn["description"]}", {txn["amount_usd"]:.2f}),\n')
 
     in_tx     = False
     insert_at = None

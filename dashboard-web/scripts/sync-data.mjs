@@ -66,13 +66,48 @@ await mkdir(publicDir, { recursive: true });
 const sourceDataPath = path.join(sourceDocs, "data.json");
 const sourceData = JSON.parse(await readFile(sourceDataPath, "utf-8"));
 const exchangeRate = await resolveExchangeRate(sourceData.usd_rate);
+const normalizedTransactions = (sourceData.transactions ?? []).map((transaction) => {
+  const amountUsd = Number(transaction.amount_usd ?? 0);
+  const originalAmount = Number(transaction.original_amount ?? amountUsd);
+  const currency = transaction.currency === "ILS" ? "ILS" : "USD";
+  const amountIls = currency === "ILS"
+    ? Number(originalAmount.toFixed(2))
+    : Number((amountUsd * exchangeRate.rate).toFixed(2));
+
+  return {
+    ...transaction,
+    currency,
+    original_amount: Number(originalAmount.toFixed(2)),
+    amount_usd: Number(amountUsd.toFixed(6)),
+    amount_ils: amountIls,
+  };
+});
+
+const monthlyIls = {};
+const byToolIls = {};
+let grandIls = 0;
+let currentMonthIls = 0;
+
+for (const transaction of normalizedTransactions) {
+  const monthKey = String(transaction.date).slice(0, 7);
+  grandIls += transaction.amount_ils;
+  monthlyIls[monthKey] = Number(((monthlyIls[monthKey] ?? 0) + transaction.amount_ils).toFixed(2));
+  byToolIls[transaction.tool] = Number(((byToolIls[transaction.tool] ?? 0) + transaction.amount_ils).toFixed(2));
+  if (monthKey === sourceData.current_month) {
+    currentMonthIls += transaction.amount_ils;
+  }
+}
+
 const mergedData = {
   ...sourceData,
   usd_rate: exchangeRate.rate,
   exchange_rate_updated_at: exchangeRate.updatedAt,
   exchange_rate_source: exchangeRate.source,
-  grand_total_ils: Number((sourceData.grand_total * exchangeRate.rate).toFixed(2)),
-  current_month_total_ils: Number((sourceData.current_month_total * exchangeRate.rate).toFixed(2)),
+  grand_total_ils: Number(grandIls.toFixed(2)),
+  current_month_total_ils: Number(currentMonthIls.toFixed(2)),
+  monthly_ils: monthlyIls,
+  by_tool_ils: Object.fromEntries(Object.entries(byToolIls).sort((left, right) => right[1] - left[1])),
+  transactions: normalizedTransactions,
 };
 
 await writeFile(path.join(publicDir, "data.json"), JSON.stringify(mergedData, null, 2), "utf-8");
