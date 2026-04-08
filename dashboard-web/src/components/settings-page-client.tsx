@@ -68,18 +68,17 @@ export function SettingsPageClient({ initialSettings }: { initialSettings: Setti
         <div className="px-6 py-2">
           <SettingsRow
             label="שער דולר"
-            help="משמש את חוברת האקסל, מסכי התקציב וסיכומי הכספים בכל הממשק."
+            help="השער הרשמי נמשך אוטומטית ממקור רשמי בכל בנייה, וכל הסכומים בממשק מוצגים בשקלים לפי השער העדכני."
           >
             <Input
               value={String(settings.finance.usdRate)}
-              onChange={(event) =>
-                setSettings({
-                  ...settings,
-                  finance: { ...settings.finance, usdRate: Number(event.target.value) || 0 },
-                })
-              }
+              readOnly
               className="h-11 border-white/10 bg-black/20 text-zinc-100"
             />
+            <p className="mt-3 text-sm text-zinc-500">
+              {settings.finance.exchangeRateSource ?? "Bank of Israel Public API"}
+              {settings.finance.exchangeRateUpdatedAt ? ` | עודכן: ${settings.finance.exchangeRateUpdatedAt}` : ""}
+            </p>
           </SettingsRow>
           <SettingsRow
             label="יום חיוב ברירת מחדל"
@@ -116,7 +115,7 @@ export function SettingsPageClient({ initialSettings }: { initialSettings: Setti
           <p className="text-sm text-zinc-500">
             הנחות שער מטבע וברירות מחדל לחיוב עבור כל המערכת.
           </p>
-          <Button onClick={() => saveSection("finance")} className="bg-emerald-500 text-black hover:bg-emerald-400">
+          <Button onClick={() => saveSection("finance")} className="bg-cyan-400 text-black hover:bg-cyan-300">
             {savedSection === "finance" ? <CheckCircle2 className="ml-2 size-4" /> : null}
             שמור הגדרות כספיות
           </Button>
@@ -193,7 +192,7 @@ export function SettingsPageClient({ initialSettings }: { initialSettings: Setti
         </div>
         <div className="flex items-center justify-between border-t border-white/6 px-6 py-4">
           <p className="text-sm text-zinc-500">הנחות הזיהוי הנוכחיות עבור Gmail, טקסט מתוך PDF ופענוח גוף המייל.</p>
-          <Button onClick={() => saveSection("detection")} className="bg-emerald-500 text-black hover:bg-emerald-400">
+          <Button onClick={() => saveSection("detection")} className="bg-cyan-400 text-black hover:bg-cyan-300">
             {savedSection === "detection" ? <CheckCircle2 className="ml-2 size-4" /> : null}
             שמור כללי זיהוי
           </Button>
@@ -253,7 +252,7 @@ export function SettingsPageClient({ initialSettings }: { initialSettings: Setti
         </div>
         <div className="flex items-center justify-between border-t border-white/6 px-6 py-4">
           <p className="text-sm text-zinc-500">החלק הזה מגדיר מה המערכת צריכה לראות כהתנהגות ספק תקינה.</p>
-          <Button onClick={() => saveSection("vendors")} className="bg-emerald-500 text-black hover:bg-emerald-400">
+          <Button onClick={() => saveSection("vendors")} className="bg-cyan-400 text-black hover:bg-cyan-300">
             {savedSection === "vendors" ? <CheckCircle2 className="ml-2 size-4" /> : null}
             שמור רישום ספקים
           </Button>
@@ -311,7 +310,7 @@ export function SettingsPageClient({ initialSettings }: { initialSettings: Setti
         </div>
         <div className="flex items-center justify-between border-t border-white/6 px-6 py-4">
           <p className="text-sm text-zinc-500">הכללים החוזרים הם מה שהופך את זה למערכת תפעול, לא רק לדוח.</p>
-          <Button onClick={() => saveSection("recurringRules")} className="bg-emerald-500 text-black hover:bg-emerald-400">
+          <Button onClick={() => saveSection("recurringRules")} className="bg-cyan-400 text-black hover:bg-cyan-300">
             {savedSection === "recurringRules" ? <CheckCircle2 className="ml-2 size-4" /> : null}
             שמור כללים חוזרים
           </Button>

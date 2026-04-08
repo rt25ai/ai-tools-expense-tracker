@@ -24,17 +24,10 @@ export function SidebarNav() {
   const pathname = usePathname();
 
   return (
-    <aside className="sticky top-0 hidden h-screen w-[280px] shrink-0 border-l border-white/6 bg-[#0a0c0f] px-6 py-7 lg:flex lg:flex-col">
+    <aside className="sticky top-0 hidden h-screen w-[280px] shrink-0 border-l border-white/6 bg-[#090c10] px-6 py-7 lg:flex lg:flex-col">
       <div className="flex items-center gap-3">
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-2">
-          <Image
-            src={withBasePath("/logo.png")}
-            alt="RT-AI"
-            width={30}
-            height={30}
-            className="rounded-lg"
-            unoptimized
-          />
+        <div className="rounded-2xl border border-cyan-400/15 bg-cyan-400/8 p-2 shadow-[0_0_30px_rgba(44,214,223,0.12)]">
+          <Image src={withBasePath("/logo.png")} alt="RT-AI" width={34} height={34} className="rounded-lg" unoptimized />
         </div>
         <div>
           <p className="text-sm font-semibold text-zinc-100">מעקב הוצאות כלי AI</p>
@@ -53,7 +46,7 @@ export function SidebarNav() {
               className={cn(
                 "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm transition-colors",
                 isActive
-                  ? "bg-emerald-400/12 text-white ring-1 ring-emerald-400/20"
+                  ? "bg-cyan-400/12 text-white ring-1 ring-cyan-400/20"
                   : "text-zinc-400 hover:bg-white/5 hover:text-zinc-100",
               )}
             >
@@ -70,7 +63,7 @@ export function SidebarNav() {
             <p className="text-xs tracking-[0.18em] text-zinc-500">מצב נוכחי</p>
             <p className="mt-2 text-lg font-semibold text-zinc-100">דשבורד סטטי</p>
           </div>
-          <ReceiptText className="size-4 text-emerald-300" />
+          <ReceiptText className="size-4 text-cyan-300" />
         </div>
         <p className="mt-3 text-sm leading-6 text-zinc-400">
           הממשק כבר בנוי כמו מערכת תפעול אמיתית, כך שבהמשך נוכל לחבר אוטומציות חיות בלי לעצב הכול מחדש.
@@ -96,7 +89,7 @@ export function MobileNav() {
               className={cn(
                 "inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm whitespace-nowrap transition-colors",
                 isActive
-                  ? "border-emerald-400/20 bg-emerald-400/12 text-white"
+                  ? "border-cyan-400/20 bg-cyan-400/12 text-white"
                   : "border-white/8 bg-white/[0.03] text-zinc-400 hover:text-zinc-100",
               )}
             >

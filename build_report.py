@@ -10,6 +10,7 @@ from openpyxl.utils import get_column_letter
 from openpyxl.chart import BarChart, Reference
 from openpyxl.worksheet.hyperlink import Hyperlink
 import datetime, os
+from exchange_rate import fetch_usd_to_ils_rate
 
 OUTPUT_PATH = r"C:\Users\roita\מעקב הוצאות כלים\AI_Tools_Expenses_2025_2026.xlsx"
 
@@ -23,6 +24,14 @@ C_BLACK    = "000000"
 C_DARKGRAY = "595959"
 C_GREEN    = "70AD47"
 C_ORANGE   = "ED7D31"
+_EXCHANGE_RATE_CACHE = None
+
+
+def get_current_usd_to_ils_rate():
+    global _EXCHANGE_RATE_CACHE
+    if _EXCHANGE_RATE_CACHE is None:
+        _EXCHANGE_RATE_CACHE = fetch_usd_to_ils_rate()
+    return _EXCHANGE_RATE_CACHE
 
 def fill(hex_color):
     return PatternFill("solid", fgColor=hex_color)
@@ -283,6 +292,7 @@ def internal_link(ws, cell_addr, target_sheet, target_cell="A1", display=None):
 # Sheet 1 – Settings
 # ════════════════════════════════════════════════════════════════════════════════
 def build_settings(wb):
+    usd_rate, last_update, source = get_current_usd_to_ils_rate()
     ws = wb.create_sheet("\u05d4\u05d2\u05d3\u05e8\u05d5\u05ea")
     ws.sheet_view.rightToLeft = True
     ws.sheet_properties.tabColor = C_ORANGE
@@ -301,11 +311,11 @@ def build_settings(wb):
     ws["A3"].fill = fill(C_BLUE)
     ws["A3"].alignment = left_al()
 
-    ws["A4"].value = "\u05e9\u05e2\u05e8 USD \u2192 ILS (\u05dc\u05e2\u05d3\u05db\u05d5\u05df \u05d9\u05d3\u05e0\u05d9)"
+    ws["A4"].value = "\u05e9\u05e2\u05e8 USD \u2192 ILS (\u05de\u05ea\u05e2\u05d3\u05db\u05df \u05d0\u05d5\u05d8\u05d5\u05de\u05d8\u05d9\u05ea)"
     ws["A4"].font = Font(bold=False, size=10, name="Arial")
     ws["A4"].alignment = left_al()
 
-    ws["B4"].value = 3.65
+    ws["B4"].value = usd_rate
     ws["B4"].font = Font(bold=True, color="0000FF", size=12, name="Arial")
     ws["B4"].fill = fill(C_YELLOW)
     ws["B4"].number_format = '#,##0.00" \u20aa/$"'
@@ -313,7 +323,10 @@ def build_settings(wb):
     ws["B4"].border = border_medium()
     ws.row_dimensions[4].height = 22
 
-    ws["C4"].value = "\u2190 \u05e0\u05d9\u05ea\u05df \u05dc\u05e2\u05d3\u05db\u05df \u05e9\u05d9\u05e2\u05d5\u05e8 \u05d6\u05d4 \u05d1\u05db\u05dc \u05e2\u05ea"
+    rate_context = f"\u2190 \u05de\u05e7\u05d5\u05e8: {source}"
+    if last_update:
+        rate_context += f" | \u05e2\u05d5\u05d3\u05db\u05df: {last_update[:10]}"
+    ws["C4"].value = rate_context
     ws["C4"].font = Font(italic=True, size=9, color=C_DARKGRAY, name="Arial")
 
     ws["A6"].value = "\u05d4\u05e2\u05e8\u05d4:"
@@ -977,19 +990,21 @@ def generate_dashboard_json():
         monthly[ym] = round(monthly[ym] + t[3], 2)
         by_tool[t[1]] = round(by_tool[t[1]] + t[3], 2)
 
-    USD_RATE = 3.65   # USD → ILS
+    usd_rate, last_update, source = get_current_usd_to_ils_rate()
     grand_usd = round(sum(t[3] for t in dashboard_transactions), 2)
     cur_month  = today.strftime("%Y-%m")
     cur_usd    = round(monthly.get(cur_month, 0.0), 2)
 
     data = {
         "generated":              today.isoformat(),
-        "usd_rate":               USD_RATE,
+        "usd_rate":               usd_rate,
+        "exchange_rate_updated_at": last_update,
+        "exchange_rate_source":   source,
         "grand_total":            grand_usd,
-        "grand_total_ils":        round(grand_usd  * USD_RATE, 2),
+        "grand_total_ils":        round(grand_usd  * usd_rate, 2),
         "current_month":          cur_month,
         "current_month_total":    cur_usd,
-        "current_month_total_ils": round(cur_usd   * USD_RATE, 2),
+        "current_month_total_ils": round(cur_usd   * usd_rate, 2),
         "transactions": sorted(txns, key=lambda x: x["date"], reverse=True),
         "monthly": dict(sorted(monthly.items())),
         "by_tool": dict(sorted(by_tool.items(), key=lambda x: -x[1]))

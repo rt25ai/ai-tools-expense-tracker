@@ -14,7 +14,7 @@ export function PageHeader({
   return (
     <div className="flex flex-col gap-6 border-b border-white/6 pb-7 md:flex-row md:items-end md:justify-between">
       <div className="max-w-3xl">
-        <p className="text-[11px] font-medium tracking-[0.18em] text-emerald-300/75">
+        <p className="text-[11px] font-medium tracking-[0.18em] text-cyan-300/75">
           {eyebrow}
         </p>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight text-white">{title}</h1>

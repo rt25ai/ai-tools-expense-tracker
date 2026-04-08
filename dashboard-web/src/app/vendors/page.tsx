@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getDashboardModel, getSourceLabel } from "@/lib/dashboard-data";
-import { formatCurrencyUsd, formatDateLabel } from "@/lib/formatters";
+import { formatCurrencyIls, formatDateLabel } from "@/lib/formatters";
 
 export default function VendorsPage() {
   const model = getDashboardModel();
@@ -16,7 +16,7 @@ export default function VendorsPage() {
         eyebrow="ספקים"
         title="רישום ספקים ובריאות חיובים"
         description="לכל ספק יש עכשיו סטטוס חוזר, מקור חשבונית, רמת אמינות וסטטוס תפעולי, כדי להבין מה יציב ומה עדיין דורש השגחה."
-        actions={<Button className="bg-emerald-500 text-black hover:bg-emerald-400">בדוק כללי ספקים</Button>}
+        actions={<Button className="bg-cyan-400 text-black hover:bg-cyan-300">בדוק כללי ספקים</Button>}
       />
 
       <section className="grid gap-4 md:grid-cols-3">
@@ -56,7 +56,7 @@ export default function VendorsPage() {
                     variant="outline"
                     className={
                       vendor.status === "healthy"
-                        ? "border-emerald-400/15 bg-emerald-400/8 text-emerald-200"
+                        ? "border-cyan-400/15 bg-cyan-400/8 text-cyan-200"
                         : vendor.status === "watch"
                           ? "border-amber-400/15 bg-amber-400/8 text-amber-200"
                           : "border-white/10 bg-white/[0.05] text-zinc-300"
@@ -72,10 +72,8 @@ export default function VendorsPage() {
               <div className="space-y-2">
                 <p className="text-xs tracking-[0.18em] text-zinc-500">מצב מסחרי</p>
                 <p className="text-sm text-zinc-100">{vendor.recurring ? "חיוב חוזר" : "חד־פעמי / משתנה"}</p>
-                <p className="text-sm text-zinc-400">
-                  צפוי: {vendor.expectedAmount ? formatCurrencyUsd(vendor.expectedAmount) : "משתנה"}
-                </p>
-                <p className="text-sm text-zinc-400">החודש: {formatCurrencyUsd(vendor.currentMonthSpend)}</p>
+                <p className="text-sm text-zinc-400">צפוי: {vendor.expectedAmount ? formatCurrencyIls(vendor.expectedAmount) : "משתנה"}</p>
+                <p className="text-sm text-zinc-400">החודש: {formatCurrencyIls(vendor.currentMonthSpend)}</p>
               </div>
 
               <div className="space-y-2">
@@ -93,7 +91,7 @@ export default function VendorsPage() {
                 <p className="text-sm text-zinc-400">
                   חיוב צפוי הבא: {vendor.nextExpectedDate ? formatDateLabel(vendor.nextExpectedDate) : "לא מתוזמן"}
                 </p>
-                <p className="text-sm text-emerald-200">סך הכל: {formatCurrencyUsd(vendor.totalSpend)}</p>
+                <p className="text-sm text-cyan-200">סך הכל: {formatCurrencyIls(vendor.totalSpend)}</p>
               </div>
             </div>
           ))}
@@ -103,11 +101,11 @@ export default function VendorsPage() {
       <section className="grid gap-6 xl:grid-cols-3">
         <Card className="border-white/8 bg-white/[0.03] p-5 shadow-none">
           <div className="flex items-center gap-3">
-            <CheckCircle2 className="size-4 text-emerald-300" />
+            <CheckCircle2 className="size-4 text-cyan-300" />
             <h3 className="font-semibold text-white">תקין</h3>
           </div>
           <p className="mt-3 text-sm leading-6 text-zinc-400">
-            ספקים חוזרים עם יבוא ממייל, רמת אמינות גבוהה ותזמון חיוב צפוי.
+            ספקים חוזרים עם ייבוא ממייל, רמת אמינות גבוהה ותזמון חיוב צפוי.
           </p>
         </Card>
         <Card className="border-white/8 bg-white/[0.03] p-5 shadow-none">
@@ -125,7 +123,7 @@ export default function VendorsPage() {
             <h3 className="font-semibold text-white">ידני</h3>
           </div>
           <p className="mt-3 text-sm leading-6 text-zinc-400">
-            ספקים שעדיין מתוחזקים ידנית עד שנחבר להם יבוא דטרמיניסטי או API ישיר.
+            ספקים שעדיין מתוחזקים ידנית עד שנחבר להם ייבוא דטרמיניסטי או API ישיר.
           </p>
         </Card>
       </section>

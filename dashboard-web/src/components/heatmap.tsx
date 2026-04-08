@@ -1,4 +1,4 @@
-import { formatCurrencyUsd, monthToken } from "@/lib/formatters";
+import { formatCurrencyIls, monthToken } from "@/lib/formatters";
 
 export function Heatmap({
   data,
@@ -12,7 +12,7 @@ export function Heatmap({
           <div
             className="h-24 rounded-2xl border border-white/6"
             style={{
-              background: `linear-gradient(180deg, rgba(68,211,146,${0.18 + month.intensity * 0.42}), rgba(255,255,255,0.02))`,
+              background: `linear-gradient(180deg, rgba(44,214,223,${0.18 + month.intensity * 0.42}), rgba(255,255,255,0.02))`,
             }}
           />
           <div className="mt-4 flex items-end justify-between gap-3">
@@ -20,7 +20,7 @@ export function Heatmap({
               <p className="text-[11px] uppercase tracking-[0.22em] text-zinc-500">{monthToken(month.key)}</p>
               <p className="mt-2 text-sm font-medium text-zinc-100">{month.label}</p>
             </div>
-            <p className="text-sm font-medium text-emerald-200">{formatCurrencyUsd(month.total)}</p>
+            <p className="text-sm font-medium text-cyan-200">{formatCurrencyIls(month.total)}</p>
           </div>
         </div>
       ))}

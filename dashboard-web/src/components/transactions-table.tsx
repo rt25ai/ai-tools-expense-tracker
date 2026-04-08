@@ -23,12 +23,12 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { EnrichedTransaction, TransactionSource } from "@/lib/dashboard-data";
-import { formatCurrencyUsd, formatDateLabel, formatMonthLabel } from "@/lib/formatters";
+import { formatCurrencyIls, formatDateLabel, formatMonthLabel } from "@/lib/formatters";
 
 function badgeTone(source: TransactionSource) {
   switch (source) {
     case "auto":
-      return "border-emerald-400/20 bg-emerald-400/10 text-emerald-200";
+      return "border-cyan-400/20 bg-cyan-400/10 text-cyan-200";
     case "email-imported":
       return "border-sky-400/20 bg-sky-400/10 text-sky-200";
     case "ai-extracted":
@@ -83,8 +83,8 @@ const columns: ColumnDef<EnrichedTransaction>[] = [
           : row.original.source === "auto"
             ? "אוטומטי"
             : row.original.source === "email-imported"
-              ? "יובא ממייל"
-              : "חולץ ב־AI"}
+              ? "מיובא ממייל"
+              : "חולץ ב-AI"}
       </Badge>
     ),
   },
@@ -94,9 +94,9 @@ const columns: ColumnDef<EnrichedTransaction>[] = [
     cell: ({ row }) => <span className="text-sm text-zinc-300">{Math.round(row.original.confidence * 100)}%</span>,
   },
   {
-    accessorKey: "amount",
-    header: "סכום",
-    cell: ({ row }) => <span className="font-medium text-emerald-200">{formatCurrencyUsd(row.original.amount)}</span>,
+    accessorKey: "amountIls",
+    header: "סכום בש״ח",
+    cell: ({ row }) => <span className="font-medium text-cyan-200">{formatCurrencyIls(row.original.amountIls)}</span>,
   },
 ];
 
@@ -133,7 +133,7 @@ export function TransactionsTable({ data }: { data: EnrichedTransaction[] }) {
   function exportCsv() {
     const rows = table.getSortedRowModel().rows.map((row) => row.original);
     const csv = [
-      ["date", "tool", "description", "type", "source", "confidence", "amount"].join(","),
+      ["date", "tool", "description", "type", "source", "confidence", "amount_ils"].join(","),
       ...rows.map((row) =>
         [
           row.date,
@@ -142,7 +142,7 @@ export function TransactionsTable({ data }: { data: EnrichedTransaction[] }) {
           row.type,
           row.source,
           Math.round(row.confidence * 100),
-          row.amount.toFixed(2),
+          row.amountIls.toFixed(2),
         ].join(","),
       ),
     ].join("\n");
@@ -151,7 +151,7 @@ export function TransactionsTable({ data }: { data: EnrichedTransaction[] }) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "transactions-export.csv";
+    link.download = "transactions-export-ils.csv";
     link.click();
     URL.revokeObjectURL(url);
   }
@@ -177,8 +177,8 @@ export function TransactionsTable({ data }: { data: EnrichedTransaction[] }) {
               <SelectItem value="all">כל המקורות</SelectItem>
               <SelectItem value="manual">ידני</SelectItem>
               <SelectItem value="auto">אוטומטי</SelectItem>
-              <SelectItem value="email-imported">יובא ממייל</SelectItem>
-              <SelectItem value="ai-extracted">חולץ ב־AI</SelectItem>
+              <SelectItem value="email-imported">מיובא ממייל</SelectItem>
+              <SelectItem value="ai-extracted">חולץ ב-AI</SelectItem>
             </SelectContent>
           </Select>
           <Select value={typeFilter} onValueChange={setTypeFilter}>
@@ -217,7 +217,7 @@ export function TransactionsTable({ data }: { data: EnrichedTransaction[] }) {
                 ))}
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button onClick={exportCsv} className="bg-emerald-500 text-black hover:bg-emerald-400">
+          <Button onClick={exportCsv} className="bg-cyan-400 text-black hover:bg-cyan-300">
             <Download className="size-4" />
             ייצוא CSV
           </Button>

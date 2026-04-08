@@ -19,6 +19,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 import pdfplumber
 import requests
+from exchange_rate import FALLBACK_USD_ILS_RATE, fetch_usd_to_ils_rate
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 BASE_DIR       = Path(r"C:\Users\roita\מעקב הוצאות כלים")
@@ -30,7 +31,7 @@ TOKEN_JSON     = BASE_DIR / "gmail_token.json"
 LOG_FILE       = BASE_DIR / "auto_invoice.log"
 
 SCOPES        = ["https://www.googleapis.com/auth/gmail.readonly"]
-EXCHANGE_RATE = 3.65   # ILS → USD  (matches הגדרות sheet B4)
+EXCHANGE_RATE = FALLBACK_USD_ILS_RATE
 
 # ── Logging ───────────────────────────────────────────────────────────────────
 logging.basicConfig(
@@ -40,6 +41,15 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 log = logging.getLogger(__name__)
+_EXCHANGE_RATE_CACHE = None
+
+
+def get_exchange_rate():
+    global _EXCHANGE_RATE_CACHE
+    if _EXCHANGE_RATE_CACHE is None:
+        rate, _, _ = fetch_usd_to_ils_rate()
+        _EXCHANGE_RATE_CACHE = rate
+    return _EXCHANGE_RATE_CACHE
 
 # ── Tool detection rules ──────────────────────────────────────────────────────
 # Each rule: sender pattern → (tool_name, currency, source)
@@ -300,7 +310,7 @@ def process_message(service, msg_id):
 
     # Convert ILS → USD
     if currency == "ILS":
-        amount_usd = round(amount_raw / EXCHANGE_RATE, 2)
+        amount_usd = round(amount_raw / get_exchange_rate(), 2)
         description = f"{tool} (₪{amount_raw})"
     else:
         amount_usd  = amount_raw

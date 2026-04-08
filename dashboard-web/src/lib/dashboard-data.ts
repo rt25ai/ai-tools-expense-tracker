@@ -1,7 +1,7 @@
 import { cache } from "react";
 import fs from "node:fs";
 import path from "node:path";
-import { formatMonthLabel } from "@/lib/formatters";
+import { convertUsdToIls, formatMonthLabel } from "@/lib/formatters";
 
 export type TransactionSource = "manual" | "auto" | "email-imported" | "ai-extracted";
 export type ChargeType = "recurring" | "one-time";
@@ -17,6 +17,8 @@ type RawTransaction = {
 type RawDashboardData = {
   generated: string;
   usd_rate: number;
+  exchange_rate_updated_at?: string;
+  exchange_rate_source?: string;
   grand_total: number;
   grand_total_ils: number;
   current_month: string;
@@ -45,6 +47,7 @@ export type EnrichedTransaction = RawTransaction & {
   type: ChargeType;
   category: string;
   confidence: number;
+  amountIls: number;
 };
 
 export type VendorSummary = {
@@ -92,6 +95,8 @@ export type AuditEvent = {
 export type SettingsModel = {
   finance: {
     usdRate: number;
+    exchangeRateUpdatedAt?: string | null;
+    exchangeRateSource?: string;
     defaultBillingDay: number;
     monthlyBudget: number;
   };
@@ -159,7 +164,7 @@ const vendorCatalog: Record<string, VendorConfig> = {
     expectedAmount: 20.79,
     confidence: 0.97,
     owner: "תפעול",
-    notes: "מיובא מ־Gmail ומנורמל משקלים לדולרים.",
+    notes: "מיובא מ־Gmail ומוצג בממשק בשקלים לפי שער דולר רשמי.",
   },
   CapCut: {
     category: "וידאו",
@@ -388,6 +393,7 @@ export const getDashboardModel = cache((): DashboardModel => {
       type: config.recurring ? "recurring" : "one-time",
       category: config.category,
       confidence: config.confidence,
+      amountIls: convertUsdToIls(transaction.amount, raw.usd_rate),
     } satisfies EnrichedTransaction;
   });
 
@@ -415,8 +421,8 @@ export const getDashboardModel = cache((): DashboardModel => {
   const monthlySeries = Object.entries(raw.monthly).map(([key, total]) => ({
     key,
     label: monthLabel(key),
-    total,
-    budget: recurringBaseline + (key >= raw.current_month ? 36 : 88),
+    total: convertUsdToIls(total, raw.usd_rate),
+    budget: convertUsdToIls(recurringBaseline + (key >= raw.current_month ? 36 : 88), raw.usd_rate),
     intensity: 0,
   }));
 
@@ -431,16 +437,16 @@ export const getDashboardModel = cache((): DashboardModel => {
       const vendorTransactions = transactions.filter((transaction) => transaction.tool === name);
       return {
         name,
-        totalSpend,
+        totalSpend: convertUsdToIls(totalSpend, raw.usd_rate),
         currentMonthSpend: vendorTransactions
           .filter((transaction) => transaction.monthKey === raw.current_month)
-          .reduce((sum, transaction) => sum + transaction.amount, 0),
+          .reduce((sum, transaction) => sum + transaction.amountIls, 0),
         lastChargeDate: vendorTransactions[0]?.date ?? null,
         nextExpectedDate:
           config.recurring && config.billingDay
             ? nextExpectedDate(raw.current_month, config.billingDay)
             : null,
-        expectedAmount: config.expectedAmount ?? null,
+        expectedAmount: config.expectedAmount ? convertUsdToIls(config.expectedAmount, raw.usd_rate) : null,
         recurring: config.recurring,
         source: config.source,
         category: config.category,
@@ -463,7 +469,7 @@ export const getDashboardModel = cache((): DashboardModel => {
     .map((transaction) => ({
       id: transaction.id,
       vendor: transaction.tool,
-      amount: transaction.amount,
+      amount: transaction.amountIls,
       date: transaction.date,
       reason:
         transaction.source === "manual"
@@ -472,7 +478,11 @@ export const getDashboardModel = cache((): DashboardModel => {
             ? "חיוב חד־פעמי או משתנה שדורש אישור מול התקציב."
             : "רמת האמינות של הפענוח נמוכה מסף האישור.",
       severity:
-        transaction.amount >= 40 ? "high" : transaction.amount >= 15 ? "medium" : "low",
+        transaction.amountIls >= convertUsdToIls(40, raw.usd_rate)
+          ? "high"
+          : transaction.amountIls >= convertUsdToIls(15, raw.usd_rate)
+            ? "medium"
+            : "low",
     })) satisfies ReviewItem[];
 
   const auditLog: AuditEvent[] = [
@@ -544,8 +554,10 @@ export const getDashboardModel = cache((): DashboardModel => {
   const settings: SettingsModel = {
     finance: {
       usdRate: raw.usd_rate,
+      exchangeRateUpdatedAt: raw.exchange_rate_updated_at ?? null,
+      exchangeRateSource: raw.exchange_rate_source ?? "Bank of Israel Public API",
       defaultBillingDay: 16,
-      monthlyBudget: Math.round(recurringBaseline + 90),
+      monthlyBudget: Math.round(convertUsdToIls(recurringBaseline + 90, raw.usd_rate)),
     },
     detection: {
       scanWindowDays: 90,
@@ -568,8 +580,8 @@ export const getDashboardModel = cache((): DashboardModel => {
     transactions,
     monthlySeries,
     recurringSeries: [
-      { label: "חוזר", value: recurringTotal, share: recurringTotal / raw.grand_total },
-      { label: "חד־פעמי", value: oneTimeTotal, share: oneTimeTotal / raw.grand_total },
+      { label: "חוזר", value: convertUsdToIls(recurringTotal, raw.usd_rate), share: recurringTotal / raw.grand_total },
+      { label: "חד־פעמי", value: convertUsdToIls(oneTimeTotal, raw.usd_rate), share: oneTimeTotal / raw.grand_total },
     ],
     vendors,
     automations,
@@ -578,8 +590,8 @@ export const getDashboardModel = cache((): DashboardModel => {
     settings,
     stats: {
       totalYtd,
-      currentMonth: raw.current_month_total,
-      recurringBaseline,
+      currentMonth: raw.current_month_total_ils,
+      recurringBaseline: convertUsdToIls(recurringBaseline, raw.usd_rate),
       unexpectedCharges,
       recurringShare: recurringTotal / raw.grand_total,
     },

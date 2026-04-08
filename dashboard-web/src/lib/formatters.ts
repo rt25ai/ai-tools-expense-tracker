@@ -14,11 +14,29 @@ export function formatCurrencyIls(value: number) {
   }).format(value);
 }
 
+export function convertUsdToIls(value: number, usdRate: number) {
+  return Number((value * usdRate).toFixed(2));
+}
+
+export function formatExchangeRate(usdRate: number) {
+  return `₪${usdRate.toFixed(3)} לכל $1`;
+}
+
 export function formatDateLabel(value: string) {
   return new Intl.DateTimeFormat("he-IL", {
     month: "long",
     day: "numeric",
     year: "numeric",
+  }).format(new Date(value));
+}
+
+export function formatDateTimeLabel(value: string) {
+  return new Intl.DateTimeFormat("he-IL", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   }).format(new Date(value));
 }
 

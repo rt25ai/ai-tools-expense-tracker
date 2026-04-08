@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { ArrowUpLeft, CheckCircle2, CircleAlert, ShieldCheck } from "lucide-react";
-import { Heatmap } from "@/components/heatmap";
-import { KpiCard } from "@/components/kpi-card";
-import { PageHeader } from "@/components/page-header";
 import { BudgetBars } from "@/components/budget-bars";
+import { Heatmap } from "@/components/heatmap";
+import { OverviewKpiGrid } from "@/components/overview-kpi-grid";
+import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getDashboardModel } from "@/lib/dashboard-data";
-import { formatCurrencyIls, formatCurrencyUsd, formatDateLabel } from "@/lib/formatters";
+import { formatCurrencyIls, formatDateLabel, formatDateTimeLabel, formatExchangeRate } from "@/lib/formatters";
 
 export function OverviewView() {
   const model = getDashboardModel();
@@ -18,9 +18,9 @@ export function OverviewView() {
       <PageHeader
         eyebrow="ראשי"
         title="תמונת מצב תפעולית"
-        description="מסך עבודה מהודק יותר לניהול הוצאות, חיובים חוזרים, בדיקות ידניות ובריאות ספקים. המטרה היא להרגיש כמו מערכת תפעול אמיתית, לא רק עמוד תצוגה."
+        description="מסך עבודה מהודק לניהול הוצאות, חיובים חוזרים, בדיקות ידניות ובריאות ספקים. המטרה היא להרגיש כמו מערכת תפעול אמיתית, לא רק עמוד תצוגה."
         actions={
-          <Button asChild className="bg-emerald-500 text-black hover:bg-emerald-400">
+          <Button asChild className="bg-cyan-400 text-black hover:bg-cyan-300">
             <Link href="/transactions">
               פתח עסקאות
               <ArrowUpLeft className="size-4" />
@@ -29,28 +29,7 @@ export function OverviewView() {
         }
       />
 
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <KpiCard
-          label='סה"כ מתחילת השנה'
-          value={formatCurrencyUsd(model.stats.totalYtd)}
-          hint="סך כל ההוצאות מתחילת השנה, כולל מנויים, קרדיטים, פרסום וחיובים חד-פעמיים."
-        />
-        <KpiCard
-          label="החודש הנוכחי"
-          value={formatCurrencyUsd(model.stats.currentMonth)}
-          hint={`שווה ל־${formatCurrencyIls(model.raw.current_month_total_ils)} בחוברת האקסל.`}
-        />
-        <KpiCard
-          label="בסיס חודשי קבוע"
-          value={formatCurrencyUsd(model.stats.recurringBaseline)}
-          hint="הוצאה חודשית צפויה לפני פרסום משתנה, קרדיטים חריגים והשלמות ידניות."
-        />
-        <KpiCard
-          label="חיובים לבדיקה"
-          value={String(model.stats.unexpectedCharges)}
-          hint="חיובי החודש שעדיין דורשים בדיקה ידנית כי הם חריגים, משתנים או חד-פעמיים."
-        />
-      </section>
+      <OverviewKpiGrid model={model} />
 
       <section className="grid gap-6 xl:grid-cols-[1.25fr_0.9fr]">
         <Card className="border-white/8 bg-white/[0.03] p-6 shadow-none">
@@ -59,12 +38,17 @@ export function OverviewView() {
               <p className="text-[11px] tracking-[0.18em] text-zinc-500">מפת חום חודשית</p>
               <h2 className="mt-2 text-2xl font-semibold text-white">לחץ תקציבי לפי חודש</h2>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">
-                מפת החום מחליפה את התצוגה הישנה והגנרית, ועוזרת לזהות חודשים כבדים, בסיסי חיוב עתידיים וריכוזי הוצאה.
+                מפת החום מחליפה את התצוגה הישנה ועוזרת לזהות חודשים כבדים, בסיסי חיוב עתידיים וריכוזי הוצאה בשקלים.
               </p>
             </div>
-            <Badge variant="outline" className="border-white/10 bg-black/20 text-zinc-300">
-              {model.monthlySeries.length} חודשים במעקב
-            </Badge>
+            <div className="flex flex-col items-end gap-2">
+              <Badge variant="outline" className="border-white/10 bg-black/20 text-zinc-300">
+                {model.monthlySeries.length} חודשים במעקב
+              </Badge>
+              <Badge variant="outline" className="border-cyan-400/15 bg-cyan-400/8 text-cyan-200">
+                {formatExchangeRate(model.raw.usd_rate)}
+              </Badge>
+            </div>
           </div>
           <div className="mt-6">
             <Heatmap data={model.monthlySeries} />
@@ -79,25 +63,27 @@ export function OverviewView() {
               <div key={entry.label} className="space-y-2">
                 <div className="flex items-center justify-between gap-4">
                   <p className="text-sm font-medium text-zinc-100">{entry.label}</p>
-                  <div>
-                    <p className="text-sm font-medium text-zinc-100">{formatCurrencyUsd(entry.value)}</p>
-                    <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">
-                      {Math.round(entry.share * 100)}%
-                    </p>
+                  <div className="text-left">
+                    <p className="text-sm font-medium text-zinc-100">{formatCurrencyIls(entry.value)}</p>
+                    <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">{Math.round(entry.share * 100)}%</p>
                   </div>
                 </div>
                 <div className="h-3 rounded-full bg-white/[0.05]">
-                  <div className="h-3 rounded-full bg-emerald-400" style={{ width: `${Math.max(entry.share * 100, 8)}%` }} />
+                  <div className="h-3 rounded-full bg-cyan-400" style={{ width: `${Math.max(entry.share * 100, 8)}%` }} />
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="mt-8 rounded-[24px] border border-amber-400/15 bg-amber-400/7 p-4">
-            <p className="text-sm font-medium text-amber-100">הערת תפעול</p>
-            <p className="mt-2 text-sm leading-6 text-amber-50/80">
-              פרסום משתנה ורכישות ידניות של קרדיטים הם עדיין הסיבה המרכזית לכך שנדרש תור בדיקה אנושי.
+          <div className="mt-8 rounded-[24px] border border-cyan-400/15 bg-cyan-400/7 p-4">
+            <p className="text-sm font-medium text-cyan-100">עדכון שער</p>
+            <p className="mt-2 text-sm leading-6 text-cyan-50/80">
+              שער הדולר נמשך אוטומטית ממקור רשמי. עודכן לאחרונה:
+              {" "}
+              {model.raw.exchange_rate_updated_at ? formatDateTimeLabel(model.raw.exchange_rate_updated_at) : "לא התקבל זמן עדכון"}
+              .
             </p>
+            <p className="mt-2 text-sm leading-6 text-zinc-400">{model.raw.exchange_rate_source ?? "Bank of Israel Public API"}</p>
           </div>
         </Card>
       </section>
@@ -152,7 +138,7 @@ export function OverviewView() {
                     {item.severity === "high" ? "גבוה" : item.severity === "medium" ? "בינוני" : "נמוך"}
                   </Badge>
                 </div>
-                <p className="mt-3 text-sm text-zinc-300">{formatCurrencyUsd(item.amount)}</p>
+                <p className="mt-3 text-sm text-zinc-300">{formatCurrencyIls(item.amount)}</p>
                 <p className="mt-2 text-sm leading-6 text-zinc-500">{item.reason}</p>
               </div>
             ))}
@@ -167,14 +153,14 @@ export function OverviewView() {
               <p className="text-[11px] tracking-[0.18em] text-zinc-500">יומן שינויים אחרון</p>
               <h2 className="mt-2 text-2xl font-semibold text-white">מה השתנה בתהליך</h2>
             </div>
-            <Badge variant="outline" className="border-emerald-400/15 bg-emerald-400/8 text-emerald-200">
+            <Badge variant="outline" className="border-cyan-400/15 bg-cyan-400/8 text-cyan-200">
               {model.raw.generated}
             </Badge>
           </div>
           <div className="mt-6 space-y-4">
             {model.auditLog.map((event) => (
               <div key={event.id} className="flex gap-4 rounded-[22px] border border-white/8 bg-black/20 p-4">
-                <div className="mt-1 rounded-full border border-emerald-400/15 bg-emerald-400/8 p-2 text-emerald-300">
+                <div className="mt-1 rounded-full border border-cyan-400/15 bg-cyan-400/8 p-2 text-cyan-300">
                   <CheckCircle2 className="size-4" />
                 </div>
                 <div>
@@ -193,7 +179,7 @@ export function OverviewView() {
           <div className="mt-6 space-y-4">
             <div className="rounded-[22px] border border-white/8 bg-black/20 p-4">
               <div className="flex items-center gap-3">
-                <ShieldCheck className="size-4 text-emerald-300" />
+                <ShieldCheck className="size-4 text-cyan-300" />
                 <p className="font-medium text-white">רישום הספקים מפורש וברור</p>
               </div>
               <p className="mt-2 text-sm leading-6 text-zinc-400">
@@ -206,7 +192,7 @@ export function OverviewView() {
                 <p className="font-medium text-white">זרימות ידניות מופרדות</p>
               </div>
               <p className="mt-2 text-sm leading-6 text-zinc-400">
-                חיובים ידניים וחד־פעמיים מופרדים בבירור מהוצאות חוזרות שמגיעות מהיבוא האוטומטי.
+                חיובים ידניים וחד־פעמיים מופרדים בבירור מהוצאות חוזרות שמגיעות מהייבוא האוטומטי.
               </p>
             </div>
             <div className="rounded-[22px] border border-white/8 bg-black/20 p-4">
@@ -215,7 +201,7 @@ export function OverviewView() {
                 <p className="font-medium text-white">מוכן לשכבת אוטומציה חיה</p>
               </div>
               <p className="mt-2 text-sm leading-6 text-zinc-400">
-                המעטפת, הניווט וההגדרות כבר מוכנים לחיבור עתידי של דחיפת Gmail, ניתוח AI ו־API של ספקים.
+                המעטפת, הניווט וההגדרות כבר מוכנים לחיבור עתידי של Gmail, ניתוח AI ו־API של ספקים.
               </p>
             </div>
           </div>

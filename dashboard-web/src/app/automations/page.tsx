@@ -14,7 +14,7 @@ export default function AutomationsPage() {
         eyebrow="אוטומציות"
         title="חוקים פעילים ובריאות התהליך"
         description="העמוד הזה הופך את הדשבורד למסך תפעול: רואים אילו חוקים קיימים, מתי הם רצים, מה יציב ואיפה עדיין צריך מגע אנושי."
-        actions={<Button className="bg-emerald-500 text-black hover:bg-emerald-400">בדוק תהליך</Button>}
+        actions={<Button className="bg-cyan-400 text-black hover:bg-cyan-300">בדוק תהליך</Button>}
       />
 
       <section className="grid gap-4 lg:grid-cols-2">
@@ -29,15 +29,15 @@ export default function AutomationsPage() {
                 variant="outline"
                 className={
                   automation.status === "active"
-                    ? "border-emerald-400/15 bg-emerald-400/8 text-emerald-200"
+                    ? "border-cyan-400/15 bg-cyan-400/8 text-cyan-200"
                     : automation.status === "watch"
                       ? "border-amber-400/15 bg-amber-400/8 text-amber-200"
                       : "border-white/10 bg-white/[0.05] text-zinc-300"
                 }
               >
-                    {automation.status === "active" ? "פעיל" : automation.status === "watch" ? "לבדיקה" : "חצי־אוטומטי"}
-                  </Badge>
-                </div>
+                {automation.status === "active" ? "פעיל" : automation.status === "watch" ? "לבדיקה" : "חצי־אוטומטי"}
+              </Badge>
+            </div>
             <p className="mt-4 text-sm leading-6 text-zinc-400">{automation.description}</p>
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               <div className="rounded-2xl border border-white/8 bg-black/20 p-4">
@@ -67,7 +67,7 @@ export default function AutomationsPage() {
               "פרסום ל־GitHub Pages",
             ].map((step, index, steps) => (
               <div key={step} className="flex items-center gap-4 rounded-[22px] border border-white/8 bg-black/20 p-4">
-                <div className="rounded-full border border-emerald-400/15 bg-emerald-400/8 p-2 text-emerald-300">
+                <div className="rounded-full border border-cyan-400/15 bg-cyan-400/8 p-2 text-cyan-300">
                   <BadgeCheck className="size-4" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -93,7 +93,7 @@ export default function AutomationsPage() {
 
           <Card className="border-white/8 bg-white/[0.03] p-6 shadow-none">
             <div className="flex items-center gap-3">
-              <Workflow className="size-4 text-emerald-300" />
+              <Workflow className="size-4 text-cyan-300" />
               <h2 className="text-xl font-semibold text-white">שכבת האוטומציה הבאה</h2>
             </div>
             <ul className="mt-4 space-y-3 text-sm leading-6 text-zinc-400">
