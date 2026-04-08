@@ -262,7 +262,35 @@ def _amount_candidates(pattern: str, text: str):
             continue
 
 
+def extract_labeled_amount(text: str):
+    lines = [normalize_text_for_matching(line) for line in text.splitlines()]
+    labeled_patterns = [
+        ("USD", r"(?:\bamount paid\b|\bpaid on\b|\bpaid\b|\btotal\b)\D*([0-9][0-9,]*(?:\.[0-9]{1,2})?)\s*(?:USD|\$)"),
+        ("USD", r"(?:\bamount paid\b|\bpaid on\b|\bpaid\b|\btotal\b)\D*(?:USD|\$)\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)"),
+        ("ILS", r"(?:\bamount paid\b|\bpaid on\b|\bpaid\b|\btotal\b)\D*([0-9][0-9,]*(?:\.[0-9]{1,2})?)\s*(?:₪|ILS|NIS)"),
+        ("ILS", r"(?:\bamount paid\b|\bpaid on\b|\bpaid\b|\btotal\b)\D*(?:₪|ILS|NIS)\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)"),
+    ]
+
+    for line in lines:
+        lowered = line.casefold()
+        if "subtotal" in lowered:
+            continue
+        if not re.search(r"\b(amount paid|paid on|paid|total)\b", lowered):
+            continue
+
+        for currency, pattern in labeled_patterns:
+            matches = list(_amount_candidates(pattern, line))
+            if matches:
+                return {"currency": currency, "amount": round(matches[-1], 2)}
+
+    return None
+
+
 def extract_amount_from_text(text: str):
+    labeled_amount = extract_labeled_amount(text)
+    if labeled_amount:
+        return labeled_amount
+
     ils_candidates = list(
         _amount_candidates(r"(?:₪|ILS|NIS)\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)", text)
     )
