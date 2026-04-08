@@ -16,7 +16,8 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 62.84
+      "amount_ils": 62.84,
+      "entry_source": null
     },
     {
       "date": "2026-04-03",
@@ -25,7 +26,8 @@
       "currency": "USD",
       "original_amount": 2.25,
       "amount_usd": 2.25,
-      "amount_ils": 7.07
+      "amount_ils": 7.07,
+      "entry_source": null
     },
     {
       "date": "2026-04-01",
@@ -34,7 +36,8 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 62.84
+      "amount_ils": 62.84,
+      "entry_source": null
     },
     {
       "date": "2026-04-01",
@@ -43,7 +46,8 @@
       "currency": "USD",
       "original_amount": 5,
       "amount_usd": 5,
-      "amount_ils": 15.71
+      "amount_ils": 15.71,
+      "entry_source": null
     },
     {
       "date": "2026-04-01",
@@ -52,7 +56,8 @@
       "currency": "ILS",
       "original_amount": 75.9,
       "amount_usd": 20.79,
-      "amount_ils": 75.9
+      "amount_ils": 75.9,
+      "entry_source": null
     },
     {
       "date": "2026-04-01",
@@ -61,7 +66,8 @@
       "currency": "USD",
       "original_amount": 51,
       "amount_usd": 51,
-      "amount_ils": 160.24
+      "amount_ils": 160.24,
+      "entry_source": null
     },
     {
       "date": "2026-03-25",
@@ -70,7 +76,8 @@
       "currency": "USD",
       "original_amount": 5,
       "amount_usd": 5,
-      "amount_ils": 15.71
+      "amount_ils": 15.71,
+      "entry_source": null
     },
     {
       "date": "2026-03-19",
@@ -79,7 +86,8 @@
       "currency": "USD",
       "original_amount": 10,
       "amount_usd": 10,
-      "amount_ils": 31.42
+      "amount_ils": 31.42,
+      "entry_source": null
     },
     {
       "date": "2026-03-19",
@@ -88,7 +96,8 @@
       "currency": "USD",
       "original_amount": 11,
       "amount_usd": 11,
-      "amount_ils": 34.56
+      "amount_ils": 34.56,
+      "entry_source": null
     },
     {
       "date": "2026-03-16",
@@ -97,7 +106,8 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 62.84
+      "amount_ils": 62.84,
+      "entry_source": null
     },
     {
       "date": "2026-03-15",
@@ -106,7 +116,8 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 62.84
+      "amount_ils": 62.84,
+      "entry_source": null
     },
     {
       "date": "2026-03-12",
@@ -115,7 +126,8 @@
       "currency": "USD",
       "original_amount": 51,
       "amount_usd": 51,
-      "amount_ils": 160.24
+      "amount_ils": 160.24,
+      "entry_source": null
     },
     {
       "date": "2026-03-10",
@@ -124,7 +136,8 @@
       "currency": "ILS",
       "original_amount": 49.9,
       "amount_usd": 13.67,
-      "amount_ils": 49.9
+      "amount_ils": 49.9,
+      "entry_source": null
     },
     {
       "date": "2026-03-03",
@@ -133,7 +146,8 @@
       "currency": "USD",
       "original_amount": 40.11,
       "amount_usd": 40.11,
-      "amount_ils": 126.03
+      "amount_ils": 126.03,
+      "entry_source": null
     },
     {
       "date": "2026-03-02",
@@ -142,7 +156,8 @@
       "currency": "ILS",
       "original_amount": 75.9,
       "amount_usd": 20.79,
-      "amount_ils": 75.9
+      "amount_ils": 75.9,
+      "entry_source": null
     },
     {
       "date": "2026-03-02",
@@ -151,7 +166,8 @@
       "currency": "USD",
       "original_amount": 10,
       "amount_usd": 10,
-      "amount_ils": 31.42
+      "amount_ils": 31.42,
+      "entry_source": null
     },
     {
       "date": "2026-03-01",
@@ -160,7 +176,8 @@
       "currency": "USD",
       "original_amount": 10,
       "amount_usd": 10,
-      "amount_ils": 31.42
+      "amount_ils": 31.42,
+      "entry_source": null
     },
     {
       "date": "2026-03-01",
@@ -169,7 +186,8 @@
       "currency": "USD",
       "original_amount": 14.5,
       "amount_usd": 14.5,
-      "amount_ils": 45.56
+      "amount_ils": 45.56,
+      "entry_source": null
     },
     {
       "date": "2026-02-28",
@@ -178,7 +196,8 @@
       "currency": "USD",
       "original_amount": 5,
       "amount_usd": 5,
-      "amount_ils": 15.71
+      "amount_ils": 15.71,
+      "entry_source": null
     },
     {
       "date": "2026-02-28",
@@ -187,7 +206,8 @@
       "currency": "USD",
       "original_amount": 10,
       "amount_usd": 10,
-      "amount_ils": 31.42
+      "amount_ils": 31.42,
+      "entry_source": null
     },
     {
       "date": "2026-02-25",
@@ -196,7 +216,8 @@
       "currency": "USD",
       "original_amount": 50,
       "amount_usd": 50,
-      "amount_ils": 157.1
+      "amount_ils": 157.1,
+      "entry_source": null
     },
     {
       "date": "2026-02-25",
@@ -205,7 +226,8 @@
       "currency": "USD",
       "original_amount": 51,
       "amount_usd": 51,
-      "amount_ils": 160.24
+      "amount_ils": 160.24,
+      "entry_source": null
     },
     {
       "date": "2026-02-24",
@@ -214,7 +236,8 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 62.84
+      "amount_ils": 62.84,
+      "entry_source": null
     },
     {
       "date": "2026-02-16",
@@ -223,7 +246,8 @@
       "currency": "USD",
       "original_amount": 5,
       "amount_usd": 5,
-      "amount_ils": 15.71
+      "amount_ils": 15.71,
+      "entry_source": null
     },
     {
       "date": "2026-02-16",
@@ -232,7 +256,8 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 62.84
+      "amount_ils": 62.84,
+      "entry_source": null
     },
     {
       "date": "2026-02-15",
@@ -241,7 +266,8 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 62.84
+      "amount_ils": 62.84,
+      "entry_source": null
     },
     {
       "date": "2026-02-12",
@@ -250,7 +276,8 @@
       "currency": "USD",
       "original_amount": 47,
       "amount_usd": 47,
-      "amount_ils": 147.67
+      "amount_ils": 147.67,
+      "entry_source": null
     },
     {
       "date": "2026-02-10",
@@ -259,7 +286,8 @@
       "currency": "ILS",
       "original_amount": 49.9,
       "amount_usd": 13.67,
-      "amount_ils": 49.9
+      "amount_ils": 49.9,
+      "entry_source": null
     },
     {
       "date": "2026-02-03",
@@ -268,7 +296,8 @@
       "currency": "USD",
       "original_amount": 31.42,
       "amount_usd": 31.42,
-      "amount_ils": 98.72
+      "amount_ils": 98.72,
+      "entry_source": null
     },
     {
       "date": "2026-02-02",
@@ -277,7 +306,8 @@
       "currency": "ILS",
       "original_amount": 75.9,
       "amount_usd": 20.79,
-      "amount_ils": 75.9
+      "amount_ils": 75.9,
+      "entry_source": null
     },
     {
       "date": "2026-02-01",
@@ -286,7 +316,8 @@
       "currency": "USD",
       "original_amount": 25,
       "amount_usd": 25,
-      "amount_ils": 78.55
+      "amount_ils": 78.55,
+      "entry_source": null
     },
     {
       "date": "2026-01-30",
@@ -295,7 +326,8 @@
       "currency": "USD",
       "original_amount": 5,
       "amount_usd": 5,
-      "amount_ils": 15.71
+      "amount_ils": 15.71,
+      "entry_source": null
     },
     {
       "date": "2026-01-30",
@@ -304,7 +336,8 @@
       "currency": "USD",
       "original_amount": 14.5,
       "amount_usd": 14.5,
-      "amount_ils": 45.56
+      "amount_ils": 45.56,
+      "entry_source": null
     },
     {
       "date": "2026-01-27",
@@ -313,7 +346,8 @@
       "currency": "USD",
       "original_amount": 43,
       "amount_usd": 43,
-      "amount_ils": 135.11
+      "amount_ils": 135.11,
+      "entry_source": null
     },
     {
       "date": "2026-01-25",
@@ -322,7 +356,8 @@
       "currency": "USD",
       "original_amount": 25,
       "amount_usd": 25,
-      "amount_ils": 78.55
+      "amount_ils": 78.55,
+      "entry_source": null
     },
     {
       "date": "2026-01-19",
@@ -331,7 +366,8 @@
       "currency": "USD",
       "original_amount": 39,
       "amount_usd": 39,
-      "amount_ils": 122.54
+      "amount_ils": 122.54,
+      "entry_source": null
     },
     {
       "date": "2026-01-16",
@@ -340,7 +376,8 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 62.84
+      "amount_ils": 62.84,
+      "entry_source": null
     },
     {
       "date": "2026-01-10",
@@ -349,7 +386,8 @@
       "currency": "ILS",
       "original_amount": 49.9,
       "amount_usd": 13.67,
-      "amount_ils": 49.9
+      "amount_ils": 49.9,
+      "entry_source": null
     },
     {
       "date": "2026-01-08",
@@ -358,7 +396,8 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 62.84
+      "amount_ils": 62.84,
+      "entry_source": null
     },
     {
       "date": "2026-01-05",
@@ -367,7 +406,8 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 62.84
+      "amount_ils": 62.84,
+      "entry_source": null
     },
     {
       "date": "2026-01-03",
@@ -376,7 +416,8 @@
       "currency": "USD",
       "original_amount": 139.92,
       "amount_usd": 139.92,
-      "amount_ils": 439.63
+      "amount_ils": 439.63,
+      "entry_source": null
     },
     {
       "date": "2026-01-03",
@@ -385,7 +426,8 @@
       "currency": "USD",
       "original_amount": 15,
       "amount_usd": 15,
-      "amount_ils": 47.13
+      "amount_ils": 47.13,
+      "entry_source": null
     },
     {
       "date": "2026-01-03",
@@ -394,7 +436,8 @@
       "currency": "USD",
       "original_amount": 19.43,
       "amount_usd": 19.43,
-      "amount_ils": 61.05
+      "amount_ils": 61.05,
+      "entry_source": null
     },
     {
       "date": "2026-01-01",
@@ -403,7 +446,8 @@
       "currency": "ILS",
       "original_amount": 75.9,
       "amount_usd": 20.79,
-      "amount_ils": 75.9
+      "amount_ils": 75.9,
+      "entry_source": null
     },
     {
       "date": "2025-12-30",
@@ -412,7 +456,8 @@
       "currency": "USD",
       "original_amount": 5,
       "amount_usd": 5,
-      "amount_ils": 15.71
+      "amount_ils": 15.71,
+      "entry_source": null
     },
     {
       "date": "2025-12-29",
@@ -421,7 +466,8 @@
       "currency": "USD",
       "original_amount": 36,
       "amount_usd": 36,
-      "amount_ils": 113.11
+      "amount_ils": 113.11,
+      "entry_source": null
     },
     {
       "date": "2025-12-16",
@@ -430,7 +476,8 @@
       "currency": "USD",
       "original_amount": 33,
       "amount_usd": 33,
-      "amount_ils": 103.69
+      "amount_ils": 103.69,
+      "entry_source": null
     },
     {
       "date": "2025-12-16",
@@ -439,7 +486,8 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 62.84
+      "amount_ils": 62.84,
+      "entry_source": null
     },
     {
       "date": "2025-12-08",
@@ -448,7 +496,8 @@
       "currency": "USD",
       "original_amount": 30,
       "amount_usd": 30,
-      "amount_ils": 94.26
+      "amount_ils": 94.26,
+      "entry_source": null
     },
     {
       "date": "2025-12-03",
@@ -457,7 +506,8 @@
       "currency": "USD",
       "original_amount": 15,
       "amount_usd": 15,
-      "amount_ils": 47.13
+      "amount_ils": 47.13,
+      "entry_source": null
     },
     {
       "date": "2025-12-03",
@@ -466,7 +516,8 @@
       "currency": "USD",
       "original_amount": 9.72,
       "amount_usd": 9.72,
-      "amount_ils": 30.54
+      "amount_ils": 30.54,
+      "entry_source": null
     },
     {
       "date": "2025-12-01",
@@ -475,7 +526,8 @@
       "currency": "ILS",
       "original_amount": 75.9,
       "amount_usd": 20.79,
-      "amount_ils": 75.9
+      "amount_ils": 75.9,
+      "entry_source": null
     },
     {
       "date": "2025-11-30",
@@ -484,7 +536,8 @@
       "currency": "USD",
       "original_amount": 5,
       "amount_usd": 5,
-      "amount_ils": 15.71
+      "amount_ils": 15.71,
+      "entry_source": null
     },
     {
       "date": "2025-11-24",
@@ -493,7 +546,8 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 62.84
+      "amount_ils": 62.84,
+      "entry_source": null
     },
     {
       "date": "2025-11-16",
@@ -502,7 +556,8 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 62.84
+      "amount_ils": 62.84,
+      "entry_source": null
     },
     {
       "date": "2025-11-13",
@@ -511,7 +566,8 @@
       "currency": "USD",
       "original_amount": 10,
       "amount_usd": 10,
-      "amount_ils": 31.42
+      "amount_ils": 31.42,
+      "entry_source": null
     },
     {
       "date": "2025-11-11",
@@ -520,7 +576,8 @@
       "currency": "USD",
       "original_amount": 11.8,
       "amount_usd": 11.8,
-      "amount_ils": 37.08
+      "amount_ils": 37.08,
+      "entry_source": null
     },
     {
       "date": "2025-11-11",
@@ -529,7 +586,8 @@
       "currency": "USD",
       "original_amount": 15,
       "amount_usd": 15,
-      "amount_ils": 47.13
+      "amount_ils": 47.13,
+      "entry_source": null
     },
     {
       "date": "2025-11-09",
@@ -538,7 +596,8 @@
       "currency": "USD",
       "original_amount": 12,
       "amount_usd": 12,
-      "amount_ils": 37.7
+      "amount_ils": 37.7,
+      "entry_source": null
     },
     {
       "date": "2025-10-30",
@@ -547,7 +606,8 @@
       "currency": "USD",
       "original_amount": 5,
       "amount_usd": 5,
-      "amount_ils": 15.71
+      "amount_ils": 15.71,
+      "entry_source": null
     },
     {
       "date": "2025-10-24",
@@ -556,7 +616,8 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 62.84
+      "amount_ils": 62.84,
+      "entry_source": null
     },
     {
       "date": "2025-10-16",
@@ -565,7 +626,8 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 62.84
+      "amount_ils": 62.84,
+      "entry_source": null
     },
     {
       "date": "2025-10-02",
@@ -574,7 +636,8 @@
       "currency": "ILS",
       "original_amount": 56.93,
       "amount_usd": 15.6,
-      "amount_ils": 56.93
+      "amount_ils": 56.93,
+      "entry_source": null
     },
     {
       "date": "2025-09-30",
@@ -583,7 +646,8 @@
       "currency": "USD",
       "original_amount": 5,
       "amount_usd": 5,
-      "amount_ils": 15.71
+      "amount_ils": 15.71,
+      "entry_source": null
     },
     {
       "date": "2025-09-24",
@@ -592,7 +656,8 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 62.84
+      "amount_ils": 62.84,
+      "entry_source": null
     },
     {
       "date": "2025-09-16",
@@ -601,7 +666,8 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 62.84
+      "amount_ils": 62.84,
+      "entry_source": null
     },
     {
       "date": "2025-09-10",
@@ -610,7 +676,8 @@
       "currency": "USD",
       "original_amount": 10.59,
       "amount_usd": 10.59,
-      "amount_ils": 33.27
+      "amount_ils": 33.27,
+      "entry_source": null
     },
     {
       "date": "2025-09-05",
@@ -619,7 +686,8 @@
       "currency": "USD",
       "original_amount": 2.79,
       "amount_usd": 2.79,
-      "amount_ils": 8.77
+      "amount_ils": 8.77,
+      "entry_source": null
     },
     {
       "date": "2025-09-01",
@@ -628,7 +696,8 @@
       "currency": "ILS",
       "original_amount": 56.93,
       "amount_usd": 15.6,
-      "amount_ils": 56.93
+      "amount_ils": 56.93,
+      "entry_source": null
     },
     {
       "date": "2025-08-30",
@@ -637,7 +706,8 @@
       "currency": "USD",
       "original_amount": 5,
       "amount_usd": 5,
-      "amount_ils": 15.71
+      "amount_ils": 15.71,
+      "entry_source": null
     },
     {
       "date": "2025-08-30",
@@ -646,7 +716,8 @@
       "currency": "USD",
       "original_amount": 11.25,
       "amount_usd": 11.25,
-      "amount_ils": 35.35
+      "amount_ils": 35.35,
+      "entry_source": null
     },
     {
       "date": "2025-08-16",
@@ -655,7 +726,8 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 62.84
+      "amount_ils": 62.84,
+      "entry_source": null
     },
     {
       "date": "2025-08-11",
@@ -664,7 +736,8 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 62.84
+      "amount_ils": 62.84,
+      "entry_source": null
     },
     {
       "date": "2025-08-10",
@@ -673,7 +746,8 @@
       "currency": "USD",
       "original_amount": 10.59,
       "amount_usd": 10.59,
-      "amount_ils": 33.27
+      "amount_ils": 33.27,
+      "entry_source": null
     },
     {
       "date": "2025-08-09",
@@ -682,7 +756,8 @@
       "currency": "USD",
       "original_amount": 19,
       "amount_usd": 19,
-      "amount_ils": 59.7
+      "amount_ils": 59.7,
+      "entry_source": null
     },
     {
       "date": "2025-08-05",
@@ -691,7 +766,8 @@
       "currency": "USD",
       "original_amount": 0.9,
       "amount_usd": 0.9,
-      "amount_ils": 2.83
+      "amount_ils": 2.83,
+      "entry_source": null
     },
     {
       "date": "2025-08-04",
@@ -700,7 +776,8 @@
       "currency": "USD",
       "original_amount": 12,
       "amount_usd": 12,
-      "amount_ils": 37.7
+      "amount_ils": 37.7,
+      "entry_source": null
     },
     {
       "date": "2025-08-02",
@@ -709,7 +786,8 @@
       "currency": "USD",
       "original_amount": 15,
       "amount_usd": 15,
-      "amount_ils": 47.13
+      "amount_ils": 47.13,
+      "entry_source": null
     },
     {
       "date": "2025-08-01",
@@ -718,7 +796,8 @@
       "currency": "ILS",
       "original_amount": 56.93,
       "amount_usd": 15.6,
-      "amount_ils": 56.93
+      "amount_ils": 56.93,
+      "entry_source": null
     },
     {
       "date": "2025-07-30",
@@ -727,7 +806,8 @@
       "currency": "USD",
       "original_amount": 113.14,
       "amount_usd": 113.14,
-      "amount_ils": 355.49
+      "amount_ils": 355.49,
+      "entry_source": null
     },
     {
       "date": "2025-07-30",
@@ -736,7 +816,8 @@
       "currency": "USD",
       "original_amount": 10,
       "amount_usd": 10,
-      "amount_ils": 31.42
+      "amount_ils": 31.42,
+      "entry_source": null
     },
     {
       "date": "2025-07-20",
@@ -745,7 +826,8 @@
       "currency": "USD",
       "original_amount": 13.5,
       "amount_usd": 13.5,
-      "amount_ils": 42.42
+      "amount_ils": 42.42,
+      "entry_source": null
     },
     {
       "date": "2025-07-16",
@@ -754,7 +836,8 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 62.84
+      "amount_ils": 62.84,
+      "entry_source": null
     },
     {
       "date": "2025-07-11",
@@ -763,7 +846,8 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 62.84
+      "amount_ils": 62.84,
+      "entry_source": null
     },
     {
       "date": "2025-07-10",
@@ -772,7 +856,8 @@
       "currency": "USD",
       "original_amount": 10.59,
       "amount_usd": 10.59,
-      "amount_ils": 33.27
+      "amount_ils": 33.27,
+      "entry_source": null
     },
     {
       "date": "2025-07-09",
@@ -781,7 +866,8 @@
       "currency": "USD",
       "original_amount": 72,
       "amount_usd": 72,
-      "amount_ils": 226.22
+      "amount_ils": 226.22,
+      "entry_source": null
     },
     {
       "date": "2025-07-04",
@@ -790,7 +876,8 @@
       "currency": "USD",
       "original_amount": 1,
       "amount_usd": 1,
-      "amount_ils": 3.14
+      "amount_ils": 3.14,
+      "entry_source": null
     }
   ],
   "monthly": {

@@ -13,6 +13,7 @@ from openpyxl.worksheet.hyperlink import Hyperlink
 import datetime, os, re
 from pathlib import Path
 from exchange_rate import fetch_usd_to_ils_rate
+from manual_receipts_store import load_manual_receipts, receipt_identity, to_transaction_tuple
 
 OUTPUT_PATH = r"C:\Users\roita\מעקב הוצאות כלים\AI_Tools_Expenses_2025_2026.xlsx"
 VENDOR_RULES_PATH = Path(__file__).with_name("vendor_rules.json")
@@ -219,6 +220,7 @@ def parse_ils_amount(description):
 
 def normalize_transaction(txn):
     usd_rate, _, _ = get_current_usd_to_ils_rate()
+    entry_source = txn[5] if len(txn) >= 6 else None
 
     if len(txn) >= 5:
         date, tool, description, original_amount, currency = txn[:5]
@@ -249,6 +251,7 @@ def normalize_transaction(txn):
         "amount_usd": amount_usd,
         "amount_ils": amount_ils,
         "month_key": date[:7],
+        "entry_source": entry_source,
     }
 
 
@@ -295,6 +298,7 @@ def build_recurring_transactions(months):
                         rule["description"],
                         rule["amount"],
                         "ILS",
+                        "auto",
                     )
                 )
             else:
@@ -304,6 +308,8 @@ def build_recurring_transactions(months):
                         rule["tool"],
                         rule["description"],
                         rule["amount"],
+                        "USD",
+                        "auto",
                     )
                 )
     return recurring
@@ -311,16 +317,26 @@ def build_recurring_transactions(months):
 
 def combine_transactions():
     manual = list(MANUAL_TRANSACTIONS)
+    manual.extend(to_transaction_tuple(entry) for entry in load_manual_receipts())
+    deduped_manual = []
+    seen_manual = set()
+    for txn in manual:
+        txn_key = receipt_identity(normalize_transaction(txn))
+        if txn_key in seen_manual:
+            continue
+        seen_manual.add(txn_key)
+        deduped_manual.append(txn)
+
     recurring = build_recurring_transactions(MONTHS)
-    manual_month_tool = {(txn[0][:7], txn[1]) for txn in manual}
+    manual_month_tool = {(txn[0][:7], txn[1]) for txn in deduped_manual}
 
     for txn in recurring:
         month_key = txn[0][:7]
         if (month_key, txn[1]) in manual_month_tool:
             continue
-        manual.append(txn)
+        deduped_manual.append(txn)
 
-    return sorted(manual, key=lambda item: (item[0], item[1], item[2]))
+    return sorted(deduped_manual, key=lambda item: (item[0], item[1], item[2]))
 
 
 MONTHS = build_months()
@@ -1074,6 +1090,7 @@ def generate_dashboard_json():
             "original_amount": transaction["original_amount"],
             "amount_usd": round(transaction["amount_usd"], 6),
             "amount_ils": transaction["amount_ils"],
+            "entry_source": transaction.get("entry_source"),
         }
         for transaction in dashboard_transactions
     ]

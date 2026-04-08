@@ -3,7 +3,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowRightLeft, BarChart3, Bot, House, ReceiptText, Settings2, UsersRound } from "lucide-react";
+import {
+  ArrowRightLeft,
+  BarChart3,
+  Bot,
+  FileUp,
+  House,
+  ReceiptText,
+  Settings2,
+  UsersRound,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { withBasePath } from "@/lib/site";
 import { cn } from "@/lib/utils";
@@ -11,6 +20,7 @@ import { cn } from "@/lib/utils";
 export const navigation = [
   { href: "/", label: "ראשי", icon: House },
   { href: "/transactions", label: "עסקאות", icon: ArrowRightLeft },
+  { href: "/imports", label: "ייבוא ידני", icon: FileUp },
   { href: "/reports", label: "דוחות", icon: BarChart3 },
   { href: "/vendors", label: "ספקים", icon: UsersRound },
   { href: "/automations", label: "אוטומציות", icon: Bot },
@@ -67,8 +77,11 @@ export function SidebarNav() {
           <ReceiptText className="size-4 text-cyan-300" />
         </div>
         <p className="mt-3 text-sm leading-6 text-zinc-400">
-          הממשק כבר בנוי כמו מערכת תפעול אמיתית, כך שבהמשך נוכל לחבר אוטומציות חיות בלי לעצב הכול מחדש.
+          הממשק כבר בנוי כמו מערכת תפעול אמיתית, כך שאפשר לחבר אליו עוד תהליכים בלי לעצב הכול מחדש.
         </p>
+        <Badge variant="outline" className="mt-4 border-white/10 bg-black/20 text-zinc-400">
+          כולל ייבוא ידני
+        </Badge>
       </div>
     </aside>
   );

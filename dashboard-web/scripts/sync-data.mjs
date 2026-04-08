@@ -80,6 +80,7 @@ const normalizedTransactions = (sourceData.transactions ?? []).map((transaction)
     original_amount: Number(originalAmount.toFixed(2)),
     amount_usd: Number(amountUsd.toFixed(6)),
     amount_ils: amountIls,
+    entry_source: transaction.entry_source ?? null,
   };
 });
 

@@ -16,6 +16,7 @@ type RawTransaction = {
   original_amount?: number;
   amount_usd?: number;
   amount_ils?: number;
+  entry_source?: TransactionSource | null;
 };
 
 type RawDashboardData = {
@@ -494,7 +495,7 @@ export const getDashboardModel = cache((): DashboardModel => {
       id: `${transaction.date}-${transaction.tool}-${index}`,
       description: sanitizeText(cleanText(transaction.description)),
       monthKey: transaction.date.slice(0, 7),
-      source: config.source,
+      source: transaction.entry_source ?? config.source,
       type: config.subscription ? "recurring" : "one-time",
       category: config.category,
       confidence: config.confidence,

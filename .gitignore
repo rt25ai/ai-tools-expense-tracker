@@ -2,6 +2,7 @@
 *.json
 !docs/data.json
 !docs/manifest.json
+!manual_receipts.json
 __pycache__/
 *.pyc
 *.log
