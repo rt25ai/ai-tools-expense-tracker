@@ -1,4 +1,4 @@
-import { monthToken } from "@/lib/formatters";
+import { formatCurrencyUsd, monthToken } from "@/lib/formatters";
 
 export function Heatmap({
   data,
@@ -20,7 +20,7 @@ export function Heatmap({
               <p className="text-[11px] uppercase tracking-[0.22em] text-zinc-500">{monthToken(month.key)}</p>
               <p className="mt-2 text-sm font-medium text-zinc-100">{month.label}</p>
             </div>
-            <p className="text-sm font-medium text-emerald-200">${month.total.toFixed(0)}</p>
+            <p className="text-sm font-medium text-emerald-200">{formatCurrencyUsd(month.total)}</p>
           </div>
         </div>
       ))}

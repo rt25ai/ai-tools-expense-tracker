@@ -127,6 +127,7 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
+    direction: rtl;
     background-image:
       linear-gradient(to bottom, rgba(255, 255, 255, 0.02), transparent 20%),
       linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),

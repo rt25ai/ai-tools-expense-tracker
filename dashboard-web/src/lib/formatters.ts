@@ -7,12 +7,16 @@ export function formatCurrencyUsd(value: number) {
 }
 
 export function formatCurrencyIls(value: number) {
-  return `ILS ${value.toFixed(2)}`;
+  return new Intl.NumberFormat("he-IL", {
+    style: "currency",
+    currency: "ILS",
+    maximumFractionDigits: 2,
+  }).format(value);
 }
 
 export function formatDateLabel(value: string) {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
+  return new Intl.DateTimeFormat("he-IL", {
+    month: "long",
     day: "numeric",
     year: "numeric",
   }).format(new Date(value));
@@ -22,17 +26,13 @@ export function formatMonthLabel(monthKey: string, format: "short" | "long" = "l
   const [year, month] = monthKey.split("-").map(Number);
   const date = new Date(year, month - 1, 1);
 
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat("he-IL", {
     month: format,
     year: "numeric",
   }).format(date);
 }
 
 export function monthToken(monthKey: string) {
-  const [year, month] = monthKey.split("-").map(Number);
-  const date = new Date(year, month - 1, 1);
-
-  return new Intl.DateTimeFormat("en-US", { month: "short" })
-    .format(date)
-    .toUpperCase();
+  const [, month] = monthKey.split("-").map(Number);
+  return ["ינו", "פבר", "מרץ", "אפר", "מאי", "יונ", "יול", "אוג", "ספט", "אוק", "נוב", "דצמ"][month - 1];
 }

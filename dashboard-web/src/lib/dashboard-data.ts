@@ -1,6 +1,7 @@
 import { cache } from "react";
 import fs from "node:fs";
 import path from "node:path";
+import { formatMonthLabel } from "@/lib/formatters";
 
 export type TransactionSource = "manual" | "auto" | "email-imported" | "ai-extracted";
 export type ChargeType = "recurring" | "one-time";
@@ -131,184 +132,184 @@ export type DashboardModel = {
 
 const vendorCatalog: Record<string, VendorConfig> = {
   OpenAI: {
-    category: "AI model",
+    category: "מודל AI",
     source: "auto",
     recurring: true,
     billingDay: 16,
     expectedAmount: 20,
     confidence: 0.99,
-    owner: "Finance ops",
-    notes: "Recurring ChatGPT Plus rule injected on the 16th through year-end.",
+    owner: "תפעול פיננסי",
+    notes: "כלל קבוע של ChatGPT Plus מתווסף אוטומטית בכל 16 לחודש עד סוף השנה.",
   },
   Anthropic: {
-    category: "AI model",
+    category: "מודל AI",
     source: "email-imported",
     recurring: true,
     billingDay: 15,
     expectedAmount: 20,
     confidence: 0.92,
-    owner: "Finance ops",
-    notes: "Primary Claude subscription, sometimes with extra credit top-ups.",
+    owner: "תפעול פיננסי",
+    notes: "המנוי הראשי של Claude, לעיתים עם טעינות קרדיטים נוספות.",
   },
   "Google Workspace": {
-    category: "Workspace",
+    category: "כלי עבודה",
     source: "email-imported",
     recurring: true,
     billingDay: 2,
     expectedAmount: 20.79,
     confidence: 0.97,
-    owner: "Ops",
-    notes: "Imported from Gmail and normalized from ILS to USD.",
+    owner: "תפעול",
+    notes: "מיובא מ־Gmail ומנורמל משקלים לדולרים.",
   },
   CapCut: {
-    category: "Video",
+    category: "וידאו",
     source: "email-imported",
     recurring: true,
     billingDay: 10,
     expectedAmount: 13.67,
     confidence: 0.89,
-    owner: "Creative",
-    notes: "Pulled from invoice links in email bodies.",
+    owner: "קריאייטיב",
+    notes: "נשלף מקישורי חשבוניות בגוף המייל.",
   },
   "Eleven Labs": {
-    category: "Voice",
+    category: "קול",
     source: "email-imported",
     recurring: true,
     billingDay: 30,
     expectedAmount: 11,
     confidence: 0.9,
-    owner: "Creative",
-    notes: "Monthly subscription with occasional plan changes.",
+    owner: "קריאייטיב",
+    notes: "מנוי חודשי עם שינויים מזדמנים בחבילה.",
   },
   Make: {
-    category: "Automation",
+    category: "אוטומציה",
     source: "email-imported",
     recurring: true,
     billingDay: 10,
     expectedAmount: 10.59,
     confidence: 0.94,
-    owner: "Ops",
-    notes: "Core workflow automation spend.",
+    owner: "תפעול",
+    notes: "הוצאת האוטומציה המרכזית של תהליכי העבודה.",
   },
   Manychat: {
-    category: "Automation",
+    category: "אוטומציה",
     source: "email-imported",
     recurring: true,
     billingDay: 3,
     expectedAmount: 15,
     confidence: 0.91,
-    owner: "Growth",
-    notes: "Chat funnel automation plan.",
+    owner: "צמיחה",
+    notes: "חבילת אוטומציה לפאנל צ'אט ולידים.",
   },
   Timeless: {
-    category: "Video",
+    category: "וידאו",
     source: "manual",
     recurring: true,
     billingDay: 1,
     expectedAmount: 14.5,
     confidence: 0.8,
-    owner: "Creative",
-    notes: "Manual recurring entry, discounted plan.",
+    owner: "קריאייטיב",
+    notes: "חיוב חוזר ידני במסלול מוזל.",
   },
   Lovable: {
-    category: "Builder",
+    category: "בניית מוצרים",
     source: "manual",
     recurring: true,
     billingDay: 25,
     expectedAmount: 25,
     confidence: 0.73,
-    owner: "Build",
-    notes: "Variable subscription and top-up spend. Watch for plan drift.",
+    owner: "פיתוח",
+    notes: "מנוי משתנה וטעינות נוספות. כדאי לעקוב אחרי שינויים בחבילה.",
   },
   "Runway ML": {
-    category: "Video",
+    category: "וידאו",
     source: "email-imported",
     recurring: false,
     confidence: 0.86,
-    owner: "Creative",
-    notes: "Imported usage and credit packs.",
+    owner: "קריאייטיב",
+    notes: "שימושים וחבילות קרדיטים שמיובאים מהמייל.",
   },
   Replicate: {
-    category: "Compute",
+    category: "חישוב",
     source: "email-imported",
     recurring: false,
     confidence: 0.9,
-    owner: "Build",
-    notes: "Usage-based compute charges.",
+    owner: "פיתוח",
+    notes: "חיובי חישוב לפי שימוש.",
   },
   Recraft: {
-    category: "Design",
+    category: "עיצוב",
     source: "email-imported",
     recurring: false,
     confidence: 0.9,
-    owner: "Creative",
-    notes: "Credits and plan changes imported from email.",
+    owner: "קריאייטיב",
+    notes: "קרדיטים ושינויים בחבילה שמיובאים מהמייל.",
   },
   "Ideogram AI": {
-    category: "Design",
+    category: "עיצוב",
     source: "email-imported",
     recurring: false,
     confidence: 0.96,
-    owner: "Creative",
-    notes: "Annual and upgrade charges imported from inbox.",
+    owner: "קריאייטיב",
+    notes: "חיובים שנתיים ושדרוגים שיובאו מתיבת המייל.",
   },
   Genspark: {
-    category: "AI model",
+    category: "מודל AI",
     source: "email-imported",
     recurring: false,
     confidence: 0.9,
-    owner: "R&D",
-    notes: "Annual plan and ad-hoc credits.",
+    owner: 'מו"פ',
+    notes: "תוכנית שנתית וקרדיטים מזדמנים.",
   },
   "Meta (Ads)": {
-    category: "Paid media",
+    category: "פרסום ממומן",
     source: "manual",
     recurring: false,
     confidence: 0.68,
-    owner: "Growth",
-    notes: "Manual ad-spend capture. Candidate for direct API sync later.",
+    owner: "צמיחה",
+    notes: "הוצאות פרסום שמוזנות ידנית. מועמד טוב לסנכרון API ישיר בהמשך.",
   },
   IONOS: {
-    category: "Domains",
+    category: "דומיינים",
     source: "manual",
     recurring: false,
     confidence: 0.75,
-    owner: "Ops",
-    notes: "Domain purchase added manually.",
+    owner: "תפעול",
+    notes: "רכישת דומיין שנוספה ידנית.",
   },
   "Manus AI": {
-    category: "AI model",
+    category: "מודל AI",
     source: "manual",
     recurring: true,
     billingDay: 9,
     expectedAmount: 19,
     confidence: 0.67,
-    owner: "R&D",
-    notes: "Legacy manual entry, not yet wired to inbox detection.",
+    owner: 'מו"פ',
+    notes: "חיוב ידני ישן שעדיין לא חובר לזיהוי מהמייל.",
   },
   Higgsfield: {
-    category: "Video",
+    category: "וידאו",
     source: "email-imported",
     recurring: false,
     confidence: 0.84,
-    owner: "Creative",
-    notes: "One-off credit pack imported from invoice PDF.",
+    owner: "קריאייטיב",
+    notes: "חבילת קרדיטים חד־פעמית שיובאה מ־PDF של חשבונית.",
   },
   Astria: {
-    category: "Image generation",
+    category: "יצירת תמונות",
     source: "manual",
     recurring: false,
     confidence: 0.72,
-    owner: "Creative",
-    notes: "One-time credit purchase.",
+    owner: "קריאייטיב",
+    notes: "רכישת קרדיטים חד־פעמית.",
   },
   Hedra: {
-    category: "Video",
+    category: "וידאו",
     source: "manual",
     recurring: false,
     confidence: 0.7,
-    owner: "Creative",
-    notes: "Manual credit-pack capture.",
+    owner: "קריאייטיב",
+    notes: "הזנה ידנית של חבילת קרדיטים.",
   },
 };
 
@@ -334,11 +335,7 @@ function readRawData(): RawDashboardData {
 }
 
 function monthLabel(key: string) {
-  const [year, month] = key.split("-").map(Number);
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    year: "numeric",
-  }).format(new Date(year, month - 1, 1));
+  return formatMonthLabel(key, "short");
 }
 
 function nextExpectedDate(currentMonth: string, billingDay: number) {
@@ -355,24 +352,24 @@ function nextExpectedDate(currentMonth: string, billingDay: number) {
 function sourceLabel(source: TransactionSource) {
   switch (source) {
     case "auto":
-      return "Auto";
+      return "אוטומטי";
     case "manual":
-      return "Manual";
+      return "ידני";
     case "ai-extracted":
-      return "AI extracted";
+      return "חולץ ב־AI";
     default:
-      return "Email imported";
+      return "יובא ממייל";
   }
 }
 
 function vendorFallback(tool: string): VendorConfig {
   return {
-    category: "Unclassified",
+    category: "ללא סיווג",
     source: "manual",
     recurring: false,
     confidence: 0.55,
-    owner: "Finance ops",
-    notes: `No explicit vendor rule yet for ${tool}.`,
+    owner: "תפעול פיננסי",
+    notes: `עדיין לא הוגדר כלל מפורש עבור הספק ${tool}.`,
   };
 }
 
@@ -470,10 +467,10 @@ export const getDashboardModel = cache((): DashboardModel => {
       date: transaction.date,
       reason:
         transaction.source === "manual"
-          ? "Manual entry still bypasses importer rules."
+          ? "החיוב הוזן ידנית ועדיין עוקף את כללי היבוא."
           : transaction.type === "one-time"
-            ? "One-time or variable charge should be confirmed against budget."
-            : "Parsing confidence is below the review threshold.",
+            ? "חיוב חד־פעמי או משתנה שדורש אישור מול התקציב."
+            : "רמת האמינות של הפענוח נמוכה מסף האישור.",
       severity:
         transaction.amount >= 40 ? "high" : transaction.amount >= 15 ? "medium" : "low",
     })) satisfies ReviewItem[];
@@ -481,62 +478,62 @@ export const getDashboardModel = cache((): DashboardModel => {
   const auditLog: AuditEvent[] = [
     {
       id: "audit-generated",
-      title: "Dashboard bundle regenerated",
-      detail: `Static data snapshot built from ${raw.generated}.`,
+      title: "חבילת הדשבורד נבנתה מחדש",
+      detail: `נוצר צילום מצב סטטי מהתאריך ${raw.generated}.`,
       timestamp: `${raw.generated} 09:10`,
     },
     {
       id: "audit-openai",
-      title: "Recurring OpenAI rule extended",
-      detail: "ChatGPT Plus is injected on the 16th through year-end.",
+      title: "כלל OpenAI החוזר הורחב",
+      detail: "ChatGPT Plus מתווסף אוטומטית בכל 16 לחודש עד סוף השנה.",
       timestamp: `${raw.generated} 08:45`,
     },
     {
       id: "audit-parser",
-      title: "Inbox parser synced",
-      detail: "Gmail, body parsing, PDF extraction, and static export are aligned.",
+      title: "מפענח תיבת המייל סונכרן",
+      detail: "Gmail, פענוח גוף המייל, חילוץ PDF והייצוא הסטטי נמצאים בתיאום.",
       timestamp: `${raw.generated} 08:20`,
     },
     {
       id: "audit-review",
-      title: "Review queue refreshed",
-      detail: `${needsReview.length} charges are waiting for an operator decision.`,
+      title: "תור הבדיקות רוענן",
+      detail: `${needsReview.length} חיובים ממתינים להחלטה אנושית.`,
       timestamp: `${raw.generated} 08:05`,
     },
   ];
 
   const automations: AutomationItem[] = [
     {
-      name: "Gmail invoice scan",
-      cadence: "Daily scan over the last 90 days",
+      name: "סריקת חשבוניות ב־Gmail",
+      cadence: "סריקה יומית על 90 הימים האחרונים",
       status: "active",
-      description: "Checks inbox senders, PDFs, and HTML invoice bodies.",
+      description: "בודק שולחים, קבצי PDF וגופי חשבוניות ב־HTML.",
       lastRun: `${raw.generated} 07:15`,
       nextRun: `${raw.generated} 19:15`,
     },
     {
-      name: "Recurring charge rules",
-      cadence: "Monthly at defined billing day",
+      name: "כללי חיוב חוזר",
+      cadence: "חודשי לפי יום חיוב מוגדר",
       status: "active",
-      description: "Injects expected recurring charges like OpenAI into the reporting layer.",
+      description: "מוסיף לדוחות חיובים חוזרים צפויים כמו OpenAI.",
       lastRun: `${raw.generated} 07:17`,
       nextRun: "2026-04-16 00:05",
     },
     {
-      name: "Workbook rebuild",
-      cadence: "On report refresh",
+      name: "בנייה מחדש של חוברת האקסל",
+      cadence: "עם כל רענון דוח",
       status: "active",
-      description: "Rebuilds Excel and derived dashboard data from the same source of truth.",
+      description: "בונה מחדש את קובץ האקסל ואת נתוני הדשבורד מאותו מקור אמת.",
       lastRun: `${raw.generated} 07:18`,
-      nextRun: "On next data change",
+      nextRun: "בשינוי הנתונים הבא",
     },
     {
-      name: "GitHub Pages publish",
-      cadence: "Commit + push",
+      name: "פרסום ל־GitHub Pages",
+      cadence: "קומיט ודחיפה",
       status: "semi-auto",
-      description: "Static site is published to docs/ after the Next.js export build.",
+      description: "האתר הסטטי מתפרסם אל docs/ לאחר בניית ה־Next.js.",
       lastRun: `${raw.generated} 07:20`,
-      nextRun: "On next build",
+      nextRun: "בבנייה הבאה",
     },
   ];
 
@@ -571,8 +568,8 @@ export const getDashboardModel = cache((): DashboardModel => {
     transactions,
     monthlySeries,
     recurringSeries: [
-      { label: "Recurring", value: recurringTotal, share: recurringTotal / raw.grand_total },
-      { label: "One-time", value: oneTimeTotal, share: oneTimeTotal / raw.grand_total },
+      { label: "חוזר", value: recurringTotal, share: recurringTotal / raw.grand_total },
+      { label: "חד־פעמי", value: oneTimeTotal, share: oneTimeTotal / raw.grand_total },
     ],
     vendors,
     automations,

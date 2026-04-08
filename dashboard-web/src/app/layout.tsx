@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "RT-AI Operations Console",
-  description: "AI spend dashboard rebuilt as a professional settings and operations console.",
+  title: "מעקב הוצאות כלי AI",
+  description: "לוח בקרה מקצועי לניהול הוצאות, ספקים, אוטומציות ודוחות של כלי AI.",
   manifest: withBasePath("/manifest.json"),
   icons: {
     icon: withBasePath("/favicon.ico"),
@@ -31,10 +31,11 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="he"
+      dir="rtl"
       className={`${geistSans.variable} ${geistMono.variable} dark h-full antialiased`}
     >
-      <body className="min-h-full bg-background text-foreground">
+      <body className="min-h-full bg-background text-foreground text-right">
         <TooltipProvider>
           <AppShell>{children}</AppShell>
         </TooltipProvider>

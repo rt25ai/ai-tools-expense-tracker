@@ -60,16 +60,15 @@ export function SettingsPageClient({ initialSettings }: { initialSettings: Setti
     <div className="space-y-6">
       <Card className="overflow-hidden border-white/8 bg-white/[0.03] shadow-none">
         <div className="border-b border-white/6 px-6 py-5">
-          <h2 className="text-2xl font-semibold text-white">General settings</h2>
+          <h2 className="text-2xl font-semibold text-white">הגדרות כלליות</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">
-            These are operator-facing controls that shape how the console reads spend, creates recurring
-            entries, and frames review work.
+            אלה בקרות תפעול שמכתיבות איך המערכת קוראת הוצאות, יוצרת חיובים חוזרים ומסגרת את עבודת הבדיקה.
           </p>
         </div>
         <div className="px-6 py-2">
           <SettingsRow
-            label="USD exchange rate"
-            help="Used for the workbook, budget framing, and the finance summary shown throughout the console."
+            label="שער דולר"
+            help="משמש את חוברת האקסל, מסכי התקציב וסיכומי הכספים בכל הממשק."
           >
             <Input
               value={String(settings.finance.usdRate)}
@@ -83,8 +82,8 @@ export function SettingsPageClient({ initialSettings }: { initialSettings: Setti
             />
           </SettingsRow>
           <SettingsRow
-            label="Default billing day"
-            help="The fallback day used when a recurring rule does not yet have a vendor-specific billing date."
+            label="יום חיוב ברירת מחדל"
+            help="היום שישמש כברירת מחדל כשעוד לא הוגדר יום חיוב ייעודי לספק."
           >
             <Input
               value={String(settings.finance.defaultBillingDay)}
@@ -98,8 +97,8 @@ export function SettingsPageClient({ initialSettings }: { initialSettings: Setti
             />
           </SettingsRow>
           <SettingsRow
-            label="Monthly working budget"
-            help="Used for the budget vs actual panel and for highlighting months that need an operator review."
+            label="תקציב עבודה חודשי"
+            help="משמש למסך תקציב מול בפועל ולסימון חודשים שדורשים בדיקה."
           >
             <Input
               value={String(settings.finance.monthlyBudget)}
@@ -115,26 +114,26 @@ export function SettingsPageClient({ initialSettings }: { initialSettings: Setti
         </div>
         <div className="flex items-center justify-between border-t border-white/6 px-6 py-4">
           <p className="text-sm text-zinc-500">
-            Exchange assumptions and billing defaults for the whole dashboard.
+            הנחות שער מטבע וברירות מחדל לחיוב עבור כל המערכת.
           </p>
           <Button onClick={() => saveSection("finance")} className="bg-emerald-500 text-black hover:bg-emerald-400">
-            {savedSection === "finance" ? <CheckCircle2 className="mr-2 size-4" /> : null}
-            Save finance settings
+            {savedSection === "finance" ? <CheckCircle2 className="ml-2 size-4" /> : null}
+            שמור הגדרות כספיות
           </Button>
         </div>
       </Card>
 
       <Card className="overflow-hidden border-white/8 bg-white/[0.03] shadow-none">
         <div className="border-b border-white/6 px-6 py-5">
-          <h2 className="text-2xl font-semibold text-white">Detection rules</h2>
+          <h2 className="text-2xl font-semibold text-white">כללי זיהוי</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">
-            Tune how the inbox parser behaves before we add richer automation and AI-assisted extraction.
+            כוונון האופן שבו מפענח המיילים פועל לפני שמוסיפים שכבת אוטומציה וניתוח AI רחבה יותר.
           </p>
         </div>
         <div className="px-6 py-2">
           <SettingsRow
-            label="Scan window"
-            help="How many days back the Gmail scanner should inspect when looking for missing invoices."
+            label="חלון סריקה"
+            help="כמה ימים אחורה סורק Gmail יבדוק כשהוא מחפש חשבוניות חסרות."
           >
             <Input
               value={String(settings.detection.scanWindowDays)}
@@ -148,8 +147,8 @@ export function SettingsPageClient({ initialSettings }: { initialSettings: Setti
             />
           </SettingsRow>
           <SettingsRow
-            label="Parser mode"
-            help="Controls whether the importer is optimized for precision, balanced matching, or more aggressive capture."
+            label="מצב מפענח"
+            help="קובע אם היבוא יתעדף דיוק, איזון או לכידה אגרסיבית יותר."
           >
             <Select
               value={settings.detection.parserMode}
@@ -164,15 +163,15 @@ export function SettingsPageClient({ initialSettings }: { initialSettings: Setti
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="strict">Strict</SelectItem>
-                <SelectItem value="balanced">Balanced</SelectItem>
-                <SelectItem value="aggressive">Aggressive</SelectItem>
+                <SelectItem value="strict">מחמיר</SelectItem>
+                <SelectItem value="balanced">מאוזן</SelectItem>
+                <SelectItem value="aggressive">אגרסיבי</SelectItem>
               </SelectContent>
             </Select>
           </SettingsRow>
           <SettingsRow
-            label="Ignored senders"
-            help="One sender pattern per line. Use this for noise that should never open a review item."
+            label="שולחים להתעלמות"
+            help="תבנית שולח אחת בכל שורה. מיועד לרעש שלא אמור לפתוח לעולם פריט לבדיקה."
           >
             <Textarea
               value={settings.detection.ignoredSenders.join("\n")}
@@ -193,25 +192,25 @@ export function SettingsPageClient({ initialSettings }: { initialSettings: Setti
           </SettingsRow>
         </div>
         <div className="flex items-center justify-between border-t border-white/6 px-6 py-4">
-          <p className="text-sm text-zinc-500">Current detection assumptions for Gmail, PDF text, and body parsing.</p>
+          <p className="text-sm text-zinc-500">הנחות הזיהוי הנוכחיות עבור Gmail, טקסט מתוך PDF ופענוח גוף המייל.</p>
           <Button onClick={() => saveSection("detection")} className="bg-emerald-500 text-black hover:bg-emerald-400">
-            {savedSection === "detection" ? <CheckCircle2 className="mr-2 size-4" /> : null}
-            Save detection rules
+            {savedSection === "detection" ? <CheckCircle2 className="ml-2 size-4" /> : null}
+            שמור כללי זיהוי
           </Button>
         </div>
       </Card>
 
       <Card className="overflow-hidden border-white/8 bg-white/[0.03] shadow-none">
         <div className="border-b border-white/6 px-6 py-5">
-          <h2 className="text-2xl font-semibold text-white">Vendor registry</h2>
+          <h2 className="text-2xl font-semibold text-white">רישום ספקים</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">
-            Maintain the list of known vendors and the subset that still rely on manual confirmation.
+            ניהול רשימת הספקים המוכרים ותת־הקבוצה שעדיין נשענת על אישור ידני.
           </p>
         </div>
         <div className="px-6 py-2">
           <SettingsRow
-            label="Known vendors"
-            help="This list powers the vendor console and acts as the review baseline for new incoming charges."
+            label="ספקים מוכרים"
+            help="הרשימה הזו מזינה את מסך הספקים ומשמשת בסיס בדיקה לחיובים חדשים."
           >
             <Textarea
               value={settings.vendors.knownVendors.join("\n")}
@@ -231,8 +230,8 @@ export function SettingsPageClient({ initialSettings }: { initialSettings: Setti
             />
           </SettingsRow>
           <SettingsRow
-            label="Manual-only vendors"
-            help="Use this to mark suppliers that should stay in the review flow until we wire a deterministic importer."
+            label="ספקים ידניים בלבד"
+            help="סמן כאן ספקים שצריכים להישאר בזרימת הבדיקה עד שנחבר להם יבוא אמין."
           >
             <Textarea
               value={settings.vendors.manualOnlyVendors.join("\n")}
@@ -253,27 +252,27 @@ export function SettingsPageClient({ initialSettings }: { initialSettings: Setti
           </SettingsRow>
         </div>
         <div className="flex items-center justify-between border-t border-white/6 px-6 py-4">
-          <p className="text-sm text-zinc-500">This section frames what the system should treat as normal vendor behavior.</p>
+          <p className="text-sm text-zinc-500">החלק הזה מגדיר מה המערכת צריכה לראות כהתנהגות ספק תקינה.</p>
           <Button onClick={() => saveSection("vendors")} className="bg-emerald-500 text-black hover:bg-emerald-400">
-            {savedSection === "vendors" ? <CheckCircle2 className="mr-2 size-4" /> : null}
-            Save vendor registry
+            {savedSection === "vendors" ? <CheckCircle2 className="ml-2 size-4" /> : null}
+            שמור רישום ספקים
           </Button>
         </div>
       </Card>
 
       <Card className="overflow-hidden border-white/8 bg-white/[0.03] shadow-none">
         <div className="border-b border-white/6 px-6 py-5">
-          <h2 className="text-2xl font-semibold text-white">Recurring rules</h2>
+          <h2 className="text-2xl font-semibold text-white">כללים חוזרים</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">
-            These controls shape the recurring layer that fills expected monthly charges before the inbox catches them.
+            ההגדרות כאן קובעות איך שכבת החיובים החוזרים ממלאת הוצאות צפויות עוד לפני שהחשבונית מגיעה מהמייל.
           </p>
         </div>
         <div className="space-y-5 px-6 py-5">
           {[
             {
               checked: settings.recurringRules.openAiEnabled,
-              title: "Inject OpenAI recurring charge on the 16th",
-              description: "Keeps ChatGPT Plus visible in every month even before the invoice import lands.",
+              title: "להוסיף חיוב OpenAI קבוע ב־16 לחודש",
+              description: "שומר את ChatGPT Plus גלוי בכל חודש עוד לפני שהחשבונית נקלטת.",
               update: (checked: boolean) =>
                 setSettings({
                   ...settings,
@@ -282,8 +281,8 @@ export function SettingsPageClient({ initialSettings }: { initialSettings: Setti
             },
             {
               checked: settings.recurringRules.rebuildDashboardOnChange,
-              title: "Rebuild dashboard when the report changes",
-              description: "Keeps the static console and the Excel workbook derived from the same source of truth.",
+              title: "לבנות מחדש את הדשבורד כשיש שינוי בדוח",
+              description: "שומר על התאמה בין הדשבורד הסטטי לבין חוברת האקסל מאותו מקור אמת.",
               update: (checked: boolean) =>
                 setSettings({
                   ...settings,
@@ -292,8 +291,8 @@ export function SettingsPageClient({ initialSettings }: { initialSettings: Setti
             },
             {
               checked: settings.recurringRules.autopublishEnabled,
-              title: "Mark dashboard publish as part of the workflow",
-              description: "Keeps the GitHub Pages export visible as a first-class step in the operator console.",
+              title: "להתייחס לפרסום הדשבורד כחלק מהתהליך",
+              description: "משאיר את ייצוא GitHub Pages כשלב תפעולי גלוי וברור.",
               update: (checked: boolean) =>
                 setSettings({
                   ...settings,
@@ -311,10 +310,10 @@ export function SettingsPageClient({ initialSettings }: { initialSettings: Setti
           ))}
         </div>
         <div className="flex items-center justify-between border-t border-white/6 px-6 py-4">
-          <p className="text-sm text-zinc-500">Recurring rules are what make this feel like an operations system, not just a report.</p>
+          <p className="text-sm text-zinc-500">הכללים החוזרים הם מה שהופך את זה למערכת תפעול, לא רק לדוח.</p>
           <Button onClick={() => saveSection("recurringRules")} className="bg-emerald-500 text-black hover:bg-emerald-400">
-            {savedSection === "recurringRules" ? <CheckCircle2 className="mr-2 size-4" /> : null}
-            Save recurring rules
+            {savedSection === "recurringRules" ? <CheckCircle2 className="ml-2 size-4" /> : null}
+            שמור כללים חוזרים
           </Button>
         </div>
       </Card>

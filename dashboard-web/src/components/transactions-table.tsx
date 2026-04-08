@@ -23,7 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { EnrichedTransaction, TransactionSource } from "@/lib/dashboard-data";
-import { formatCurrencyUsd, formatDateLabel } from "@/lib/formatters";
+import { formatCurrencyUsd, formatDateLabel, formatMonthLabel } from "@/lib/formatters";
 
 function badgeTone(source: TransactionSource) {
   switch (source) {
@@ -41,17 +41,17 @@ function badgeTone(source: TransactionSource) {
 const columns: ColumnDef<EnrichedTransaction>[] = [
   {
     accessorKey: "date",
-    header: "Date",
+    header: "תאריך",
     cell: ({ row }) => (
       <div>
         <p className="font-medium text-zinc-100">{formatDateLabel(row.original.date)}</p>
-        <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">{row.original.monthKey}</p>
+        <p className="text-xs tracking-[0.18em] text-zinc-500">{formatMonthLabel(row.original.monthKey, "short")}</p>
       </div>
     ),
   },
   {
     accessorKey: "tool",
-    header: "Vendor",
+    header: "ספק",
     cell: ({ row }) => (
       <div>
         <p className="font-medium text-zinc-100">{row.original.tool}</p>
@@ -61,35 +61,41 @@ const columns: ColumnDef<EnrichedTransaction>[] = [
   },
   {
     accessorKey: "description",
-    header: "Description",
+    header: "תיאור",
     cell: ({ row }) => <p className="max-w-[320px] text-sm leading-6 text-zinc-400">{row.original.description}</p>,
   },
   {
     accessorKey: "type",
-    header: "Type",
+    header: "סוג",
     cell: ({ row }) => (
       <Badge variant="outline" className="border-white/10 bg-white/[0.04] text-zinc-200 capitalize">
-        {row.original.type}
+        {row.original.type === "recurring" ? "חוזר" : "חד־פעמי"}
       </Badge>
     ),
   },
   {
     accessorKey: "source",
-    header: "Source",
+    header: "מקור",
     cell: ({ row }) => (
       <Badge variant="outline" className={badgeTone(row.original.source)}>
-        {row.original.source}
+        {row.original.source === "manual"
+          ? "ידני"
+          : row.original.source === "auto"
+            ? "אוטומטי"
+            : row.original.source === "email-imported"
+              ? "יובא ממייל"
+              : "חולץ ב־AI"}
       </Badge>
     ),
   },
   {
     accessorKey: "confidence",
-    header: "Confidence",
+    header: "אמינות",
     cell: ({ row }) => <span className="text-sm text-zinc-300">{Math.round(row.original.confidence * 100)}%</span>,
   },
   {
     accessorKey: "amount",
-    header: "Amount",
+    header: "סכום",
     cell: ({ row }) => <span className="font-medium text-emerald-200">{formatCurrencyUsd(row.original.amount)}</span>,
   },
 ];
@@ -155,34 +161,34 @@ export function TransactionsTable({ data }: { data: EnrichedTransaction[] }) {
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-1 flex-col gap-3 sm:flex-row">
           <div className="relative flex-1">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-zinc-500" />
+            <Search className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-zinc-500" />
             <Input
               value={globalFilter}
               onChange={(event) => setGlobalFilter(event.target.value)}
-              placeholder="Search vendor, description, or category"
-              className="h-11 border-white/10 bg-white/[0.04] pl-9 text-zinc-100 placeholder:text-zinc-500"
+              placeholder="חפש לפי ספק, תיאור או קטגוריה"
+              className="h-11 border-white/10 bg-white/[0.04] pr-9 text-zinc-100 placeholder:text-zinc-500"
             />
           </div>
           <Select value={sourceFilter} onValueChange={setSourceFilter}>
             <SelectTrigger className="h-11 w-full border-white/10 bg-white/[0.04] text-zinc-100 sm:w-[180px]">
-              <SelectValue placeholder="Source" />
+              <SelectValue placeholder="מקור" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All sources</SelectItem>
-              <SelectItem value="manual">Manual</SelectItem>
-              <SelectItem value="auto">Auto</SelectItem>
-              <SelectItem value="email-imported">Email imported</SelectItem>
-              <SelectItem value="ai-extracted">AI extracted</SelectItem>
+              <SelectItem value="all">כל המקורות</SelectItem>
+              <SelectItem value="manual">ידני</SelectItem>
+              <SelectItem value="auto">אוטומטי</SelectItem>
+              <SelectItem value="email-imported">יובא ממייל</SelectItem>
+              <SelectItem value="ai-extracted">חולץ ב־AI</SelectItem>
             </SelectContent>
           </Select>
           <Select value={typeFilter} onValueChange={setTypeFilter}>
             <SelectTrigger className="h-11 w-full border-white/10 bg-white/[0.04] text-zinc-100 sm:w-[180px]">
-              <SelectValue placeholder="Type" />
+              <SelectValue placeholder="סוג" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All charges</SelectItem>
-              <SelectItem value="recurring">Recurring</SelectItem>
-              <SelectItem value="one-time">One-time</SelectItem>
+              <SelectItem value="all">כל החיובים</SelectItem>
+              <SelectItem value="recurring">חוזר</SelectItem>
+              <SelectItem value="one-time">חד־פעמי</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -191,8 +197,8 @@ export function TransactionsTable({ data }: { data: EnrichedTransaction[] }) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="border-white/10 bg-white/[0.04] text-zinc-100 hover:bg-white/[0.08]">
-                <SlidersHorizontal className="mr-2 size-4" />
-                Columns
+                <SlidersHorizontal className="size-4" />
+                עמודות
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="border-white/10 bg-[#111418] text-zinc-100">
@@ -212,8 +218,8 @@ export function TransactionsTable({ data }: { data: EnrichedTransaction[] }) {
             </DropdownMenuContent>
           </DropdownMenu>
           <Button onClick={exportCsv} className="bg-emerald-500 text-black hover:bg-emerald-400">
-            <Download className="mr-2 size-4" />
-            Export CSV
+            <Download className="size-4" />
+            ייצוא CSV
           </Button>
         </div>
       </div>
@@ -245,7 +251,7 @@ export function TransactionsTable({ data }: { data: EnrichedTransaction[] }) {
             ) : (
               <TableRow className="border-white/6">
                 <TableCell colSpan={columns.length} className="h-24 text-center text-zinc-500">
-                  No transactions match the current filters.
+                  אין עסקאות שתואמות את הסינון הנוכחי.
                 </TableCell>
               </TableRow>
             )}
@@ -255,7 +261,7 @@ export function TransactionsTable({ data }: { data: EnrichedTransaction[] }) {
 
       <div className="flex flex-col gap-3 rounded-[24px] border border-white/8 bg-white/[0.02] px-4 py-3 text-sm text-zinc-400 sm:flex-row sm:items-center sm:justify-between">
         <p>
-          Showing {table.getRowModel().rows.length} of {filteredData.length} filtered rows
+          מוצגות {table.getRowModel().rows.length} מתוך {filteredData.length} שורות מסוננות
         </p>
         <div className="flex items-center gap-2">
           <Button
@@ -265,10 +271,10 @@ export function TransactionsTable({ data }: { data: EnrichedTransaction[] }) {
             disabled={!table.getCanPreviousPage()}
             className="border-white/10 bg-transparent text-zinc-100 hover:bg-white/[0.08]"
           >
-            Previous
+            הקודם
           </Button>
           <span className="px-2 text-zinc-500">
-            Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+            עמוד {table.getState().pagination.pageIndex + 1} מתוך {table.getPageCount()}
           </span>
           <Button
             variant="outline"
@@ -277,7 +283,7 @@ export function TransactionsTable({ data }: { data: EnrichedTransaction[] }) {
             disabled={!table.getCanNextPage()}
             className="border-white/10 bg-transparent text-zinc-100 hover:bg-white/[0.08]"
           >
-            Next
+            הבא
           </Button>
         </div>
       </div>

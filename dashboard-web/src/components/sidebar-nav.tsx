@@ -9,11 +9,11 @@ import { cn } from "@/lib/utils";
 import { withBasePath } from "@/lib/site";
 
 export const navigation = [
-  { href: "/", label: "Overview", icon: House },
-  { href: "/transactions", label: "Transactions", icon: ArrowRightLeft },
-  { href: "/vendors", label: "Vendors", icon: UsersRound },
-  { href: "/automations", label: "Automations", icon: Bot },
-  { href: "/settings", label: "Settings", icon: Settings2 },
+  { href: "/", label: "ראשי", icon: House },
+  { href: "/transactions", label: "עסקאות", icon: ArrowRightLeft },
+  { href: "/vendors", label: "ספקים", icon: UsersRound },
+  { href: "/automations", label: "אוטומציות", icon: Bot },
+  { href: "/settings", label: "הגדרות", icon: Settings2 },
 ];
 
 function isItemActive(pathname: string, href: string) {
@@ -24,7 +24,7 @@ export function SidebarNav() {
   const pathname = usePathname();
 
   return (
-    <aside className="sticky top-0 hidden h-screen w-[280px] shrink-0 border-r border-white/6 bg-[#0a0c0f] px-6 py-7 lg:flex lg:flex-col">
+    <aside className="sticky top-0 hidden h-screen w-[280px] shrink-0 border-l border-white/6 bg-[#0a0c0f] px-6 py-7 lg:flex lg:flex-col">
       <div className="flex items-center gap-3">
         <div className="rounded-2xl border border-white/10 bg-white/5 p-2">
           <Image
@@ -37,8 +37,8 @@ export function SidebarNav() {
           />
         </div>
         <div>
-          <p className="text-sm font-semibold text-zinc-100">AI Spend Console</p>
-          <p className="text-xs text-zinc-500">Project settings + operations</p>
+          <p className="text-sm font-semibold text-zinc-100">מעקב הוצאות כלי AI</p>
+          <p className="text-xs text-zinc-500">הגדרות פרויקט ותפעול</p>
         </div>
       </div>
 
@@ -67,14 +67,13 @@ export function SidebarNav() {
       <div className="mt-auto rounded-[28px] border border-white/8 bg-white/[0.03] p-5">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">Current mode</p>
-            <p className="mt-2 text-lg font-semibold text-zinc-100">Static dashboard</p>
+            <p className="text-xs tracking-[0.18em] text-zinc-500">מצב נוכחי</p>
+            <p className="mt-2 text-lg font-semibold text-zinc-100">דשבורד סטטי</p>
           </div>
           <ReceiptText className="size-4 text-emerald-300" />
         </div>
         <p className="mt-3 text-sm leading-6 text-zinc-400">
-          The console is already structured like a real admin product, so later we can plug in live
-          automations without redesigning the shell.
+          הממשק כבר בנוי כמו מערכת תפעול אמיתית, כך שבהמשך נוכל לחבר אוטומציות חיות בלי לעצב הכול מחדש.
         </p>
       </div>
     </aside>
@@ -106,8 +105,8 @@ export function MobileNav() {
             </Link>
           );
         })}
-        <Badge variant="outline" className="ml-auto border-white/10 bg-black/20 text-zinc-400">
-          Static export
+        <Badge variant="outline" className="border-white/10 bg-black/20 text-zinc-400">
+          פריסה חיה
         </Badge>
       </div>
     </div>

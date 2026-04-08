@@ -14,7 +14,7 @@ export function KpiCard({
     <Card className="border-white/8 bg-white/[0.03] p-5 shadow-none">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-[0.24em] text-zinc-500">{label}</p>
+          <p className="text-xs tracking-[0.18em] text-zinc-500">{label}</p>
           <p className="mt-4 text-3xl font-semibold tracking-tight text-white">{value}</p>
         </div>
         <div className="rounded-full border border-white/10 bg-black/20 p-2 text-zinc-500">

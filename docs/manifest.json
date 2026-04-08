@@ -1,13 +1,13 @@
 {
-  "name": "RT-AI Operations Console",
-  "short_name": "RT-AI",
-  "description": "AI tools finance operations console",
+  "name": "מעקב הוצאות כלי AI",
+  "short_name": "מעקב AI",
+  "description": "לוח בקרה לניהול הוצאות, ספקים ואוטומציות של כלי AI",
   "display": "standalone",
   "start_url": "./",
   "scope": "./",
   "background_color": "#0b0d10",
   "theme_color": "#0b0d10",
-  "lang": "en",
+  "lang": "he",
   "icons": [
     {
       "src": "./logo.png",
