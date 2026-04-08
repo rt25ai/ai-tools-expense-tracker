@@ -142,6 +142,38 @@ export type DashboardModel = {
   };
 };
 
+export type ReportMonth = {
+  key: string;
+  label: string;
+  year: string;
+  total: number;
+  budget: number;
+  variance: number;
+  varianceRatio: number;
+  transactionCount: number;
+  recurringCount: number;
+  oneTimeCount: number;
+  recurringTotal: number;
+  oneTimeTotal: number;
+  needsReviewCount: number;
+  transactions: EnrichedTransaction[];
+  topVendors: { name: string; total: number; chargeCount: number }[];
+  previousMonthKey: string | null;
+  nextMonthKey: string | null;
+};
+
+export type ReportYear = {
+  year: string;
+  total: number;
+  budget: number;
+  variance: number;
+  monthCount: number;
+  recurringTotal: number;
+  oneTimeTotal: number;
+  months: ReportMonth[];
+  topVendors: { name: string; total: number; chargeCount: number }[];
+};
+
 const vendorCatalog: Record<string, VendorConfig> = {
   OpenAI: {
     category: "מודל AI",
@@ -442,13 +474,15 @@ export const getDashboardModel = cache((): DashboardModel => {
     Object.entries(raw.monthly).map(([key, total]) => [key, convertUsdToIls(total, raw.usd_rate)]),
   );
 
-  const monthlySeries = Object.entries(monthlyIls).map(([key, total]) => ({
-    key,
-    label: monthLabel(key),
-    total,
-    budget: recurringBaselineIls + convertUsdToIls(key >= raw.current_month ? 36 : 88, raw.usd_rate),
-    intensity: 0,
-  }));
+  const monthlySeries = Object.entries(monthlyIls)
+    .map(([key, total]) => ({
+      key,
+      label: monthLabel(key),
+      total,
+      budget: recurringBaselineIls + convertUsdToIls(key >= raw.current_month ? 36 : 88, raw.usd_rate),
+      intensity: 0,
+    }))
+    .sort((left, right) => left.key.localeCompare(right.key));
 
   const maxMonthlyTotal = Math.max(...monthlySeries.map((entry) => entry.total), 1);
   for (const month of monthlySeries) {
@@ -630,4 +664,102 @@ export const getDashboardModel = cache((): DashboardModel => {
 
 export function getSourceLabel(source: TransactionSource) {
   return sourceLabel(source);
+}
+
+export const getMonthReports = cache((): ReportMonth[] => {
+  const model = getDashboardModel();
+  const orderedMonths = [...model.monthlySeries].sort((left, right) => left.key.localeCompare(right.key));
+
+  return orderedMonths.map((month, index) => {
+    const transactions = model.transactions
+      .filter((transaction) => transaction.monthKey === month.key)
+      .sort((left, right) => right.date.localeCompare(left.date));
+    const recurringTransactions = transactions.filter((transaction) => transaction.type === "recurring");
+    const oneTimeTransactions = transactions.filter((transaction) => transaction.type === "one-time");
+    const recurringTotal = recurringTransactions.reduce((sum, transaction) => sum + transaction.amountIls, 0);
+    const oneTimeTotal = oneTimeTransactions.reduce((sum, transaction) => sum + transaction.amountIls, 0);
+    const vendorTotals = new Map<string, { total: number; chargeCount: number }>();
+
+    for (const transaction of transactions) {
+      const current = vendorTotals.get(transaction.tool) ?? { total: 0, chargeCount: 0 };
+      vendorTotals.set(transaction.tool, {
+        total: current.total + transaction.amountIls,
+        chargeCount: current.chargeCount + 1,
+      });
+    }
+
+    return {
+      key: month.key,
+      label: formatMonthLabel(month.key),
+      year: month.key.slice(0, 4),
+      total: month.total,
+      budget: month.budget,
+      variance: month.total - month.budget,
+      varianceRatio: month.budget ? month.total / month.budget : 0,
+      transactionCount: transactions.length,
+      recurringCount: recurringTransactions.length,
+      oneTimeCount: oneTimeTransactions.length,
+      recurringTotal,
+      oneTimeTotal,
+      needsReviewCount: transactions.filter(
+        (transaction) => transaction.source === "manual" || transaction.confidence < 0.8 || transaction.type === "one-time",
+      ).length,
+      transactions,
+      topVendors: [...vendorTotals.entries()]
+        .map(([name, value]) => ({
+          name,
+          total: value.total,
+          chargeCount: value.chargeCount,
+        }))
+        .sort((left, right) => right.total - left.total)
+        .slice(0, 5),
+      previousMonthKey: index > 0 ? orderedMonths[index - 1].key : null,
+      nextMonthKey: index < orderedMonths.length - 1 ? orderedMonths[index + 1].key : null,
+    } satisfies ReportMonth;
+  });
+});
+
+export const getReportYears = cache((): string[] => {
+  const years = new Set(getMonthReports().map((month) => month.year));
+  return [...years].sort((left, right) => right.localeCompare(left));
+});
+
+export function getMonthReport(monthKey: string) {
+  return getMonthReports().find((month) => month.key === monthKey) ?? null;
+}
+
+export function getYearReport(year: string): ReportYear | null {
+  const months = getMonthReports().filter((month) => month.year === year);
+
+  if (!months.length) return null;
+
+  const vendorTotals = new Map<string, { total: number; chargeCount: number }>();
+  for (const month of months) {
+    for (const transaction of month.transactions) {
+      const current = vendorTotals.get(transaction.tool) ?? { total: 0, chargeCount: 0 };
+      vendorTotals.set(transaction.tool, {
+        total: current.total + transaction.amountIls,
+        chargeCount: current.chargeCount + 1,
+      });
+    }
+  }
+
+  return {
+    year,
+    total: months.reduce((sum, month) => sum + month.total, 0),
+    budget: months.reduce((sum, month) => sum + month.budget, 0),
+    variance: months.reduce((sum, month) => sum + month.variance, 0),
+    monthCount: months.length,
+    recurringTotal: months.reduce((sum, month) => sum + month.recurringTotal, 0),
+    oneTimeTotal: months.reduce((sum, month) => sum + month.oneTimeTotal, 0),
+    months: [...months].sort((left, right) => right.key.localeCompare(left.key)),
+    topVendors: [...vendorTotals.entries()]
+      .map(([name, value]) => ({
+        name,
+        total: value.total,
+        chargeCount: value.chargeCount,
+      }))
+      .sort((left, right) => right.total - left.total)
+      .slice(0, 8),
+  };
 }

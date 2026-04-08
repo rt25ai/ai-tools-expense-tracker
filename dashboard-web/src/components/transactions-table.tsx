@@ -1,6 +1,7 @@
 "use client";
 
 import { useDeferredValue, useState } from "react";
+import Link from "next/link";
 import type { ColumnDef, SortingState, VisibilityState } from "@tanstack/react-table";
 import {
   flexRender,
@@ -24,6 +25,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { EnrichedTransaction, TransactionSource } from "@/lib/dashboard-data";
 import { formatCurrencyIls, formatDateLabel, formatMonthLabel } from "@/lib/formatters";
+import { monthReportHref } from "@/lib/report-links";
 
 function badgeTone(source: TransactionSource) {
   switch (source) {
@@ -45,7 +47,12 @@ const columns: ColumnDef<EnrichedTransaction>[] = [
     cell: ({ row }) => (
       <div>
         <p className="font-medium text-zinc-100">{formatDateLabel(row.original.date)}</p>
-        <p className="text-xs tracking-[0.18em] text-zinc-500">{formatMonthLabel(row.original.monthKey, "short")}</p>
+        <Link
+          href={monthReportHref(row.original.monthKey)}
+          className="text-xs tracking-[0.18em] text-cyan-200 transition-colors hover:text-cyan-100"
+        >
+          {formatMonthLabel(row.original.monthKey, "short")}
+        </Link>
       </div>
     ),
   },

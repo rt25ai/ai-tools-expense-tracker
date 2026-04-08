@@ -9,7 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { DashboardModel } from "@/lib/dashboard-data";
-import { formatCurrencyIls, formatDateLabel } from "@/lib/formatters";
+import { formatCurrencyIls, formatDateLabel, formatMonthLabel } from "@/lib/formatters";
+import { monthReportHref, yearReportHref } from "@/lib/report-links";
 
 type KpiKey = "totalYtd" | "currentMonth" | "recurringBaseline" | "needsReview";
 
@@ -45,12 +46,14 @@ export function OverviewKpiGrid({ model }: { model: DashboardModel }) {
   const [activeKpi, setActiveKpi] = useState<KpiKey>("currentMonth");
   const currentMonthTransactions = model.transactions.filter((transaction) => transaction.monthKey === model.raw.current_month);
   const recurringVendors = model.vendors.filter((vendor) => vendor.recurring);
+  const currentYear = model.raw.current_month.slice(0, 4);
+  const currentMonthLabel = formatMonthLabel(model.raw.current_month);
 
   return (
     <section className="space-y-4">
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <KpiCard
-          label="סה״כ מתחילת השנה"
+          label="סך מתחילת השנה"
           value={formatCurrencyIls(model.stats.totalYtd)}
           hint="לחץ כדי לראות אילו ספקים מושכים את עיקר ההוצאה המצטברת השנה."
           active={activeKpi === "totalYtd"}
@@ -82,12 +85,12 @@ export function OverviewKpiGrid({ model }: { model: DashboardModel }) {
       {activeKpi === "totalYtd" ? (
         <DetailShell
           eyebrow="פירוט שנתי"
-          title="הספקים שמרכיבים את ההוצאה המצטברת"
-          description="מבט מהיר על הספקים הכבדים ביותר, כדי להבין איפה עיקר הכסף יושב השנה."
+          title={`הסיכום של ${currentYear}`}
+          description="מבט מהיר על הספקים הכבדים ביותר השנה, עם מעבר ישיר לדוח השנתי שבו אפשר להיכנס גם לכל חודש בנפרד."
           action={
             <Button asChild className="bg-cyan-400 text-black hover:bg-cyan-300">
-              <Link href="/vendors">
-                עבור למסך ספקים
+              <Link href={yearReportHref(currentYear)}>
+                פתח דוח שנתי
                 <ArrowUpLeft className="size-4" />
               </Link>
             </Button>
@@ -116,12 +119,12 @@ export function OverviewKpiGrid({ model }: { model: DashboardModel }) {
       {activeKpi === "currentMonth" ? (
         <DetailShell
           eyebrow="פירוט חודשי"
-          title={`החיובים של ${model.raw.current_month}`}
-          description="כל החיובים של החודש מוצגים כאן בשקלים, כדי שיהיה אפשר ללחוץ ולקבל מבט תפעולי מיידי."
+          title={`החיובים של ${currentMonthLabel}`}
+          description="כל החיובים של החודש מוצגים כאן בשקלים, עם מעבר ישיר לדוח החודשי המלא של אותו חודש."
           action={
             <Button asChild className="bg-cyan-400 text-black hover:bg-cyan-300">
-              <Link href="/transactions">
-                פתח את כל העסקאות
+              <Link href={monthReportHref(model.raw.current_month)}>
+                פתח דוח חודשי
                 <ArrowUpLeft className="size-4" />
               </Link>
             </Button>
@@ -137,7 +140,7 @@ export function OverviewKpiGrid({ model }: { model: DashboardModel }) {
                 </div>
                 <div className="text-right">
                   <p className="text-lg font-semibold text-cyan-200">{formatCurrencyIls(transaction.amountIls)}</p>
-                  <p className="mt-1 text-sm text-zinc-500">{transaction.type === "recurring" ? "חיוב חוזר" : "חיוב חד־פעמי"}</p>
+                  <p className="mt-1 text-sm text-zinc-500">{transaction.type === "recurring" ? "חיוב חוזר" : "חיוב חד-פעמי"}</p>
                 </div>
               </div>
             ))}
@@ -149,7 +152,7 @@ export function OverviewKpiGrid({ model }: { model: DashboardModel }) {
         <DetailShell
           eyebrow="בסיס קבוע"
           title="החיובים החוזרים שצפויים בכל חודש"
-          description="כך רואים בקלות מהו הבסיס הקבוע שלך, מתי כל ספק אמור לחייב, ואיפה כדאי לזהות פער."
+          description="כאן רואים בקלות מהו בסיס ההוצאות הקבוע, מתי כל ספק אמור לחייב, ולאן כדאי להיכנס אם צריך לחקור פערים."
           action={
             <Button asChild className="bg-cyan-400 text-black hover:bg-cyan-300">
               <Link href="/vendors">
@@ -171,7 +174,9 @@ export function OverviewKpiGrid({ model }: { model: DashboardModel }) {
                 <p className="mt-3 text-lg font-semibold text-cyan-200">
                   {vendor.expectedAmount ? formatCurrencyIls(vendor.expectedAmount) : "משתנה"}
                 </p>
-                <p className="mt-2 text-sm text-zinc-400">מקור: {vendor.source === "auto" ? "אוטומטי" : vendor.source === "manual" ? "ידני" : vendor.source === "email-imported" ? "מיובא מהמייל" : "חולץ ב-AI"}</p>
+                <p className="mt-2 text-sm text-zinc-400">
+                  מקור: {vendor.source === "auto" ? "אוטומטי" : vendor.source === "manual" ? "ידני" : vendor.source === "email-imported" ? "מיובא מהמייל" : "חולץ ב-AI"}
+                </p>
               </div>
             ))}
           </div>

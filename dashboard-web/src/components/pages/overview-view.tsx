@@ -1,7 +1,6 @@
 import Link from "next/link";
-import { ArrowUpLeft, CheckCircle2, CircleAlert, ShieldCheck } from "lucide-react";
+import { ArrowUpLeft, CheckCircle2, CircleAlert, FileBarChart2, ShieldCheck } from "lucide-react";
 import { BudgetBars } from "@/components/budget-bars";
-import { Heatmap } from "@/components/heatmap";
 import { OverviewKpiGrid } from "@/components/overview-kpi-grid";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
@@ -9,16 +8,21 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getDashboardModel } from "@/lib/dashboard-data";
 import { formatCurrencyIls, formatDateLabel, formatDateTimeLabel, formatExchangeRate } from "@/lib/formatters";
+import { monthReportHref, yearReportHref } from "@/lib/report-links";
 
 export function OverviewView() {
   const model = getDashboardModel();
+  const currentYear = model.raw.current_month.slice(0, 4);
+  const latestMonths = [...model.monthlySeries]
+    .sort((left, right) => right.key.localeCompare(left.key))
+    .slice(0, 6);
 
   return (
     <>
       <PageHeader
         eyebrow="ראשי"
         title="תמונת מצב תפעולית"
-        description="מסך עבודה מהודק לניהול הוצאות, חיובים חוזרים, בדיקות ידניות ובריאות ספקים. המטרה היא להרגיש כמו מערכת תפעול אמיתית, לא רק עמוד תצוגה."
+        description="מסך עבודה מהודק לניהול הוצאות, חיובים חוזרים, בדיקות ידניות ודוחות. המרכז נבנה כדי להרגיש כמו קונסולת תפעול אמיתית, לא עמוד תצוגה."
         actions={
           <Button asChild className="bg-cyan-400 text-black hover:bg-cyan-300">
             <Link href="/transactions">
@@ -33,31 +37,69 @@ export function OverviewView() {
 
       <section className="grid gap-6 xl:grid-cols-[1.25fr_0.9fr]">
         <Card className="border-white/8 bg-white/[0.03] p-6 shadow-none">
-          <div className="flex items-end justify-between gap-4">
+          <div className="flex flex-col gap-4 border-b border-white/6 pb-6 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="text-[11px] tracking-[0.18em] text-zinc-500">מפת חום חודשית</p>
-              <h2 className="mt-2 text-2xl font-semibold text-white">לחץ תקציבי לפי חודש</h2>
+              <p className="text-[11px] tracking-[0.18em] text-zinc-500">דוחות</p>
+              <h2 className="mt-2 text-2xl font-semibold text-white">מעבר מהיר לחודשים ולשנים</h2>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">
-                מפת החום מחליפה את התצוגה הישנה ועוזרת לזהות חודשים כבדים, בסיסי חיוב עתידיים וריכוזי הוצאה בשקלים.
+                במקום מפת חום צפופה, הדף הראשי מציג עכשיו מסלולי כניסה ברורים לדוחות חודשיים ולדוחות שנתיים עם מעבר ישיר לכל חודש.
               </p>
             </div>
             <div className="flex flex-col items-end gap-2">
               <Badge variant="outline" className="border-white/10 bg-black/20 text-zinc-300">
                 {model.monthlySeries.length} חודשים במעקב
               </Badge>
-              <Badge variant="outline" className="border-cyan-400/15 bg-cyan-400/8 text-cyan-200">
-                {formatExchangeRate(model.raw.usd_rate)}
-              </Badge>
+              <Button asChild variant="outline" className="border-white/10 bg-black/20 text-zinc-100 hover:bg-white/[0.08]">
+                <Link href="/reports">פתח ארכיון דוחות</Link>
+              </Button>
             </div>
           </div>
-          <div className="mt-6">
-            <Heatmap data={model.monthlySeries} />
+
+          <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {latestMonths.map((month) => {
+              const variance = month.total - month.budget;
+
+              return (
+                <Link
+                  key={month.key}
+                  href={monthReportHref(month.key)}
+                  className="rounded-[24px] border border-white/8 bg-black/20 p-4 transition-colors hover:border-cyan-400/20 hover:bg-white/[0.05]"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-medium text-white">{month.label}</p>
+                      <p className="mt-2 text-xs leading-5 text-zinc-500">מתוך יעד של {formatCurrencyIls(month.budget)}</p>
+                    </div>
+                    <ArrowUpLeft className="mt-0.5 size-4 text-cyan-300" />
+                  </div>
+                  <p className="mt-4 text-2xl font-semibold text-cyan-200">{formatCurrencyIls(month.total)}</p>
+                  <p className={`mt-2 text-sm ${variance > 0 ? "text-amber-200" : "text-zinc-400"}`}>
+                    {variance > 0 ? `חריגה של ${formatCurrencyIls(Math.abs(variance))}` : `מתחת ליעד ב-${formatCurrencyIls(Math.abs(variance))}`}
+                  </p>
+                </Link>
+              );
+            })}
+          </div>
+
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Button asChild className="bg-cyan-400 text-black hover:bg-cyan-300">
+              <Link href={yearReportHref(currentYear)}>
+                דוח שנתי {currentYear}
+                <ArrowUpLeft className="size-4" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="border-white/10 bg-black/20 text-zinc-100 hover:bg-white/[0.08]">
+              <Link href={monthReportHref(model.raw.current_month)}>
+                דוח החודש הפעיל
+                <ArrowUpLeft className="size-4" />
+              </Link>
+            </Button>
           </div>
         </Card>
 
         <Card className="border-white/8 bg-white/[0.03] p-6 shadow-none">
           <p className="text-[11px] tracking-[0.18em] text-zinc-500">חלוקת חיובים</p>
-          <h2 className="mt-2 text-2xl font-semibold text-white">חוזר מול חד־פעמי</h2>
+          <h2 className="mt-2 text-2xl font-semibold text-white">חוזר מול חד-פעמי</h2>
           <div className="mt-6 space-y-5">
             {model.recurringSeries.map((entry) => (
               <div key={entry.label} className="space-y-2">
@@ -84,6 +126,9 @@ export function OverviewView() {
               .
             </p>
             <p className="mt-2 text-sm leading-6 text-zinc-400">{model.raw.exchange_rate_source ?? "Bank of Israel Public API"}</p>
+            <Badge variant="outline" className="mt-3 border-cyan-400/15 bg-cyan-400/8 text-cyan-200">
+              {formatExchangeRate(model.raw.usd_rate)}
+            </Badge>
           </div>
         </Card>
       </section>
@@ -95,7 +140,7 @@ export function OverviewView() {
               <p className="text-[11px] tracking-[0.18em] text-zinc-500">תקציב מול בפועל</p>
               <h2 className="mt-2 text-2xl font-semibold text-white">פער חודשי מהיעד</h2>
               <p className="mt-2 text-sm leading-6 text-zinc-400">
-                מציג עד כמה כל חודש סטה מהיעד לאחר הוספת כל ההתחייבויות החוזרות.
+                כל חודש ניתן ללחיצה ומוביל ישר לדוח החודשי שלו, עם צבע ברור יותר במקרים של חריגה מול היעד.
               </p>
             </div>
             <Badge variant="outline" className="border-white/10 bg-black/20 text-zinc-300">
@@ -103,7 +148,7 @@ export function OverviewView() {
             </Badge>
           </div>
           <div className="mt-6">
-            <BudgetBars months={model.monthlySeries.filter((entry) => entry.key.startsWith("2026"))} />
+            <BudgetBars months={model.monthlySeries.filter((entry) => entry.key.startsWith(currentYear))} />
           </div>
         </Card>
 
@@ -192,16 +237,16 @@ export function OverviewView() {
                 <p className="font-medium text-white">זרימות ידניות מופרדות</p>
               </div>
               <p className="mt-2 text-sm leading-6 text-zinc-400">
-                חיובים ידניים וחד־פעמיים מופרדים בבירור מהוצאות חוזרות שמגיעות מהייבוא האוטומטי.
+                חיובים ידניים וחד-פעמיים מופרדים בבירור מההוצאות החוזרות שמגיעות מהייבוא האוטומטי.
               </p>
             </div>
             <div className="rounded-[22px] border border-white/8 bg-black/20 p-4">
               <div className="flex items-center gap-3">
-                <ArrowUpLeft className="size-4 text-sky-300" />
-                <p className="font-medium text-white">מוכן לשכבת אוטומציה חיה</p>
+                <FileBarChart2 className="size-4 text-sky-300" />
+                <p className="font-medium text-white">מוכנות לשכבת דוחות מלאה</p>
               </div>
               <p className="mt-2 text-sm leading-6 text-zinc-400">
-                המעטפת, הניווט וההגדרות כבר מוכנים לחיבור עתידי של Gmail, ניתוח AI ו־API של ספקים.
+                כל חודש משמעותי בדשבורד מקושר עכשיו לדוח חודשי, ומהתפריט אפשר להיכנס גם לדוחות שנתיים מסודרים.
               </p>
             </div>
           </div>

@@ -1,14 +1,17 @@
+import Link from "next/link";
 import { CheckCircle2, CircleAlert, CircleDot } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getDashboardModel, getSourceLabel } from "@/lib/dashboard-data";
-import { formatCurrencyIls, formatDateLabel } from "@/lib/formatters";
+import { formatCurrencyIls, formatDateLabel, formatMonthLabel } from "@/lib/formatters";
+import { monthReportHref } from "@/lib/report-links";
 
 export default function VendorsPage() {
   const model = getDashboardModel();
   const recurringVendors = model.vendors.filter((vendor) => vendor.recurring).length;
+  const currentMonthLabel = formatMonthLabel(model.raw.current_month);
 
   return (
     <>
@@ -71,9 +74,14 @@ export default function VendorsPage() {
 
               <div className="space-y-2">
                 <p className="text-xs tracking-[0.18em] text-zinc-500">מצב מסחרי</p>
-                <p className="text-sm text-zinc-100">{vendor.recurring ? "חיוב חוזר" : "חד־פעמי / משתנה"}</p>
+                <p className="text-sm text-zinc-100">{vendor.recurring ? "חיוב חוזר" : "חד-פעמי / משתנה"}</p>
                 <p className="text-sm text-zinc-400">צפוי: {vendor.expectedAmount ? formatCurrencyIls(vendor.expectedAmount) : "משתנה"}</p>
-                <p className="text-sm text-zinc-400">החודש: {formatCurrencyIls(vendor.currentMonthSpend)}</p>
+                <p className="text-sm text-zinc-400">
+                  <Link href={monthReportHref(model.raw.current_month)} className="text-cyan-200 transition-colors hover:text-cyan-100">
+                    {currentMonthLabel}
+                  </Link>
+                  : {formatCurrencyIls(vendor.currentMonthSpend)}
+                </p>
               </div>
 
               <div className="space-y-2">
@@ -105,7 +113,7 @@ export default function VendorsPage() {
             <h3 className="font-semibold text-white">תקין</h3>
           </div>
           <p className="mt-3 text-sm leading-6 text-zinc-400">
-            ספקים חוזרים עם ייבוא ממייל, רמת אמינות גבוהה ותזמון חיוב צפוי.
+            ספקים חוזרים עם ייבוא מהמייל, רמת אמינות גבוהה ותזמון חיוב צפוי.
           </p>
         </Card>
         <Card className="border-white/8 bg-white/[0.03] p-5 shadow-none">

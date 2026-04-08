@@ -3,14 +3,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowRightLeft, Bot, House, ReceiptText, Settings2, UsersRound } from "lucide-react";
+import { ArrowRightLeft, BarChart3, Bot, House, ReceiptText, Settings2, UsersRound } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 import { withBasePath } from "@/lib/site";
+import { cn } from "@/lib/utils";
 
 export const navigation = [
   { href: "/", label: "ראשי", icon: House },
   { href: "/transactions", label: "עסקאות", icon: ArrowRightLeft },
+  { href: "/reports", label: "דוחות", icon: BarChart3 },
   { href: "/vendors", label: "ספקים", icon: UsersRound },
   { href: "/automations", label: "אוטומציות", icon: Bot },
   { href: "/settings", label: "הגדרות", icon: Settings2 },

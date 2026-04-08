@@ -19,7 +19,7 @@ export function convertUsdToIls(value: number, usdRate: number) {
 }
 
 export function formatExchangeRate(usdRate: number) {
-  return `₪${usdRate.toFixed(3)} לכל $1`;
+  return `${usdRate.toFixed(3)} ש"ח לכל $1`;
 }
 
 export function formatDateLabel(value: string) {
