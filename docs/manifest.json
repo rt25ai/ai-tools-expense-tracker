@@ -1,7 +1,7 @@
 {
-  "name": "מעקב הוצאות כלי AI",
-  "short_name": "AI Expenses",
-  "description": "מעקב הוצאות כלי AI – RT-AI",
+  "name": "מעקב הוצאות כלי AI וכלים עסקיים",
+  "short_name": "AI ועסקי",
+  "description": "מעקב הוצאות כלי AI וכלים עסקיים – RT-AI",
   "start_url": "/ai-tools-expense-tracker/",
   "scope": "/ai-tools-expense-tracker/",
   "display": "standalone",

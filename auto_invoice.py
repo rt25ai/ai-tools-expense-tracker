@@ -141,6 +141,32 @@ def get_pdf_parts(payload):
     return parts
 
 
+def is_meta_final_receipt(headers, body_text):
+    """Identify only final Meta charges, not billing-threshold/intermediate notices."""
+    subject = headers.get("subject", "").lower()
+    body    = body_text.lower()
+
+    final_markers = [
+        "receipt for your payment to meta platforms, inc.",
+        "you successfully sent a payment",
+        "you paid",
+        "transaction id",
+        "meta platforms, inc.",
+    ]
+    blocked_markers = [
+        "not a final bill",
+        "this is not a final bill",
+        "this is not a bill",
+        "billing threshold",
+        "amount due",
+    ]
+
+    if any(marker in subject or marker in body for marker in blocked_markers):
+        return False
+
+    return all(marker in body or marker in subject for marker in final_markers)
+
+
 # ── Amount extraction ─────────────────────────────────────────────────────────
 
 def extract_pdf_text(pdf_bytes):
@@ -180,9 +206,28 @@ def fetch_capcut_amount(body_text):
     return None
 
 
+def find_meta_paid_amount(text):
+    """Extract the final paid amount from a PayPal Meta receipt."""
+    for pat in [
+        r"You paid\s*[^\d$]*\$([\d,]+\.?\d*)\s*USD\s*to Meta Platforms, Inc\.",
+        r"\*Payment\*\s*[^\d$]*\$([\d,]+\.?\d*)\s*USD",
+        r"\*Total\*\s*[^\d$]*\$([\d,]+\.?\d*)\s*USD",
+    ]:
+        m = re.search(pat, text, flags=re.IGNORECASE)
+        if m:
+            return float(m.group(1).replace(",", ""))
+    return None
+
+
 # ── Message processing ────────────────────────────────────────────────────────
 
-def identify_tool(headers):
+def identify_tool(headers, payload):
+    body = get_body_text(payload)
+
+    # Meta gets imported only from final PayPal payment receipts.
+    if is_meta_final_receipt(headers, body):
+        return "Meta (Ads)", "USD", "body"
+
     sender = headers.get("from", "").lower()
     for pattern, tool, currency, source in TOOL_RULES:
         if pattern in sender:
@@ -214,7 +259,8 @@ def process_message(service, msg_id):
     """
     msg     = get_full_message(service, msg_id)
     headers = get_headers(msg)
-    tool, currency, source = identify_tool(headers)
+    body    = get_body_text(msg["payload"])
+    tool, currency, source = identify_tool(headers, msg["payload"])
 
     if not tool:
         log.info(f"  Skipping {msg_id} — unknown sender: {headers.get('from','?')}")
@@ -240,12 +286,13 @@ def process_message(service, msg_id):
                 break
 
     elif source == "web":
-        body = get_body_text(msg["payload"])
         amount_raw = fetch_capcut_amount(body)
 
     elif source == "body":
-        body = get_body_text(msg["payload"])
-        amount_raw = find_amount(body, currency)
+        if tool == "Meta (Ads)":
+            amount_raw = find_meta_paid_amount(body)
+        if amount_raw is None:
+            amount_raw = find_amount(body, currency)
 
     if amount_raw is None:
         log.warning(f"  Could not extract amount for {tool} ({msg_id})")
@@ -257,7 +304,12 @@ def process_message(service, msg_id):
         description = f"{tool} (₪{amount_raw})"
     else:
         amount_usd  = amount_raw
-        description = "ChatGPT Plus" if tool == "OpenAI" else tool
+        if tool == "OpenAI":
+            description = "ChatGPT Plus"
+        elif tool == "Meta (Ads)":
+            description = "Facebook Ads"
+        else:
+            description = tool
 
     return {
         "date":        date.strftime("%Y-%m-%d"),
@@ -271,27 +323,23 @@ def process_message(service, msg_id):
 
 # ── build_report.py insertion ─────────────────────────────────────────────────
 
-def already_imported(date_str, tool):
-    """True if an entry with the same date+tool exists in MANUAL_TRANSACTIONS."""
+def already_imported(txn):
+    """True if the exact transaction line already exists in MANUAL_TRANSACTIONS."""
     code = REPORT_PY.read_text(encoding="utf-8")
-    # Accept partial date match (YYYY-MM) for monthly tools
-    ym   = date_str[:7]
-    full = re.search(rf'"{re.escape(date_str)}".*?"{re.escape(tool)}"', code)
-    approx = re.search(rf'"{ym}-\d{{2}}".*?"{re.escape(tool)}"', code)
-    return bool(full or approx)
+    exact = (f'("{txn["date"]}", "{txn["tool"]}", '
+             f'"{txn["description"]}", {txn["amount_usd"]:.2f})')
+    return exact in code
 
 
 def insert_transaction(txn):
     """Insert new line into MANUAL_TRANSACTIONS sorted by date."""
     code   = REPORT_PY.read_text(encoding="utf-8")
     lines  = code.splitlines(keepends=True)
-    ym     = txn["date"][:7]
     new_ln = (f'    ("{txn["date"]}", "{txn["tool"]}", '
               f'"{txn["description"]}", {txn["amount_usd"]:.2f}),\n')
 
-    in_tx      = False
-    insert_at  = None
-    last_month = None
+    in_tx     = False
+    insert_at = None
 
     for i, line in enumerate(lines):
         if "MANUAL_TRANSACTIONS = [" in line:
@@ -305,14 +353,10 @@ def insert_transaction(txn):
             break
         m = re.match(r'\s*\("(\d{4}-\d{2}-\d{2})"', line)
         if m:
-            entry_ym = m.group(1)[:7]
-            if entry_ym == ym:
-                last_month = i
-            elif entry_ym > ym and insert_at is None:
+            entry_date = m.group(1)
+            if entry_date > txn["date"]:
                 insert_at = i
-
-    if insert_at is None and last_month is not None:
-        insert_at = last_month + 1
+                break
 
     if insert_at is None:
         log.error("Could not find insertion point in MANUAL_TRANSACTIONS")
@@ -385,7 +429,7 @@ def main():
         if txn is None:
             continue
 
-        if already_imported(txn["date"], txn["tool"]):
+        if already_imported(txn):
             log.info(f"  Already exists: {txn['tool']} {txn['date']}")
             continue
 

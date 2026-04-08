@@ -289,7 +289,7 @@ def build_settings(wb):
 
     ws.merge_cells("A1:E1")
     c = ws["A1"]
-    c.value = "  \u05d4\u05d2\u05d3\u05e8\u05d5\u05ea \u05d5\u05e4\u05e8\u05de\u05d8\u05e8\u05d9\u05dd \u2013 AI Tool Expenses"
+    c.value = "  \u05d4\u05d2\u05d3\u05e8\u05d5\u05ea \u05d5\u05e4\u05e8\u05de\u05d8\u05e8\u05d9\u05dd \u2013 AI & Business Tools Expenses"
     c.font = Font(bold=True, color=C_WHITE, size=16, name="Arial")
     c.fill = fill(C_NAVY)
     c.alignment = center()
@@ -766,7 +766,7 @@ def build_annual_report(wb, month_sheet_names):
 
     ws.merge_cells("A1:F1")
     c = ws["A1"]
-    c.value = "\u05d3\u05d5\u05d7 \u05e9\u05e0\u05ea\u05d9 \u2013 AI Tool Expenses"
+    c.value = "\u05d3\u05d5\u05d7 \u05e9\u05e0\u05ea\u05d9 \u2013 AI & Business Tools Expenses"
     c.font = Font(bold=True, color=C_WHITE, size=16, name="Arial")
     c.fill = fill(C_NAVY)
     c.alignment = center()
@@ -906,7 +906,7 @@ def build_annual_report(wb, month_sheet_names):
     # Bar chart
     chart = BarChart()
     chart.type = "col"
-    chart.title = "Monthly AI Tool Expenses (USD)"
+    chart.title = "Monthly AI & Business Tools Expenses (USD)"
     chart.y_axis.title = "USD ($)"
     chart.x_axis.title = "Month"
     chart.style = 10
