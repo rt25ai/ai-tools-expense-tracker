@@ -6,6 +6,7 @@ import { convertUsdToIls, formatMonthLabel } from "@/lib/formatters";
 export type TransactionSource = "manual" | "auto" | "email-imported" | "ai-extracted";
 export type ChargeType = "recurring" | "one-time";
 export type VendorStatus = "healthy" | "watch" | "manual";
+export type BillingStatus = "active" | "stopped" | "one-time";
 
 type RawTransaction = {
   date: string;
@@ -34,16 +35,33 @@ type RawDashboardData = {
   by_tool_ils?: Record<string, number>;
 };
 
-type VendorConfig = {
+type VendorMetadata = {
   category: string;
   source: TransactionSource;
-  recurring: boolean;
-  billingDay?: number;
-  expectedAmount?: number;
-  billingCurrency?: "USD" | "ILS";
   confidence: number;
   owner: string;
   notes: string;
+};
+
+type VendorRule = {
+  subscription?: boolean;
+  billing_status?: BillingStatus;
+  billing_day?: number;
+  expected_amount?: number;
+  billing_currency?: "USD" | "ILS";
+  auto_add_to_sheet?: boolean;
+  start_month?: string;
+  sheet_description?: string;
+};
+
+type VendorConfig = VendorMetadata & {
+  subscription?: boolean;
+  recurring?: boolean;
+  billingStatus?: BillingStatus;
+  billingDay?: number;
+  expectedAmount?: number;
+  billingCurrency?: "USD" | "ILS";
+  autoAddToSheet?: boolean;
 };
 
 export type EnrichedTransaction = RawTransaction & {
@@ -65,6 +83,7 @@ export type VendorSummary = {
   nextExpectedDate: string | null;
   expectedAmount: number | null;
   recurring: boolean;
+  billingStatus: BillingStatus;
   source: TransactionSource;
   category: string;
   confidence: number;
@@ -173,6 +192,17 @@ export type ReportYear = {
   months: ReportMonth[];
   topVendors: { name: string; total: number; chargeCount: number }[];
 };
+
+function readVendorRules(): Record<string, VendorRule> {
+  const filePath = path.join(process.cwd(), "..", "vendor_rules.json");
+  if (!fs.existsSync(filePath)) {
+    return {};
+  }
+
+  return JSON.parse(fs.readFileSync(filePath, "utf-8")) as Record<string, VendorRule>;
+}
+
+const vendorRules = readVendorRules();
 
 const vendorCatalog: Record<string, VendorConfig> = {
   OpenAI: {
@@ -359,6 +389,26 @@ const vendorCatalog: Record<string, VendorConfig> = {
   },
 };
 
+function getVendorConfig(tool: string): VendorConfig {
+  const baseConfig = vendorCatalog[tool] ?? vendorFallback(tool);
+  const rule = vendorRules[tool];
+  const subscription = rule?.subscription ?? baseConfig.subscription ?? baseConfig.recurring ?? false;
+  const billingStatus =
+    rule?.billing_status ??
+    baseConfig.billingStatus ??
+    (subscription ? "active" : "one-time");
+
+  return {
+    ...baseConfig,
+    subscription,
+    billingStatus,
+    billingDay: rule?.billing_day ?? baseConfig.billingDay,
+    expectedAmount: rule?.expected_amount ?? baseConfig.expectedAmount,
+    billingCurrency: rule?.billing_currency ?? baseConfig.billingCurrency,
+    autoAddToSheet: rule?.auto_add_to_sheet ?? baseConfig.autoAddToSheet,
+  };
+}
+
 function cleanText(value: string) {
   return value.replaceAll("ג€“", "–").replaceAll("ג‚×", "₪").replace(/\s+/g, " ").trim();
 }
@@ -408,11 +458,23 @@ function sourceLabel(source: TransactionSource) {
   }
 }
 
+function billingStatusLabel(status: BillingStatus) {
+  switch (status) {
+    case "active":
+      return "מנוי פעיל";
+    case "stopped":
+      return "מנוי שהופסק";
+    default:
+      return "חד-פעמי / משתנה";
+  }
+}
+
 function vendorFallback(tool: string): VendorConfig {
   return {
     category: "ללא סיווג",
     source: "manual",
-    recurring: false,
+    subscription: false,
+    billingStatus: "one-time",
     confidence: 0.55,
     owner: "תפעול פיננסי",
     notes: `עדיין לא הוגדר כלל מפורש עבור הספק ${tool}.`,
@@ -424,7 +486,7 @@ export const getDashboardModel = cache((): DashboardModel => {
   const currentYear = raw.current_month.slice(0, 4);
 
   const transactions = raw.transactions.map((transaction, index) => {
-    const config = vendorCatalog[transaction.tool] ?? vendorFallback(transaction.tool);
+    const config = getVendorConfig(transaction.tool);
     const amountUsd = transaction.amount_usd ?? 0;
     const amountIls = transaction.amount_ils ?? convertUsdToIls(amountUsd, raw.usd_rate);
     return {
@@ -433,7 +495,7 @@ export const getDashboardModel = cache((): DashboardModel => {
       description: sanitizeText(cleanText(transaction.description)),
       monthKey: transaction.date.slice(0, 7),
       source: config.source,
-      type: config.recurring ? "recurring" : "one-time",
+      type: config.subscription ? "recurring" : "one-time",
       category: config.category,
       confidence: config.confidence,
       amountUsd,
@@ -448,8 +510,9 @@ export const getDashboardModel = cache((): DashboardModel => {
     .filter((transaction) => transaction.type === "recurring")
     .reduce((sum, transaction) => sum + transaction.amountIls, 0);
   const oneTimeTotalIls = Math.max(raw.grand_total_ils - recurringTotalIls, 0);
-  const recurringBaselineIls = Object.values(vendorCatalog).reduce((sum, vendor) => {
-    if (!vendor.recurring || !vendor.expectedAmount) return sum;
+  const recurringBaselineIls = [...new Set([...Object.keys(vendorCatalog), ...Object.keys(vendorRules)])].reduce((sum, tool) => {
+    const vendor = getVendorConfig(tool);
+    if (!vendor.subscription || vendor.billingStatus != "active" || !vendor.expectedAmount) return sum;
     return sum + (vendor.billingCurrency === "ILS" ? vendor.expectedAmount : convertUsdToIls(vendor.expectedAmount, raw.usd_rate));
   }, 0);
 
@@ -458,11 +521,11 @@ export const getDashboardModel = cache((): DashboardModel => {
   );
 
   const unexpectedCharges = currentMonthTransactions.filter((transaction) => {
-    const vendor = vendorCatalog[transaction.tool] ?? vendorFallback(transaction.tool);
+    const vendor = getVendorConfig(transaction.tool);
     return (
       transaction.type === "one-time" ||
       transaction.source === "manual" ||
-      (vendor.expectedAmount
+      (vendor.billingStatus === "active" && vendor.expectedAmount
         ? vendor.billingCurrency === "ILS"
           ? transaction.amountIls > vendor.expectedAmount * 1.35
           : transaction.amountUsd > vendor.expectedAmount * 1.35
@@ -492,7 +555,7 @@ export const getDashboardModel = cache((): DashboardModel => {
   const vendorKeys = Object.keys(raw.by_tool_ils ?? raw.by_tool);
   const vendors = vendorKeys
     .map((name) => {
-      const config = vendorCatalog[name] ?? vendorFallback(name);
+      const config = getVendorConfig(name);
       const vendorTransactions = transactions.filter((transaction) => transaction.tool === name);
       const totalSpend = vendorTransactions.reduce((sum, transaction) => sum + transaction.amountIls, 0);
       return {
@@ -503,15 +566,16 @@ export const getDashboardModel = cache((): DashboardModel => {
           .reduce((sum, transaction) => sum + transaction.amountIls, 0),
         lastChargeDate: vendorTransactions[0]?.date ?? null,
         nextExpectedDate:
-          config.recurring && config.billingDay
+          config.subscription && config.billingStatus === "active" && config.billingDay
             ? nextExpectedDate(raw.current_month, config.billingDay)
             : null,
-        expectedAmount: config.expectedAmount
+        expectedAmount: config.billingStatus === "active" && config.expectedAmount
           ? config.billingCurrency === "ILS"
             ? config.expectedAmount
             : convertUsdToIls(config.expectedAmount, raw.usd_rate)
           : null,
-        recurring: config.recurring,
+        recurring: config.subscription ?? false,
+        billingStatus: config.billingStatus ?? "one-time",
         source: config.source,
         category: config.category,
         confidence: config.confidence,
@@ -664,6 +728,10 @@ export const getDashboardModel = cache((): DashboardModel => {
 
 export function getSourceLabel(source: TransactionSource) {
   return sourceLabel(source);
+}
+
+export function getBillingStatusLabel(status: BillingStatus) {
+  return billingStatusLabel(status);
 }
 
 export const getMonthReports = cache((): ReportMonth[] => {

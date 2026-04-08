@@ -22,7 +22,7 @@ import requests
 from exchange_rate import FALLBACK_USD_ILS_RATE, fetch_usd_to_ils_rate
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
-BASE_DIR       = Path(r"C:\Users\roita\מעקב הוצאות כלים")
+BASE_DIR       = Path(__file__).resolve().parent
 REPORT_PY      = BASE_DIR / "build_report.py"
 INVOICES_DIR   = BASE_DIR / "invoices"
 PROCESSED_JSON = BASE_DIR / "processed_messages.json"
@@ -97,20 +97,64 @@ def get_service():
 
 
 def search_messages(service, days=90):
-    """Return all message IDs from the חשבוניות label in the last N days."""
-    query = f"newer_than:{days}d"
-    # Try label first, fall back to broad search
-    for q in [f"label:חשבוניות {query}", query]:
-        try:
-            resp = service.users().messages().list(
-                userId="me", q=q, maxResults=100
-            ).execute()
-            msgs = resp.get("messages", [])
-            if msgs:
-                return msgs
-        except Exception as e:
-            log.warning(f"Search query '{q}' failed: {e}")
-    return []
+    """Return a deduplicated message list from the invoices label, inbox, and recent mail."""
+    queries = [
+        f"label:חשבוניות newer_than:{days}d",
+        f"in:inbox newer_than:{days}d",
+        f"newer_than:{days}d",
+    ]
+    messages_by_id = {}
+
+    for q in queries:
+        page_token = None
+        while True:
+            try:
+                resp = service.users().messages().list(
+                    userId="me",
+                    q=q,
+                    maxResults=100,
+                    pageToken=page_token,
+                ).execute()
+            except Exception as e:
+                log.warning(f"Search query '{q}' failed: {e}")
+                break
+
+            for msg in resp.get("messages", []):
+                messages_by_id[msg["id"]] = msg
+
+            page_token = resp.get("nextPageToken")
+            if not page_token:
+                break
+
+    return list(messages_by_id.values())
+
+
+def load_processed_state():
+    if not PROCESSED_JSON.exists():
+        return {"message_ids": set(), "invoice_keys": set()}
+
+    payload = json.loads(PROCESSED_JSON.read_text(encoding="utf-8"))
+    if isinstance(payload, list):
+        return {"message_ids": set(payload), "invoice_keys": set()}
+
+    return {
+        "message_ids": set(payload.get("message_ids", [])),
+        "invoice_keys": set(payload.get("invoice_keys", [])),
+    }
+
+
+def save_processed_state(message_ids, invoice_keys):
+    PROCESSED_JSON.write_text(
+        json.dumps(
+            {
+                "message_ids": sorted(message_ids),
+                "invoice_keys": sorted(invoice_keys),
+            },
+            indent=2,
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
 
 
 def get_full_message(service, msg_id):
@@ -262,6 +306,22 @@ def parse_date(headers):
     return datetime.date.today()
 
 
+def build_invoice_key(headers, txn):
+    message_header_id = headers.get("message-id", "").strip().lower()
+    if message_header_id:
+        return f"msgid:{message_header_id}"
+
+    return "|".join(
+        [
+            txn["tool"],
+            txn["date"],
+            txn["currency"],
+            f'{txn["original_amount"]:.2f}',
+            txn["description"],
+        ]
+    )
+
+
 def process_message(service, msg_id):
     """
     Returns dict with {date, tool, description, amount_usd, pdf_bytes, pdf_name}
@@ -323,7 +383,7 @@ def process_message(service, msg_id):
         else:
             description = tool
 
-    return {
+    txn = {
         "date":        date.strftime("%Y-%m-%d"),
         "tool":        tool,
         "description": description,
@@ -333,6 +393,8 @@ def process_message(service, msg_id):
         "pdf_bytes":   pdf_bytes,
         "pdf_name":    pdf_name,
     }
+    txn["invoice_key"] = build_invoice_key(headers, txn)
+    return txn
 
 
 # ── build_report.py insertion ─────────────────────────────────────────────────
@@ -424,9 +486,10 @@ def main():
     log.info("auto_invoice scan started")
     INVOICES_DIR.mkdir(exist_ok=True)
 
-    service   = get_service()
-    processed = set(json.loads(PROCESSED_JSON.read_text(encoding="utf-8"))
-                    if PROCESSED_JSON.exists() else [])
+    service = get_service()
+    processed_state = load_processed_state()
+    processed_ids = processed_state["message_ids"]
+    processed_invoice_keys = processed_state["invoice_keys"]
 
     messages = search_messages(service, days=90)
     log.info(f"Found {len(messages)} messages (last 90 days)")
@@ -435,7 +498,7 @@ def main():
 
     for m in messages:
         mid = m["id"]
-        if mid in processed:
+        if mid in processed_ids:
             continue
 
         log.info(f"Processing {mid}")
@@ -443,16 +506,18 @@ def main():
             txn = process_message(service, mid)
         except Exception as e:
             log.error(f"  Error on {mid}: {e}")
-            processed.add(mid)
             continue
-
-        processed.add(mid)
 
         if txn is None:
+            processed_ids.add(mid)
             continue
 
-        if already_imported(txn):
+        invoice_key = txn.get("invoice_key")
+        if invoice_key in processed_invoice_keys or already_imported(txn):
             log.info(f"  Already exists: {txn['tool']} {txn['date']}")
+            processed_ids.add(mid)
+            if invoice_key:
+                processed_invoice_keys.add(invoice_key)
             continue
 
         # Save PDF
@@ -462,11 +527,11 @@ def main():
 
         if insert_transaction(txn):
             new_txns.append(txn)
+            processed_ids.add(mid)
+            if invoice_key:
+                processed_invoice_keys.add(invoice_key)
 
-    # Save processed list
-    PROCESSED_JSON.write_text(
-        json.dumps(sorted(processed), indent=2), encoding="utf-8"
-    )
+    save_processed_state(processed_ids, processed_invoice_keys)
 
     if new_txns:
         log.info(f"Added {len(new_txns)} new transactions → rebuilding")

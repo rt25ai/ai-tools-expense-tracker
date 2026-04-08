@@ -45,7 +45,7 @@ function DetailShell({
 export function OverviewKpiGrid({ model }: { model: DashboardModel }) {
   const [activeKpi, setActiveKpi] = useState<KpiKey>("currentMonth");
   const currentMonthTransactions = model.transactions.filter((transaction) => transaction.monthKey === model.raw.current_month);
-  const recurringVendors = model.vendors.filter((vendor) => vendor.recurring);
+  const recurringVendors = model.vendors.filter((vendor) => vendor.billingStatus === "active");
   const currentYear = model.raw.current_month.slice(0, 4);
   const currentMonthLabel = formatMonthLabel(model.raw.current_month);
 

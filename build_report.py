@@ -4,15 +4,18 @@
 AI Tools Expense Report Builder
 Generates professional Excel workbook with monthly and annual expense tracking.
 """
+import json
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.chart import BarChart, Reference
 from openpyxl.worksheet.hyperlink import Hyperlink
 import datetime, os, re
+from pathlib import Path
 from exchange_rate import fetch_usd_to_ils_rate
 
 OUTPUT_PATH = r"C:\Users\roita\מעקב הוצאות כלים\AI_Tools_Expenses_2025_2026.xlsx"
+VENDOR_RULES_PATH = Path(__file__).with_name("vendor_rules.json")
 
 # ── Color palette ──────────────────────────────────────────────────────────────
 C_NAVY     = "1F3864"
@@ -171,16 +174,42 @@ EN_MONTH_NAMES = {
     12: "December",
 }
 
-RECURRING_RULES = [
-    {
-        "tool": "OpenAI",
-        "description": "ChatGPT Plus",
-        "amount_usd": 20.00,
-        "day": 16,
-        "start_month": "2025-07",
-        "notes": "Automatic recurring charge every month on the 16th.",
-    },
-]
+def load_vendor_rules():
+    if not VENDOR_RULES_PATH.exists():
+        return {}
+    return json.loads(VENDOR_RULES_PATH.read_text(encoding="utf-8"))
+
+
+VENDOR_RULES = load_vendor_rules()
+
+
+def build_recurring_rules():
+    rules = []
+    for tool, config in VENDOR_RULES.items():
+        if not config.get("subscription"):
+            continue
+        if config.get("billing_status") != "active":
+            continue
+        if not config.get("auto_add_to_sheet"):
+            continue
+        if not config.get("expected_amount") or not config.get("billing_day"):
+            continue
+
+        rules.append(
+            {
+                "tool": tool,
+                "description": config.get("sheet_description") or tool,
+                "amount": float(config["expected_amount"]),
+                "currency": config.get("billing_currency", "USD"),
+                "day": int(config["billing_day"]),
+                "start_month": config.get("start_month", "2025-07"),
+                "notes": f"Automatic recurring charge every month on the {config['billing_day']}.",
+            }
+        )
+    return rules
+
+
+RECURRING_RULES = build_recurring_rules()
 
 
 def parse_ils_amount(description):
@@ -258,14 +287,25 @@ def build_recurring_transactions(months):
         for month_key in month_keys:
             if month_key < rule["start_month"]:
                 continue
-            recurring.append(
-                (
-                    f"{month_key}-{rule['day']:02d}",
-                    rule["tool"],
-                    rule["description"],
-                    rule["amount_usd"],
+            if rule["currency"] == "ILS":
+                recurring.append(
+                    (
+                        f"{month_key}-{rule['day']:02d}",
+                        rule["tool"],
+                        rule["description"],
+                        rule["amount"],
+                        "ILS",
+                    )
                 )
-            )
+            else:
+                recurring.append(
+                    (
+                        f"{month_key}-{rule['day']:02d}",
+                        rule["tool"],
+                        rule["description"],
+                        rule["amount"],
+                    )
+                )
     return recurring
 
 
