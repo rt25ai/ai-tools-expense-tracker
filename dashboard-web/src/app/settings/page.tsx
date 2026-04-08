@@ -8,9 +8,9 @@ export default function SettingsPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Settings"
-        title="Project settings"
-        description="A proper settings surface with fixed rows, two-column label/control layout, and one clear action per section. This is the shell we can extend once we wire in more automation."
+        eyebrow="הגדרות"
+        title="הגדרות פרויקט"
+        description="משטח הגדרות תקני עם שורות קבועות, פריסת תווית/שליטה בשתי עמודות ופעולה אחת ברורה לכל סעיף. זוהי הקליפה שנוכל להרחיב ברגע שנחבר אוטומציות נוספות."
       />
       <SettingsPageClient initialSettings={model.settings} />
     </>

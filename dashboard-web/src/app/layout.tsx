@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Heebo, Geist_Mono } from "next/font/google";
 import { AppShell } from "@/components/app-shell";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { withBasePath } from "@/lib/site";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const heebo = Heebo({
+  variable: "--font-heebo",
+  subsets: ["hebrew", "latin"],
 });
 
 const geistMono = Geist_Mono({
@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "RT-AI Operations Console",
-  description: "AI spend dashboard rebuilt as a professional settings and operations console.",
+  title: "מסוף תפעולי RT-AI",
+  description: "דשבורד הוצאות AI שנבנה מחדש כמסוף הגדרות ותפעול מקצועי.",
   manifest: withBasePath("/manifest.json"),
   icons: {
     icon: withBasePath("/favicon.ico"),
@@ -31,8 +31,9 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} dark h-full antialiased`}
+      lang="he"
+      dir="rtl"
+      className={`${heebo.variable} ${geistMono.variable} dark h-full antialiased`}
     >
       <body className="min-h-full bg-background text-foreground">
         <TooltipProvider>
