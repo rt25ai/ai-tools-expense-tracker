@@ -1,13 +1,14 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { ArrowUpLeft } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
+import { VendorChargeBreakdown } from "@/components/vendor-charge-breakdown";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getReportYears, getYearReport } from "@/lib/dashboard-data";
-import { formatCurrencyIls } from "@/lib/formatters";
+import { formatCurrencyIls, formatMonthLabel } from "@/lib/formatters";
 import { monthReportHref } from "@/lib/report-links";
-import { notFound } from "next/navigation";
 
 export const dynamicParams = false;
 
@@ -26,6 +27,23 @@ export default async function YearReportPage({
   if (!report) {
     notFound();
   }
+
+  const allTransactions = report.months.flatMap((month) => month.transactions);
+  const vendorChargeBreakdown = report.topVendors.map((vendor) => ({
+    ...vendor,
+    charges: allTransactions
+      .filter((transaction) => transaction.tool === vendor.name)
+      .sort((left, right) => right.date.localeCompare(left.date))
+      .map((transaction) => ({
+        id: transaction.id,
+        date: transaction.date,
+        amountIls: transaction.amountIls,
+        description: transaction.description,
+        monthKey: transaction.monthKey,
+        monthLabel: formatMonthLabel(transaction.monthKey),
+        monthHref: monthReportHref(transaction.monthKey),
+      })),
+  }));
 
   return (
     <>
@@ -52,7 +70,9 @@ export default async function YearReportPage({
           <p className="text-xs tracking-[0.18em] text-zinc-500">יעד מצטבר</p>
           <p className="mt-4 text-3xl font-semibold text-white">{formatCurrencyIls(report.budget)}</p>
           <p className={`mt-2 text-sm ${report.variance > 0 ? "text-amber-200" : "text-zinc-400"}`}>
-            {report.variance > 0 ? `חריגה ${formatCurrencyIls(Math.abs(report.variance))}` : `מרווח ${formatCurrencyIls(Math.abs(report.variance))}`}
+            {report.variance > 0
+              ? `חריגה ${formatCurrencyIls(Math.abs(report.variance))}`
+              : `מרווח ${formatCurrencyIls(Math.abs(report.variance))}`}
           </p>
         </Card>
         <Card className="border-white/8 bg-white/[0.03] p-5 shadow-none">
@@ -104,7 +124,9 @@ export default async function YearReportPage({
                         : "border-cyan-400/15 bg-cyan-400/10 text-cyan-200"
                     }
                   >
-                    {month.variance > 0 ? `חריגה ${formatCurrencyIls(Math.abs(month.variance))}` : `מרווח ${formatCurrencyIls(Math.abs(month.variance))}`}
+                    {month.variance > 0
+                      ? `חריגה ${formatCurrencyIls(Math.abs(month.variance))}`
+                      : `מרווח ${formatCurrencyIls(Math.abs(month.variance))}`}
                   </Badge>
                 </div>
               </Link>
@@ -119,17 +141,7 @@ export default async function YearReportPage({
               <h2 className="mt-2 text-2xl font-semibold text-white">מי הוביל את השנה</h2>
             </div>
           </div>
-          <div className="mt-6 space-y-3">
-            {report.topVendors.map((vendor) => (
-              <div key={vendor.name} className="flex items-center justify-between gap-3 rounded-[22px] border border-white/8 bg-black/20 p-4">
-                <div>
-                  <p className="font-medium text-white">{vendor.name}</p>
-                  <p className="mt-1 text-sm text-zinc-500">{vendor.chargeCount} חיובים</p>
-                </div>
-                <p className="text-lg font-semibold text-cyan-200">{formatCurrencyIls(vendor.total)}</p>
-              </div>
-            ))}
-          </div>
+          <VendorChargeBreakdown vendors={vendorChargeBreakdown} />
         </Card>
       </section>
     </>
