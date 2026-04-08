@@ -134,7 +134,7 @@ class ManualReceiptHandler(BaseHTTPRequestHandler):
 
         try:
             pdf_bytes = decode_data_url(file_data)
-            suggestions = extract_pdf_suggestions(pdf_bytes)
+            suggestions = extract_pdf_suggestions(pdf_bytes, payload.get("fileName"))
         except Exception as error:
             self.send_json(422, {"ok": False, "error": f"Could not read the PDF: {error}"})
             return

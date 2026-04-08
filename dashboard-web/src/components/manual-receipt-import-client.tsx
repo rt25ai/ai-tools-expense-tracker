@@ -31,6 +31,8 @@ type ParseResult = {
   suggestedDate: string | null;
   suggestedCurrency: "USD" | "ILS" | null;
   suggestedAmount: number | null;
+  suggestedTool: string | null;
+  suggestedDescription: string | null;
   textPreview: string;
 };
 
@@ -138,7 +140,9 @@ export function ManualReceiptImportClient({
       setParseResult(payload);
       setForm((current) => ({
         ...current,
+        tool: current.tool || payload.suggestedTool || current.tool,
         date: current.date || payload.suggestedDate || current.date,
+        description: current.description || payload.suggestedDescription || current.description,
         currency: payload.suggestedCurrency || current.currency,
         originalAmount:
           current.originalAmount || payload.suggestedAmount === null
@@ -419,6 +423,8 @@ export function ManualReceiptImportClient({
                 <Card className="border-white/8 bg-black/20 p-5 shadow-none">
                   <p className="text-sm font-medium text-white">מה זוהה מתוך הקובץ</p>
                   <div className="mt-4 space-y-3 text-sm text-zinc-400">
+                    <p>ספק: <span className="text-zinc-100">{parseResult.suggestedTool ?? "לא זוהה"}</span></p>
+                    <p>שירות: <span className="text-zinc-100">{parseResult.suggestedDescription ?? "לא זוהה"}</span></p>
                     <p>תאריך: <span className="text-zinc-100">{parseResult.suggestedDate ?? "לא זוהה"}</span></p>
                     <p>מטבע: <span className="text-zinc-100">{parseResult.suggestedCurrency ?? "לא זוהה"}</span></p>
                     <p>סכום: <span className="text-zinc-100">{parseResult.suggestedAmount ?? "לא זוהה"}</span></p>

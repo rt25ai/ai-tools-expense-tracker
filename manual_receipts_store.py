@@ -30,6 +30,96 @@ DATE_PATTERNS = (
     "%m/%d/%Y",
 )
 
+MONTH_NAME_TO_NUMBER = {
+    "january": 1,
+    "jan": 1,
+    "february": 2,
+    "feb": 2,
+    "march": 3,
+    "mar": 3,
+    "april": 4,
+    "apr": 4,
+    "may": 5,
+    "june": 6,
+    "jun": 6,
+    "july": 7,
+    "jul": 7,
+    "august": 8,
+    "aug": 8,
+    "september": 9,
+    "sep": 9,
+    "sept": 9,
+    "october": 10,
+    "oct": 10,
+    "november": 11,
+    "nov": 11,
+    "december": 12,
+    "dec": 12,
+    "ינואר": 1,
+    "פברואר": 2,
+    "מרץ": 3,
+    "אפריל": 4,
+    "אפר": 4,
+    "מאי": 5,
+    "יוני": 6,
+    "יולי": 7,
+    "אוגוסט": 8,
+    "אוג": 8,
+    "ספטמבר": 9,
+    "ספט": 9,
+    "אוקטובר": 10,
+    "אוק": 10,
+    "נובמבר": 11,
+    "נוב": 11,
+    "דצמבר": 12,
+    "דצמ": 12,
+}
+
+MONTH_PATTERN = "|".join(sorted((re.escape(name) for name in MONTH_NAME_TO_NUMBER), key=len, reverse=True))
+
+TOOL_ALIASES = {
+    "openai": "OpenAI",
+    "chatgpt": "OpenAI",
+    "anthropic": "Anthropic",
+    "claude": "Anthropic",
+    "google workspace": "Google Workspace",
+    "workspace": "Google Workspace",
+    "capcut": "CapCut",
+    "eleven labs": "Eleven Labs",
+    "elevenlabs": "Eleven Labs",
+    "make": "Make",
+    "manychat": "Manychat",
+    "timeless": "Timeless",
+    "lovable": "Lovable",
+    "runway": "Runway ML",
+    "replicate": "Replicate",
+    "recraft": "Recraft",
+    "ideogram": "Ideogram AI",
+    "genspark": "Genspark",
+    "meta": "Meta (Ads)",
+    "facebook ads": "Meta (Ads)",
+    "ionos": "IONOS",
+    "manus": "Manus AI",
+    "higgsfield": "Higgsfield",
+    "astria": "Astria",
+    "hedra": "Hedra",
+    "dzine.ai": "Dzine",
+    "dzine": "Dzine",
+}
+
+BLOCKED_DESCRIPTION_TOKENS = (
+    "subtotal",
+    "total",
+    "amount paid",
+    "payment history",
+    "receipt number",
+    "payment method",
+    "description qty unit price amount",
+    "charged ",
+    "using 1 usd",
+    "page ",
+)
+
 
 def ensure_manual_receipts_file():
     if not MANUAL_RECEIPTS_PATH.exists():
@@ -50,18 +140,20 @@ def save_manual_receipts(entries):
 
 
 def normalize_tool_name(tool: str) -> str:
-    value = re.sub(r"\s+", " ", tool.strip())
-    return value
+    return re.sub(r"\s+", " ", tool.strip())
 
 
 def normalize_description(description: str) -> str:
-    value = re.sub(r"\s+", " ", description.strip())
-    return value
+    return re.sub(r"\s+", " ", description.strip())
 
 
 def slugify(value: str) -> str:
     slug = re.sub(r"[^a-zA-Z0-9]+", "-", value.strip().lower()).strip("-")
     return slug or "receipt"
+
+
+def normalize_text_for_matching(text: str) -> str:
+    return re.sub(r"\s+", " ", text).strip()
 
 
 def receipt_identity(entry: dict):
@@ -118,6 +210,21 @@ def parse_date_candidate(value: str) -> str | None:
     return None
 
 
+def clean_month_token(value: str) -> str:
+    return re.sub(r"[^A-Za-zא-ת]", "", value).strip().lower()
+
+
+def build_iso_date(day: str, month_token: str, year: str) -> str | None:
+    month_number = MONTH_NAME_TO_NUMBER.get(clean_month_token(month_token))
+    if not month_number:
+        return None
+
+    try:
+        return dt.date(int(year), month_number, int(day)).isoformat()
+    except ValueError:
+        return None
+
+
 def extract_date_from_text(text: str) -> str | None:
     for match in re.finditer(r"\b\d{4}-\d{2}-\d{2}\b", text):
         parsed = parse_date_candidate(match.group(0))
@@ -126,6 +233,20 @@ def extract_date_from_text(text: str) -> str | None:
 
     for match in re.finditer(r"\b\d{1,2}[./-]\d{1,2}[./-]\d{4}\b", text):
         parsed = parse_date_candidate(match.group(0))
+        if parsed:
+            return parsed
+
+    month_patterns = [
+        rf"\b(?P<day>\d{{1,2}})\s+(?P<month>{MONTH_PATTERN})\s+(?P<year>\d{{4}})\b",
+        rf"\b(?P<month>{MONTH_PATTERN})\s+(?P<day>\d{{1,2}})\s*,?\s*(?P<year>\d{{4}})\b",
+        rf"\b(?P<day>\d{{1,2}})\s+(?P<year>\d{{4}})\s+(?P<month>{MONTH_PATTERN})\b",
+    ]
+
+    for pattern in month_patterns:
+        match = re.search(pattern, text, re.IGNORECASE)
+        if not match:
+            continue
+        parsed = build_iso_date(match.group("day"), match.group("month"), match.group("year"))
         if parsed:
             return parsed
 
@@ -145,33 +266,72 @@ def extract_amount_from_text(text: str):
     ils_candidates = list(
         _amount_candidates(r"(?:₪|ILS|NIS)\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)", text)
     )
+    ils_candidates.extend(
+        _amount_candidates(r"([0-9][0-9,]*(?:\.[0-9]{1,2})?)\s*(?:₪|ILS|NIS)", text)
+    )
+
     usd_candidates = list(
         _amount_candidates(r"(?:USD|\$)\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)", text)
     )
-
-    if ils_candidates:
-        return {
-            "currency": "ILS",
-            "amount": round(max(ils_candidates), 2),
-        }
+    usd_candidates.extend(
+        _amount_candidates(r"([0-9][0-9,]*(?:\.[0-9]{1,2})?)\s*(?:USD|\$)", text)
+    )
 
     if usd_candidates:
-        return {
-            "currency": "USD",
-            "amount": round(max(usd_candidates), 2),
-        }
+        return {"currency": "USD", "amount": round(max(usd_candidates), 2)}
 
-    generic_candidates = list(_amount_candidates(r"\b([0-9][0-9,]*(?:\.[0-9]{1,2})?)\b", text))
+    if ils_candidates:
+        return {"currency": "ILS", "amount": round(max(ils_candidates), 2)}
+
+    generic_candidates = list(_amount_candidates(r"\b([0-9][0-9,]*\.[0-9]{2})\b", text))
     if generic_candidates:
-        return {
-            "currency": None,
-            "amount": round(max(generic_candidates), 2),
-        }
+        return {"currency": None, "amount": round(max(generic_candidates), 2)}
 
-    return {
-        "currency": None,
-        "amount": None,
-    }
+    return {"currency": None, "amount": None}
+
+
+def extract_tool_from_text(text: str, file_name: str | None = None) -> str | None:
+    haystack = f"{text}\n{file_name or ''}".casefold()
+    for alias, tool_name in sorted(TOOL_ALIASES.items(), key=lambda item: len(item[0]), reverse=True):
+        if alias.casefold() in haystack:
+            return tool_name
+    return None
+
+
+def clean_description_candidate(value: str) -> str:
+    candidate = normalize_text_for_matching(value)
+    candidate = re.sub(
+        r"(?:\s+(?:[0-9]+\.[0-9]{1,2}\s*(?:USD|\$|₪|ILS|NIS)?|[0-9]+\s*(?:USD|\$|₪|ILS|NIS)))+\s*$",
+        "",
+        candidate,
+        flags=re.IGNORECASE,
+    )
+    candidate = re.sub(r"\s+(?:Qty|Unit price|Amount)\b.*$", "", candidate, flags=re.IGNORECASE)
+    return candidate.strip(" -:")
+
+
+def extract_description_from_text(text: str, tool: str | None = None) -> str | None:
+    lines = [normalize_text_for_matching(line) for line in text.splitlines()]
+
+    for line in lines:
+        if not line or len(line) < 4:
+            continue
+
+        lowered = line.casefold()
+        if any(token in lowered for token in BLOCKED_DESCRIPTION_TOKENS):
+            continue
+        if tool and tool.casefold() not in lowered:
+            continue
+        if not re.search(r"[A-Za-zא-ת]", line):
+            continue
+        if not re.search(r"\d+(?:\.\d{1,2})?\s*(?:USD|\$|₪|ILS|NIS)", line, re.IGNORECASE):
+            continue
+
+        candidate = clean_description_candidate(line)
+        if candidate:
+            return candidate
+
+    return tool
 
 
 def extract_pdf_text(pdf_bytes: bytes):
@@ -181,13 +341,17 @@ def extract_pdf_text(pdf_bytes: bytes):
         return "\n".join(page.extract_text() or "" for page in pdf.pages).strip()
 
 
-def extract_pdf_suggestions(pdf_bytes: bytes):
+def extract_pdf_suggestions(pdf_bytes: bytes, file_name: str | None = None):
     text = extract_pdf_text(pdf_bytes)
     amount = extract_amount_from_text(text)
+    tool = extract_tool_from_text(text, file_name)
+    description = extract_description_from_text(text, tool)
     return {
         "suggestedDate": extract_date_from_text(text),
         "suggestedCurrency": amount["currency"],
         "suggestedAmount": amount["amount"],
+        "suggestedTool": tool,
+        "suggestedDescription": description,
         "textPreview": text[:2400],
     }
 
