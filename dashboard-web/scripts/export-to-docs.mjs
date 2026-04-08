@@ -1,4 +1,4 @@
-import { cp, mkdir, readdir, rm } from "node:fs/promises";
+import { cp, mkdir, readdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -33,5 +33,6 @@ for (const entry of await readdir(docsDir)) {
 
 await cp(outDir, docsDir, { recursive: true, force: true });
 await removeTxtFiles(docsDir);
+await writeFile(path.join(docsDir, ".nojekyll"), "");
 
 console.log("Exported static dashboard to docs/.");
