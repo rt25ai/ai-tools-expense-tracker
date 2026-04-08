@@ -7,17 +7,23 @@ from pathlib import Path
 from collections import defaultdict
 import datetime
 
-txns = [{"date": t[0], "tool": t[1], "description": t[2], "amount": t[3]} for t in TRANSACTIONS]
+today = datetime.date.today()
+dashboard_transactions = [
+    t for t in TRANSACTIONS
+    if datetime.date.fromisoformat(t[0]) <= today
+]
+
+txns = [{"date": t[0], "tool": t[1], "description": t[2], "amount": t[3]} for t in dashboard_transactions]
 monthly = defaultdict(float)
 by_tool = defaultdict(float)
-for t in TRANSACTIONS:
+for t in dashboard_transactions:
     ym = t[0][:7]
     monthly[ym] = round(monthly[ym] + t[3], 2)
     by_tool[t[1]] = round(by_tool[t[1]] + t[3], 2)
 
 data = {
-    "generated": datetime.date.today().isoformat(),
-    "grand_total": round(sum(t[3] for t in TRANSACTIONS), 2),
+    "generated": today.isoformat(),
+    "grand_total": round(sum(t[3] for t in dashboard_transactions), 2),
     "transactions": sorted(txns, key=lambda x: x["date"], reverse=True),
     "monthly": dict(sorted(monthly.items())),
     "by_tool": dict(sorted(by_tool.items(), key=lambda x: -x[1]))

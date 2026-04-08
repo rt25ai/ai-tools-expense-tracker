@@ -963,21 +963,27 @@ def generate_dashboard_json():
     docs_dir = Path(r"C:\Users\roita\מעקב הוצאות כלים\docs")
     docs_dir.mkdir(exist_ok=True)
 
-    txns = [{"date": t[0], "tool": t[1], "description": t[2], "amount": t[3]} for t in TRANSACTIONS]
+    today = dt.date.today()
+    dashboard_transactions = [
+        t for t in TRANSACTIONS
+        if dt.date.fromisoformat(t[0]) <= today
+    ]
+
+    txns = [{"date": t[0], "tool": t[1], "description": t[2], "amount": t[3]} for t in dashboard_transactions]
     monthly = defaultdict(float)
     by_tool = defaultdict(float)
-    for t in TRANSACTIONS:
+    for t in dashboard_transactions:
         ym = t[0][:7]
         monthly[ym] = round(monthly[ym] + t[3], 2)
         by_tool[t[1]] = round(by_tool[t[1]] + t[3], 2)
 
     USD_RATE = 3.65   # USD → ILS
-    grand_usd = round(sum(t[3] for t in TRANSACTIONS), 2)
-    cur_month  = dt.date.today().strftime("%Y-%m")
+    grand_usd = round(sum(t[3] for t in dashboard_transactions), 2)
+    cur_month  = today.strftime("%Y-%m")
     cur_usd    = round(monthly.get(cur_month, 0.0), 2)
 
     data = {
-        "generated":              dt.date.today().isoformat(),
+        "generated":              today.isoformat(),
         "usd_rate":               USD_RATE,
         "grand_total":            grand_usd,
         "grand_total_ils":        round(grand_usd  * USD_RATE, 2),
