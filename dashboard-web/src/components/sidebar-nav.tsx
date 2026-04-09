@@ -41,7 +41,7 @@ export function SidebarNav() {
           <Image src={withBasePath("/logo.png")} alt="RT-AI" width={34} height={34} className="rounded-lg" unoptimized />
         </div>
         <div>
-          <p className="text-sm font-semibold text-zinc-100">מעקב הוצאות כלי AI</p>
+          <p className="text-sm font-semibold text-zinc-100">מעקב הוצאות AI וכלים עסקיים</p>
           <p className="text-xs text-zinc-500">הגדרות פרויקט ותפעול</p>
         </div>
       </div>

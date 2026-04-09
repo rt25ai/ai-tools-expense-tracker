@@ -12,7 +12,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <div className="mx-auto flex w-full max-w-[1120px] items-center justify-between gap-3">
               <div>
                 <p className="text-[11px] font-medium tracking-[0.18em] text-cyan-300/70">מרכז התפעול של RT-AI</p>
-                <p className="text-sm text-zinc-400">הוצאות, ספקים, ייבוא חשבוניות, בדיקות ודוחות במקום אחד.</p>
+                <p className="text-sm text-zinc-400">הוצאות AI וכלים עסקיים, ספקים, ייבוא חשבוניות, בדיקות ודוחות במקום אחד.</p>
               </div>
               <div className="rounded-full border border-cyan-400/15 bg-cyan-400/8 px-3 py-1 text-xs text-cyan-200">
                 פריסה חיה

@@ -5,6 +5,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowUpLeft, CalendarClock, CircleAlert, RefreshCw } from "lucide-react";
 import { KpiCard } from "@/components/kpi-card";
+import { VendorChargeBreakdown } from "@/components/vendor-charge-breakdown";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -13,6 +14,49 @@ import { formatCurrencyIls, formatDateLabel, formatMonthLabel } from "@/lib/form
 import { monthReportHref, yearReportHref } from "@/lib/report-links";
 
 type KpiKey = "totalYtd" | "currentMonth" | "recurringBaseline" | "needsReview";
+
+function groupTransactionsByVendor(transactions: DashboardModel["transactions"]) {
+  const vendors = new Map<
+    string,
+    {
+      name: string;
+      total: number;
+      chargeCount: number;
+      charges: {
+        id: string;
+        date: string;
+        amountIls: number;
+        description: string;
+      }[];
+    }
+  >();
+
+  for (const transaction of transactions) {
+    const existingVendor = vendors.get(transaction.tool);
+    const charge = {
+      id: transaction.id,
+      date: transaction.date,
+      amountIls: transaction.amountIls,
+      description: transaction.description,
+    };
+
+    if (existingVendor) {
+      existingVendor.total += transaction.amountIls;
+      existingVendor.chargeCount += 1;
+      existingVendor.charges.push(charge);
+      continue;
+    }
+
+    vendors.set(transaction.tool, {
+      name: transaction.tool,
+      total: transaction.amountIls,
+      chargeCount: 1,
+      charges: [charge],
+    });
+  }
+
+  return [...vendors.values()];
+}
 
 function DetailShell({
   eyebrow,
@@ -45,6 +89,7 @@ function DetailShell({
 export function OverviewKpiGrid({ model }: { model: DashboardModel }) {
   const [activeKpi, setActiveKpi] = useState<KpiKey>("currentMonth");
   const currentMonthTransactions = model.transactions.filter((transaction) => transaction.monthKey === model.raw.current_month);
+  const currentMonthChargeBreakdown = groupTransactionsByVendor(currentMonthTransactions);
   const recurringVendors = model.vendors.filter((vendor) => vendor.billingStatus === "active");
   const currentYear = model.raw.current_month.slice(0, 4);
   const currentMonthLabel = formatMonthLabel(model.raw.current_month);
@@ -120,7 +165,7 @@ export function OverviewKpiGrid({ model }: { model: DashboardModel }) {
         <DetailShell
           eyebrow="פירוט חודשי"
           title={`החיובים של ${currentMonthLabel}`}
-          description="כל החיובים של החודש מוצגים כאן בשקלים, עם מעבר ישיר לדוח החודשי המלא של אותו חודש."
+          description="החיובים של החודש מקובצים כאן לפי ספק, כך שאם יש כמה עסקאות לאותו ספק רואים שורה אחת ובלחיצה נפתח הפירוט."
           action={
             <Button asChild className="bg-cyan-400 text-black hover:bg-cyan-300">
               <Link href={monthReportHref(model.raw.current_month)}>
@@ -130,21 +175,13 @@ export function OverviewKpiGrid({ model }: { model: DashboardModel }) {
             </Button>
           }
         >
-          <div className="space-y-3">
-            {currentMonthTransactions.map((transaction) => (
-              <div key={transaction.id} className="flex flex-col gap-3 rounded-[22px] border border-white/8 bg-black/20 p-4 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <p className="font-medium text-white">{transaction.tool}</p>
-                  <p className="mt-1 text-sm text-zinc-500">{transaction.description}</p>
-                  <p className="mt-2 text-sm text-zinc-400">{formatDateLabel(transaction.date)}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-lg font-semibold text-cyan-200">{formatCurrencyIls(transaction.amountIls)}</p>
-                  <p className="mt-1 text-sm text-zinc-500">{transaction.type === "recurring" ? "חיוב חוזר" : "חיוב חד-פעמי"}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+          {currentMonthChargeBreakdown.length ? (
+            <VendorChargeBreakdown vendors={currentMonthChargeBreakdown} />
+          ) : (
+            <div className="rounded-[22px] border border-white/8 bg-black/20 p-4 text-sm text-zinc-400">
+              אין חיובים בחודש הנוכחי.
+            </div>
+          )}
         </DetailShell>
       ) : null}
 
@@ -175,7 +212,14 @@ export function OverviewKpiGrid({ model }: { model: DashboardModel }) {
                   {vendor.expectedAmount ? formatCurrencyIls(vendor.expectedAmount) : "משתנה"}
                 </p>
                 <p className="mt-2 text-sm text-zinc-400">
-                  מקור: {vendor.source === "auto" ? "אוטומטי" : vendor.source === "manual" ? "ידני" : vendor.source === "email-imported" ? "מיובא מהמייל" : "חולץ ב-AI"}
+                  מקור:{" "}
+                  {vendor.source === "auto"
+                    ? "אוטומטי"
+                    : vendor.source === "manual"
+                      ? "ידני"
+                      : vendor.source === "email-imported"
+                        ? "מיובא מהמייל"
+                        : "חולץ ב-AI"}
                 </p>
               </div>
             ))}
@@ -199,10 +243,19 @@ export function OverviewKpiGrid({ model }: { model: DashboardModel }) {
         >
           <div className="space-y-3">
             {model.needsReview.map((item) => (
-              <div key={item.id} className="flex flex-col gap-3 rounded-[22px] border border-white/8 bg-black/20 p-4 md:flex-row md:items-center md:justify-between">
+              <div
+                key={item.id}
+                className="flex flex-col gap-3 rounded-[22px] border border-white/8 bg-black/20 p-4 md:flex-row md:items-center md:justify-between"
+              >
                 <div className="flex items-start gap-3">
                   <div className="mt-1 rounded-full border border-amber-400/15 bg-amber-400/10 p-2 text-amber-200">
-                    {item.severity === "high" ? <CircleAlert className="size-4" /> : item.severity === "medium" ? <RefreshCw className="size-4" /> : <CalendarClock className="size-4" />}
+                    {item.severity === "high" ? (
+                      <CircleAlert className="size-4" />
+                    ) : item.severity === "medium" ? (
+                      <RefreshCw className="size-4" />
+                    ) : (
+                      <CalendarClock className="size-4" />
+                    )}
                   </div>
                   <div>
                     <p className="font-medium text-white">{item.vendor}</p>

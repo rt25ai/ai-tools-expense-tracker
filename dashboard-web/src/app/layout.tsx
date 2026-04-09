@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "מעקב הוצאות כלי AI",
-  description: "לוח בקרה מקצועי לניהול הוצאות, ספקים, אוטומציות ודוחות של כלי AI.",
+  title: "מעקב הוצאות AI וכלים עסקיים",
+  description: "לוח בקרה מקצועי לניהול הוצאות, ספקים, אוטומציות ודוחות של כלי AI וכלים עסקיים.",
   manifest: withBasePath("/manifest.json"),
   icons: {
     icon: withBasePath("/favicon.ico"),

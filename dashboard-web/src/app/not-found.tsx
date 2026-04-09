@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 export const metadata = {
-  title: "העמוד לא נמצא | מעקב הוצאות כלי AI",
+  title: "העמוד לא נמצא | מעקב הוצאות AI וכלים עסקיים",
 };
 
 export default function NotFound() {

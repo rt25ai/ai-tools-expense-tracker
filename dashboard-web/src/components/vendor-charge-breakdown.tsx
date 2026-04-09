@@ -39,25 +39,26 @@ export function VendorChargeBreakdown({
             key={vendor.name}
             className="overflow-hidden rounded-[22px] border border-white/8 bg-black/20"
           >
-            <div className="flex items-center justify-between gap-3 p-4">
+            <button
+              type="button"
+              onClick={() =>
+                setOpenVendors((current) => ({
+                  ...current,
+                  [vendor.name]: !isOpen,
+                }))
+              }
+              aria-expanded={isOpen}
+              className="flex w-full items-center justify-between gap-3 p-4 text-right transition-colors hover:bg-white/[0.03]"
+            >
               <div>
                 <p className="font-medium text-white">{vendor.name}</p>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setOpenVendors((current) => ({
-                      ...current,
-                      [vendor.name]: !isOpen,
-                    }))
-                  }
-                  className="mt-1 inline-flex items-center gap-2 text-sm text-cyan-300 transition-colors hover:text-cyan-200"
-                >
+                <div className="mt-1 inline-flex items-center gap-2 text-sm text-cyan-300">
                   <span>{vendor.chargeCount} חיובים</span>
                   {isOpen ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
-                </button>
+                </div>
               </div>
               <p className="text-lg font-semibold text-cyan-200">{formatCurrencyIls(vendor.total)}</p>
-            </div>
+            </button>
 
             {isOpen ? (
               <div className="border-t border-white/8 bg-white/[0.02] px-4 py-3">
