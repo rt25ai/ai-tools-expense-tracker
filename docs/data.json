@@ -3,8 +3,8 @@
   "usd_rate": 3.087,
   "exchange_rate_updated_at": "2026-04-09T12:21:03.1867453Z",
   "exchange_rate_source": "Bank of Israel Public API",
-  "grand_total": 1864.76,
-  "grand_total_ils": 5864.57,
+  "grand_total": 1884.76,
+  "grand_total_ils": 5926.31,
   "current_month": "2026-04",
   "current_month_total": 137.04,
   "current_month_total_ils": 434.78,
@@ -78,6 +78,16 @@
       "amount_usd": 51,
       "amount_ils": 157.44,
       "entry_source": null
+    },
+    {
+      "date": "2026-03-26",
+      "tool": "Dzine",
+      "description": "Video Top-Up",
+      "currency": "USD",
+      "original_amount": 20,
+      "amount_usd": 20,
+      "amount_ils": 61.74,
+      "entry_source": "manual"
     },
     {
       "date": "2026-03-25",
@@ -899,12 +909,12 @@
     "2025-12": 169.51,
     "2026-01": 395.31,
     "2026-02": 318.88,
-    "2026-03": 226.07,
+    "2026-03": 246.07,
     "2026-04": 137.04
   },
   "monthly_ils": {
     "2026-04": 434.78,
-    "2026-03": 717.31,
+    "2026-03": 779.05,
     "2026-02": 1003.82,
     "2026-01": 1239.74,
     "2025-12": 535,
@@ -925,6 +935,7 @@
     "Runway ML": 54.75,
     "Eleven Labs": 46,
     "CapCut": 41.01,
+    "Dzine": 38,
     "Make": 31.77,
     "Manychat": 30,
     "Timeless": 29,
@@ -932,7 +943,6 @@
     "Higgsfield": 20,
     "IONOS": 20,
     "Manus AI": 19,
-    "Dzine": 18,
     "Replicate": 13.69,
     "Astria": 11.8,
     "Hedra": 10
@@ -948,6 +958,7 @@
     "Runway ML": 169,
     "CapCut": 149.7,
     "Eleven Labs": 142.04,
+    "Dzine": 117.31,
     "Make": 98.07,
     "Manychat": 92.6,
     "Timeless": 89.52,
@@ -955,7 +966,6 @@
     "IONOS": 61.74,
     "Higgsfield": 61.74,
     "Manus AI": 58.65,
-    "Dzine": 55.57,
     "Replicate": 42.26,
     "Astria": 36.43,
     "Hedra": 30.87

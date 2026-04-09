@@ -1,5 +1,19 @@
 [
   {
+    "id": "manual-2026-03-26-dzine-3f13684e0c",
+    "date": "2026-03-26",
+    "tool": "Dzine",
+    "description": "Video Top-Up",
+    "currency": "USD",
+    "original_amount": 20.0,
+    "attachment_path": "manual_invoices/2026-03-26-dzine-manual-2026-03-26-dzine-3f13684e0c.pdf",
+    "attachment_name": "Receipt-2156-6167.pdf",
+    "entry_mode": "pdf-upload",
+    "notes": null,
+    "created_at": "2026-04-09T21:46:41",
+    "entry_source": "manual"
+  },
+  {
     "id": "manual-2026-04-02-dzine-5dc2b07ce6",
     "date": "2026-04-02",
     "tool": "Dzine",
