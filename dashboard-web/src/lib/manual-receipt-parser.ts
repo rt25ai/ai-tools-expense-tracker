@@ -91,6 +91,11 @@ const BLOCKED_DESCRIPTION_TOKENS = [
   "page ",
 ];
 
+const MONEY_PATTERN = String.raw`[0-9][0-9,]*(?:\.[0-9]{1,2})?`;
+const USD_CURRENCY_PATTERN = String.raw`(?:USD|\$)`;
+const ILS_CURRENCY_PATTERN = String.raw`(?:₪|ILS|NIS|ג‚×|׳’ג€ֳ—)`;
+const ANY_CURRENCY_PATTERN = String.raw`(?:${USD_CURRENCY_PATTERN}|${ILS_CURRENCY_PATTERN})`;
+
 export type ManualReceiptParseResult = {
   suggestedDate: string | null;
   suggestedCurrency: "USD" | "ILS" | null;
@@ -100,8 +105,32 @@ export type ManualReceiptParseResult = {
   textPreview: string;
 };
 
+type CurrencyAmountMatch = {
+  amount: number;
+  currency: "USD" | "ILS";
+  index: number;
+  priority: number;
+};
+
 function normalizeWhitespace(value: string) {
   return value.replace(/\s+/g, " ").trim();
+}
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function indexedAmountCandidates(pattern: RegExp, text: string) {
+  return [...text.matchAll(pattern)]
+    .map((match) => ({
+      amount: Number((match[1] ?? "").replace(/,/g, "").trim()),
+      index: match.index ?? -1,
+    }))
+    .filter((match) => Number.isFinite(match.amount));
+}
+
+function roundMoney(value: number) {
+  return Math.round(value * 100) / 100;
 }
 
 function cleanMonthToken(value: string) {
@@ -151,10 +180,7 @@ function buildIsoDate(dayText: string, monthToken: string, yearText: string) {
 
 function extractDateFromLine(line: string) {
   const compactLine = normalizeWhitespace(line);
-  const simplePatterns = [
-    /\b\d{4}-\d{2}-\d{2}\b/g,
-    /\b\d{1,2}[./-]\d{1,2}[./-]\d{4}\b/g,
-  ];
+  const simplePatterns = [/\b\d{4}-\d{2}-\d{2}\b/g, /\b\d{1,2}[./-]\d{1,2}[./-]\d{4}\b/g];
 
   for (const pattern of simplePatterns) {
     const matches = compactLine.match(pattern) ?? [];
@@ -208,53 +234,76 @@ function extractDateFromText(text: string, fileName?: string | null) {
   return extractDateFromLine(combined);
 }
 
-function amountCandidates(pattern: RegExp, text: string) {
-  return [...text.matchAll(pattern)]
-    .map((match) => Number((match[1] ?? "").replace(/,/g, "").trim()))
-    .filter((value) => Number.isFinite(value));
-}
-
 function extractAmountFromText(text: string) {
-  const lines = text.split(/\r?\n/).map(normalizeWhitespace);
-  const labeledPatterns: Array<{ currency: "USD" | "ILS"; pattern: RegExp }> = [
+  const labeledPatterns: Array<{ currency: "USD" | "ILS"; priority: number; pattern: RegExp }> = [
     {
       currency: "USD",
-      pattern: /(?:\bamount paid\b|\bpaid on\b|\bpaid\b|\btotal\b)\D*([0-9][0-9,]*(?:\.[0-9]{1,2})?)\s*(?:USD|\$)/gi,
+      priority: 0,
+      pattern: new RegExp(
+        `\\bamount paid\\b[\\s:.-]*(?:${USD_CURRENCY_PATTERN})?\\s*(${MONEY_PATTERN})\\s*(?:${USD_CURRENCY_PATTERN})?`,
+        "gi",
+      ),
     },
     {
       currency: "USD",
-      pattern: /(?:\bamount paid\b|\bpaid on\b|\bpaid\b|\btotal\b)\D*(?:USD|\$)\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)/gi,
+      priority: 1,
+      pattern: new RegExp(
+        `\\btotal\\b[\\s:.-]*(?:${USD_CURRENCY_PATTERN})?\\s*(${MONEY_PATTERN})\\s*(?:${USD_CURRENCY_PATTERN})?`,
+        "gi",
+      ),
     },
     {
       currency: "ILS",
-      pattern: /(?:\bamount paid\b|\bpaid on\b|\bpaid\b|\btotal\b)\D*([0-9][0-9,]*(?:\.[0-9]{1,2})?)\s*(?:₪|ILS|NIS)/gi,
+      priority: 0,
+      pattern: new RegExp(
+        `\\bamount paid\\b[\\s:.-]*(?:${ILS_CURRENCY_PATTERN})?\\s*(${MONEY_PATTERN})\\s*(?:${ILS_CURRENCY_PATTERN})?`,
+        "gi",
+      ),
     },
     {
       currency: "ILS",
-      pattern: /(?:\bamount paid\b|\bpaid on\b|\bpaid\b|\btotal\b)\D*(?:₪|ILS|NIS)\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)/gi,
+      priority: 1,
+      pattern: new RegExp(
+        `\\btotal\\b[\\s:.-]*(?:${ILS_CURRENCY_PATTERN})?\\s*(${MONEY_PATTERN})\\s*(?:${ILS_CURRENCY_PATTERN})?`,
+        "gi",
+      ),
+    },
+    {
+      currency: "ILS",
+      priority: 2,
+      pattern: new RegExp(
+        `\\bcharged\\b[\\s:.-]*(?:${ILS_CURRENCY_PATTERN})?\\s*(${MONEY_PATTERN})\\s*(?:${ILS_CURRENCY_PATTERN})?`,
+        "gi",
+      ),
     },
   ];
 
-  for (const line of lines) {
-    const lowered = line.toLowerCase();
-    if (lowered.includes("subtotal")) continue;
-    for (const { currency, pattern } of labeledPatterns) {
-      const matches = amountCandidates(pattern, line);
-      if (matches.length) return { currency, amount: Math.round(matches.at(-1)! * 100) / 100 };
-    }
+  const labeledMatches: CurrencyAmountMatch[] = labeledPatterns
+    .flatMap(({ currency, priority, pattern }) =>
+      indexedAmountCandidates(pattern, text).map((match) => ({
+        ...match,
+        currency,
+        priority,
+      })),
+    )
+    .sort((left, right) => left.priority - right.priority || right.index - left.index);
+
+  if (labeledMatches.length) {
+    const bestMatch = labeledMatches[0]!;
+    return { currency: bestMatch.currency, amount: roundMoney(bestMatch.amount) };
   }
 
   const usd = [
-    ...amountCandidates(/(?:USD|\$)\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)/gi, text),
-    ...amountCandidates(/([0-9][0-9,]*(?:\.[0-9]{1,2})?)\s*(?:USD|\$)/gi, text),
-  ];
-  if (usd.length) return { currency: "USD" as const, amount: Math.max(...usd) };
+    ...indexedAmountCandidates(new RegExp(`(?:${USD_CURRENCY_PATTERN})\\s*(${MONEY_PATTERN})`, "gi"), text),
+    ...indexedAmountCandidates(new RegExp(`(${MONEY_PATTERN})\\s*(?:${USD_CURRENCY_PATTERN})`, "gi"), text),
+  ].sort((left, right) => left.index - right.index);
+  if (usd.length) return { currency: "USD" as const, amount: roundMoney(usd.at(-1)!.amount) };
 
   const ils = [
-    ...amountCandidates(/(?:₪|ILS|NIS)\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)/gi, text),
-    ...amountCandidates(/([0-9][0-9,]*(?:\.[0-9]{1,2})?)\s*(?:₪|ILS|NIS)/gi, text),
-  ];
-  if (ils.length) return { currency: "ILS" as const, amount: Math.max(...ils) };
+    ...indexedAmountCandidates(new RegExp(`(?:${ILS_CURRENCY_PATTERN})\\s*(${MONEY_PATTERN})`, "gi"), text),
+    ...indexedAmountCandidates(new RegExp(`(${MONEY_PATTERN})\\s*(?:${ILS_CURRENCY_PATTERN})`, "gi"), text),
+  ].sort((left, right) => left.index - right.index);
+  if (ils.length) return { currency: "ILS" as const, amount: roundMoney(ils.at(-1)!.amount) };
 
   return { currency: null, amount: null };
 }
@@ -270,24 +319,81 @@ function extractToolFromText(text: string, fileName?: string | null) {
 
 function cleanDescriptionCandidate(value: string) {
   return normalizeWhitespace(value)
-    .replace(/(?:\s+(?:[0-9]+\.[0-9]{1,2}\s*(?:USD|\$|₪|ILS|NIS)?|[0-9]+\s*(?:USD|\$|₪|ILS|NIS)))+\s*$/i, "")
+    .replace(/\bDescription\b\s*/i, "")
+    .replace(
+      new RegExp(`\\s+\\d+\\s+${MONEY_PATTERN}\\s*(?:${ANY_CURRENCY_PATTERN})(?:\\s+${MONEY_PATTERN}\\s*(?:${ANY_CURRENCY_PATTERN}))*\\s*$`, "i"),
+      "",
+    )
+    .replace(new RegExp(`(?:\\s+${MONEY_PATTERN}\\s*(?:${ANY_CURRENCY_PATTERN}))+\\s*$`, "i"), "")
     .replace(/\s+(?:Qty|Unit price|Amount)\b.*$/i, "")
     .replace(/^[\-:\s]+|[\-:\s]+$/g, "");
 }
 
+function finalizeDescriptionCandidate(value: string, tool: string | null) {
+  let candidate = cleanDescriptionCandidate(value);
+  if (!candidate) return null;
+
+  if (tool) {
+    const escapedTool = escapeRegExp(tool);
+    candidate = candidate
+      .replace(new RegExp(`^${escapedTool}\\s+`, "i"), "")
+      .replace(new RegExp(`\\s+${escapedTool}$`, "i"), "")
+      .trim();
+  }
+
+  if (!candidate) return null;
+
+  const lowered = candidate.toLowerCase();
+  if (BLOCKED_DESCRIPTION_TOKENS.some((token) => lowered.includes(token))) return null;
+  if (tool && lowered === tool.toLowerCase()) return null;
+
+  return candidate;
+}
+
+function extractDescriptionFromTable(text: string, tool: string | null) {
+  const rowPatterns = [
+    new RegExp(
+      `\\bDescription(?:\\s+Qty)?(?:\\s+Unit price)?(?:\\s+Amount)?\\b\\s+(.+?)\\s+\\d+\\s+${MONEY_PATTERN}\\s*(?:${ANY_CURRENCY_PATTERN})(?:\\s+${MONEY_PATTERN}\\s*(?:${ANY_CURRENCY_PATTERN}))?`,
+      "iu",
+    ),
+    new RegExp(
+      `\\bDescription(?:\\s+Qty)?(?:\\s+Unit price)?(?:\\s+Amount)?\\b\\s+(.+?)\\s+${MONEY_PATTERN}\\s*(?:${ANY_CURRENCY_PATTERN})`,
+      "iu",
+    ),
+  ];
+
+  for (const pattern of rowPatterns) {
+    const match = text.match(pattern);
+    const candidate = finalizeDescriptionCandidate(match?.[1] ?? "", tool);
+    if (candidate) return candidate;
+  }
+
+  return null;
+}
+
 function extractDescriptionFromText(text: string, tool: string | null) {
+  const tableDescription = extractDescriptionFromTable(text, tool);
+  if (tableDescription) return tableDescription;
+
   const lines = text.split(/\r?\n/).map(normalizeWhitespace);
+  let firstCandidate: string | null = null;
+
   for (const line of lines) {
     if (!line || line.length < 4) continue;
+
     const lowered = line.toLowerCase();
     if (BLOCKED_DESCRIPTION_TOKENS.some((token) => lowered.includes(token))) continue;
-    if (tool && !lowered.includes(tool.toLowerCase())) continue;
     if (!/[A-Za-z\u0590-\u05FF]/.test(line)) continue;
-    if (!/\d+(?:\.\d{1,2})?\s*(?:USD|\$|₪|ILS|NIS)/i.test(line)) continue;
-    const cleaned = cleanDescriptionCandidate(line);
-    if (cleaned) return cleaned;
+    if (!new RegExp(`\\d+(?:\\.\\d{1,2})?\\s*(?:${ANY_CURRENCY_PATTERN})`, "i").test(line)) continue;
+
+    const cleaned = finalizeDescriptionCandidate(line, tool);
+    if (!cleaned) continue;
+
+    if (tool && lowered.includes(tool.toLowerCase())) return cleaned;
+    if (!firstCandidate) firstCandidate = cleaned;
   }
-  return tool;
+
+  return firstCandidate ?? tool;
 }
 
 export async function extractPdfText(file: File) {
@@ -296,6 +402,7 @@ export async function extractPdfText(file: File) {
   if (!pdfjs.GlobalWorkerOptions.workerSrc) {
     pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
   }
+
   const loadingTask = pdfjs.getDocument({
     data: new Uint8Array(arrayBuffer),
     useWorkerFetch: false,
@@ -307,29 +414,45 @@ export async function extractPdfText(file: File) {
   for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
     const page = await pdf.getPage(pageNumber);
     const content = await page.getTextContent();
-    const text = content.items
-      .map((item) => ("str" in item ? item.str : ""))
+    const parts: string[] = [];
+
+    for (const item of content.items) {
+      const value = "str" in item ? item.str : "";
+      if (!value) continue;
+      parts.push(value);
+      if ("hasEOL" in item && item.hasEOL) parts.push("\n");
+    }
+
+    const text = parts
       .join(" ")
-      .replace(/\s+/g, " ")
+      .replace(/[ \t]+\n/g, "\n")
+      .replace(/\n[ \t]+/g, "\n")
+      .replace(/[ \t]{2,}/g, " ")
+      .replace(/\n{2,}/g, "\n")
       .trim();
+
     if (text) pageTexts.push(text);
   }
 
   return pageTexts.join("\n").trim();
 }
 
-export async function parseManualReceiptPdf(file: File): Promise<ManualReceiptParseResult> {
-  const text = await extractPdfText(file);
+export function parseManualReceiptText(text: string, fileName?: string | null): ManualReceiptParseResult {
   const { currency, amount } = extractAmountFromText(text);
-  const tool = extractToolFromText(text, file.name);
+  const tool = extractToolFromText(text, fileName);
   const description = extractDescriptionFromText(text, tool);
 
   return {
-    suggestedDate: extractDateFromText(text, file.name),
+    suggestedDate: extractDateFromText(text, fileName),
     suggestedCurrency: currency,
     suggestedAmount: amount,
     suggestedTool: tool,
     suggestedDescription: description,
     textPreview: text.slice(0, 2400),
   };
+}
+
+export async function parseManualReceiptPdf(file: File): Promise<ManualReceiptParseResult> {
+  const text = await extractPdfText(file);
+  return parseManualReceiptText(text, file.name);
 }
