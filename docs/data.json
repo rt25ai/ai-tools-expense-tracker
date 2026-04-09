@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-08",
+  "generated": "2026-04-09",
   "usd_rate": 3.087,
   "exchange_rate_updated_at": "2026-04-09T12:21:03.1867453Z",
   "exchange_rate_source": "Bank of Israel Public API",
-  "grand_total": 1846.76,
-  "grand_total_ils": 5809,
+  "grand_total": 1864.76,
+  "grand_total_ils": 5864.57,
   "current_month": "2026-04",
-  "current_month_total": 119.04,
-  "current_month_total_ils": 379.21,
+  "current_month_total": 137.04,
+  "current_month_total_ils": 434.78,
   "transactions": [
     {
       "date": "2026-04-05",
@@ -28,6 +28,16 @@
       "amount_usd": 2.25,
       "amount_ils": 6.95,
       "entry_source": null
+    },
+    {
+      "date": "2026-04-02",
+      "tool": "Dzine",
+      "description": "Video Top-Up",
+      "currency": "USD",
+      "original_amount": 18,
+      "amount_usd": 18,
+      "amount_ils": 55.57,
+      "entry_source": "manual"
     },
     {
       "date": "2026-04-01",
@@ -107,7 +117,7 @@
       "original_amount": 20,
       "amount_usd": 20,
       "amount_ils": 61.74,
-      "entry_source": null
+      "entry_source": "auto"
     },
     {
       "date": "2026-03-15",
@@ -257,7 +267,7 @@
       "original_amount": 20,
       "amount_usd": 20,
       "amount_ils": 61.74,
-      "entry_source": null
+      "entry_source": "auto"
     },
     {
       "date": "2026-02-15",
@@ -377,7 +387,7 @@
       "original_amount": 20,
       "amount_usd": 20,
       "amount_ils": 61.74,
-      "entry_source": null
+      "entry_source": "auto"
     },
     {
       "date": "2026-01-10",
@@ -487,7 +497,7 @@
       "original_amount": 20,
       "amount_usd": 20,
       "amount_ils": 61.74,
-      "entry_source": null
+      "entry_source": "auto"
     },
     {
       "date": "2025-12-08",
@@ -557,7 +567,7 @@
       "original_amount": 20,
       "amount_usd": 20,
       "amount_ils": 61.74,
-      "entry_source": null
+      "entry_source": "auto"
     },
     {
       "date": "2025-11-13",
@@ -627,7 +637,7 @@
       "original_amount": 20,
       "amount_usd": 20,
       "amount_ils": 61.74,
-      "entry_source": null
+      "entry_source": "auto"
     },
     {
       "date": "2025-10-02",
@@ -667,7 +677,7 @@
       "original_amount": 20,
       "amount_usd": 20,
       "amount_ils": 61.74,
-      "entry_source": null
+      "entry_source": "auto"
     },
     {
       "date": "2025-09-10",
@@ -727,7 +737,7 @@
       "original_amount": 20,
       "amount_usd": 20,
       "amount_ils": 61.74,
-      "entry_source": null
+      "entry_source": "auto"
     },
     {
       "date": "2025-08-11",
@@ -837,7 +847,7 @@
       "original_amount": 20,
       "amount_usd": 20,
       "amount_ils": 61.74,
-      "entry_source": null
+      "entry_source": "auto"
     },
     {
       "date": "2025-07-11",
@@ -890,10 +900,10 @@
     "2026-01": 395.31,
     "2026-02": 318.88,
     "2026-03": 226.07,
-    "2026-04": 119.04
+    "2026-04": 137.04
   },
   "monthly_ils": {
-    "2026-04": 379.21,
+    "2026-04": 434.78,
     "2026-03": 717.31,
     "2026-02": 1003.82,
     "2026-01": 1239.74,
@@ -922,6 +932,7 @@
     "Higgsfield": 20,
     "IONOS": 20,
     "Manus AI": 19,
+    "Dzine": 18,
     "Replicate": 13.69,
     "Astria": 11.8,
     "Hedra": 10
@@ -944,6 +955,7 @@
     "IONOS": 61.74,
     "Higgsfield": 61.74,
     "Manus AI": 58.65,
+    "Dzine": 55.57,
     "Replicate": 42.26,
     "Astria": 36.43,
     "Hedra": 30.87

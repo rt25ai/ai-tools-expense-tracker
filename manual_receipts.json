@@ -1,1 +1,16 @@
-[]
+[
+  {
+    "id": "manual-2026-04-02-dzine-5dc2b07ce6",
+    "date": "2026-04-02",
+    "tool": "Dzine",
+    "description": "Video Top-Up",
+    "currency": "USD",
+    "original_amount": 18.0,
+    "attachment_path": "manual_invoices/2026-04-02-dzine-manual-2026-04-02-dzine-5dc2b07ce6.pdf",
+    "attachment_name": "Receipt-2117-6889.pdf",
+    "entry_mode": "pdf-upload",
+    "notes": "Imported after fixing Windows bridge command resolution.",
+    "created_at": "2026-04-09T21:42:30",
+    "entry_source": "manual"
+  }
+]

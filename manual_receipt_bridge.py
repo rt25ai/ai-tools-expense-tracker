@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 import subprocess
 import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -28,6 +29,18 @@ DASHBOARD_DIR = BASE_DIR / "dashboard-web"
 
 
 def run_command(command, cwd: Path):
+    executable = command[0]
+    resolved_executable = shutil.which(executable)
+
+    if resolved_executable is None and sys.platform.startswith("win"):
+        for suffix in (".cmd", ".exe", ".bat"):
+            resolved_executable = shutil.which(f"{executable}{suffix}")
+            if resolved_executable:
+                break
+
+    if resolved_executable:
+        command = [resolved_executable, *command[1:]]
+
     return subprocess.run(
         command,
         cwd=str(cwd),
