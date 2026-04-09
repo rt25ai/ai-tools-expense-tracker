@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import base64
 import datetime as dt
+import difflib
 import hashlib
 import io
 import json
@@ -214,8 +215,29 @@ def clean_month_token(value: str) -> str:
     return re.sub(r"[^A-Za-zא-ת]", "", value).strip().lower()
 
 
+def resolve_month_number(month_token: str) -> int | None:
+    cleaned = clean_month_token(month_token)
+    if not cleaned:
+        return None
+
+    candidates = [cleaned]
+    if len(cleaned) > 3 and cleaned[0] in {"ב", "ל", "מ", "ה", "ו", "כ", "ש"}:
+        candidates.append(cleaned[1:])
+
+    for candidate in candidates:
+        month_number = MONTH_NAME_TO_NUMBER.get(candidate)
+        if month_number:
+            return month_number
+
+    fuzzy_match = difflib.get_close_matches(cleaned, MONTH_NAME_TO_NUMBER.keys(), n=1, cutoff=0.72)
+    if fuzzy_match:
+        return MONTH_NAME_TO_NUMBER[fuzzy_match[0]]
+
+    return None
+
+
 def build_iso_date(day: str, month_token: str, year: str) -> str | None:
-    month_number = MONTH_NAME_TO_NUMBER.get(clean_month_token(month_token))
+    month_number = resolve_month_number(month_token)
     if not month_number:
         return None
 
@@ -225,32 +247,129 @@ def build_iso_date(day: str, month_token: str, year: str) -> str | None:
         return None
 
 
-def extract_date_from_text(text: str) -> str | None:
-    for match in re.finditer(r"\b\d{4}-\d{2}-\d{2}\b", text):
+def extract_date_from_line(line: str) -> str | None:
+    compact_line = normalize_text_for_matching(line)
+
+    for match in re.finditer(r"\b\d{4}-\d{2}-\d{2}\b", compact_line):
         parsed = parse_date_candidate(match.group(0))
         if parsed:
             return parsed
 
-    for match in re.finditer(r"\b\d{1,2}[./-]\d{1,2}[./-]\d{4}\b", text):
+    for match in re.finditer(r"\b\d{1,2}[./-]\d{1,2}[./-]\d{4}\b", compact_line):
         parsed = parse_date_candidate(match.group(0))
         if parsed:
             return parsed
 
     month_patterns = [
-        rf"\b(?P<day>\d{{1,2}})\s+(?P<month>{MONTH_PATTERN})\s+(?P<year>\d{{4}})\b",
-        rf"\b(?P<month>{MONTH_PATTERN})\s+(?P<day>\d{{1,2}})\s*,?\s*(?P<year>\d{{4}})\b",
-        rf"\b(?P<day>\d{{1,2}})\s+(?P<year>\d{{4}})\s+(?P<month>{MONTH_PATTERN})\b",
+        rf"\b(?P<day>\d{{1,2}})(?:st|nd|rd|th)?\s+(?P<month>{MONTH_PATTERN})\s+(?P<year>\d{{4}})\b",
+        rf"\b(?P<month>{MONTH_PATTERN})\s+(?P<day>\d{{1,2}})(?:st|nd|rd|th)?\s*,?\s*(?P<year>\d{{4}})\b",
+        rf"\b(?P<day>\d{{1,2}})(?:st|nd|rd|th)?\s+(?P<year>\d{{4}})\s+(?P<month>{MONTH_PATTERN})\b",
+        rf"\b(?P<month>{MONTH_PATTERN})\s+(?P<year>\d{{4}})\s+(?P<day>\d{{1,2}})(?:st|nd|rd|th)?\b",
     ]
 
     for pattern in month_patterns:
-        match = re.search(pattern, text, re.IGNORECASE)
+        match = re.search(pattern, compact_line, re.IGNORECASE)
         if not match:
             continue
         parsed = build_iso_date(match.group("day"), match.group("month"), match.group("year"))
         if parsed:
             return parsed
 
+    tokens = re.findall(r"[A-Za-zà-ú]+|\d{1,4}", compact_line)
+    for index, token in enumerate(tokens):
+        month_number = resolve_month_number(token)
+        if not month_number:
+            continue
+
+        nearby_numbers = [
+            candidate
+            for candidate in tokens[max(0, index - 2): min(len(tokens), index + 3)]
+            if candidate.isdigit()
+        ]
+        day = next((value for value in nearby_numbers if len(value) <= 2 and 1 <= int(value) <= 31), None)
+        year = next((value for value in nearby_numbers if len(value) == 4 and 2000 <= int(value) <= 2100), None)
+        if not (day and year):
+            continue
+
+        try:
+            return dt.date(int(year), month_number, int(day)).isoformat()
+        except ValueError:
+            continue
+
     return None
+
+
+def extract_date_from_text(text: str) -> str | None:
+    for line in text.splitlines():
+        parsed = extract_date_from_line(line)
+        if parsed:
+            return parsed
+
+    return extract_date_from_line(text)
+
+def clean_month_token(value: str) -> str:
+    return re.sub(r"[^A-Za-z\u0590-\u05FF]", "", value).strip().lower()
+
+
+def extract_date_from_line(line: str) -> str | None:
+    compact_line = normalize_text_for_matching(line)
+
+    for match in re.finditer(r"\b\d{4}-\d{2}-\d{2}\b", compact_line):
+        parsed = parse_date_candidate(match.group(0))
+        if parsed:
+            return parsed
+
+    for match in re.finditer(r"\b\d{1,2}[./-]\d{1,2}[./-]\d{4}\b", compact_line):
+        parsed = parse_date_candidate(match.group(0))
+        if parsed:
+            return parsed
+
+    month_patterns = [
+        rf"\b(?P<day>\d{{1,2}})(?:st|nd|rd|th)?\s+(?P<month>{MONTH_PATTERN})\s+(?P<year>\d{{4}})\b",
+        rf"\b(?P<month>{MONTH_PATTERN})\s+(?P<day>\d{{1,2}})(?:st|nd|rd|th)?\s*,?\s*(?P<year>\d{{4}})\b",
+        rf"\b(?P<day>\d{{1,2}})(?:st|nd|rd|th)?\s+(?P<year>\d{{4}})\s+(?P<month>{MONTH_PATTERN})\b",
+        rf"\b(?P<month>{MONTH_PATTERN})\s+(?P<year>\d{{4}})\s+(?P<day>\d{{1,2}})(?:st|nd|rd|th)?\b",
+    ]
+
+    for pattern in month_patterns:
+        match = re.search(pattern, compact_line, re.IGNORECASE)
+        if not match:
+            continue
+        parsed = build_iso_date(match.group("day"), match.group("month"), match.group("year"))
+        if parsed:
+            return parsed
+
+    tokens = re.findall(r"[A-Za-z\u0590-\u05FF]+|\d{1,4}", compact_line)
+    for index, token in enumerate(tokens):
+        month_number = resolve_month_number(token)
+        if not month_number:
+            continue
+
+        nearby_numbers = [
+            candidate
+            for candidate in tokens[max(0, index - 2): min(len(tokens), index + 3)]
+            if candidate.isdigit()
+        ]
+        day = next((value for value in nearby_numbers if len(value) <= 2 and 1 <= int(value) <= 31), None)
+        year = next((value for value in nearby_numbers if len(value) == 4 and 2000 <= int(value) <= 2100), None)
+        if not (day and year):
+            continue
+
+        try:
+            return dt.date(int(year), month_number, int(day)).isoformat()
+        except ValueError:
+            continue
+
+    return None
+
+
+def extract_date_from_text(text: str) -> str | None:
+    for line in text.splitlines():
+        parsed = extract_date_from_line(line)
+        if parsed:
+            return parsed
+
+    return extract_date_from_line(text)
 
 
 def _amount_candidates(pattern: str, text: str):
@@ -374,8 +493,9 @@ def extract_pdf_suggestions(pdf_bytes: bytes, file_name: str | None = None):
     amount = extract_amount_from_text(text)
     tool = extract_tool_from_text(text, file_name)
     description = extract_description_from_text(text, tool)
+    combined_date_context = text if not file_name else f"{text}\n{file_name}"
     return {
-        "suggestedDate": extract_date_from_text(text),
+        "suggestedDate": extract_date_from_text(combined_date_context),
         "suggestedCurrency": amount["currency"],
         "suggestedAmount": amount["amount"],
         "suggestedTool": tool,

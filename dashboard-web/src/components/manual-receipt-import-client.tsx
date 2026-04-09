@@ -5,6 +5,14 @@ import { startTransition, useEffect, useMemo, useState } from "react";
 import { CheckCircle2, FileUp, LoaderCircle, PlugZap, RefreshCw, Upload } from "lucide-react";
 import { monthReportHref } from "@/lib/report-links";
 import { formatDateLabel } from "@/lib/formatters";
+import {
+  isGithubImportConfigured,
+  loadGithubImportConfig,
+  saveGithubImportConfig,
+  saveManualReceiptToGithub,
+  type GithubImportConfig,
+} from "@/lib/github-manual-import";
+import { parseManualReceiptPdf, type ManualReceiptParseResult } from "@/lib/manual-receipt-parser";
 import type { ManualReceiptRecord } from "@/lib/manual-receipts";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,15 +33,6 @@ type ReceiptFormState = {
   currency: "USD" | "ILS";
   originalAmount: string;
   notes: string;
-};
-
-type ParseResult = {
-  suggestedDate: string | null;
-  suggestedCurrency: "USD" | "ILS" | null;
-  suggestedAmount: number | null;
-  suggestedTool: string | null;
-  suggestedDescription: string | null;
-  textPreview: string;
 };
 
 const initialFormState: ReceiptFormState = {
@@ -75,14 +74,16 @@ export function ManualReceiptImportClient({
 }) {
   const [bridgeStatus, setBridgeStatus] = useState<BridgeStatus>("checking");
   const [bridgeMessage, setBridgeMessage] = useState("בודק אם הגשר המקומי פעיל...");
+  const [githubConfig, setGithubConfig] = useState<GithubImportConfig>(() => loadGithubImportConfig());
   const [form, setForm] = useState<ReceiptFormState>(initialFormState);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [parseResult, setParseResult] = useState<ParseResult | null>(null);
+  const [parseResult, setParseResult] = useState<ManualReceiptParseResult | null>(null);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [isParsingPdf, setIsParsingPdf] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [recentReceipts, setRecentReceipts] = useState(initialReceipts);
+  const githubConfigured = useMemo(() => isGithubImportConfigured(githubConfig), [githubConfig]);
 
   async function checkBridge() {
     try {
@@ -112,6 +113,12 @@ export function ManualReceiptImportClient({
     return form.date ? monthReportHref(monthKeyFromDate(form.date)) : null;
   }, [form.date]);
 
+  function persistGithubConfig() {
+    saveGithubImportConfig(githubConfig);
+    setSaveError(null);
+    setSaveMessage("חיבור GitHub נשמר במכשיר הזה. אפשר להעלות מסמכים גם בלי שרת מקומי.");
+  }
+
   async function handleParsePdf() {
     if (!selectedFile) {
       setSaveError("בחר קודם קובץ PDF לחילוץ.");
@@ -123,19 +130,7 @@ export function ManualReceiptImportClient({
     setSaveMessage(null);
 
     try {
-      const fileBase64 = await readFileAsDataUrl(selectedFile);
-      const response = await fetch(`${BRIDGE_URL}/parse-pdf`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fileName: selectedFile.name,
-          fileBase64,
-        }),
-      });
-      const payload = await response.json();
-      if (!response.ok || !payload.ok) {
-        throw new Error(payload.error || "Could not parse the uploaded PDF.");
-      }
+      const payload = await parseManualReceiptPdf(selectedFile);
 
       setParseResult(payload);
       setForm((current) => ({
@@ -149,7 +144,7 @@ export function ManualReceiptImportClient({
             ? current.originalAmount
             : String(payload.suggestedAmount),
       }));
-      setSaveMessage("ה־PDF נותח בהצלחה. עבר על השדות, אשר וכתוב לפרויקט.");
+      setSaveMessage("ה־PDF נותח בדפדפן והטופס מולא אוטומטית ככל האפשר. אפשר לעבור על השדות ואז לשמור.");
     } catch (error) {
       setSaveError(error instanceof Error ? error.message : "חילוץ ה־PDF נכשל.");
     } finally {
@@ -158,8 +153,8 @@ export function ManualReceiptImportClient({
   }
 
   async function handleSave() {
-    if (bridgeStatus !== "online") {
-      setSaveError("הגשר המקומי לא זמין כרגע, לכן אי אפשר לשמור קבלה לפרויקט.");
+    if (!githubConfigured && bridgeStatus !== "online") {
+      setSaveError("כדי לשמור צריך או חיבור GitHub אונליין או גשר מקומי פעיל.");
       return;
     }
 
@@ -173,27 +168,42 @@ export function ManualReceiptImportClient({
     setSaveMessage(null);
 
     try {
-      const fileBase64 = selectedFile ? await readFileAsDataUrl(selectedFile) : null;
-      const response = await fetch(`${BRIDGE_URL}/manual-receipts`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          entry: {
-            tool: form.tool,
-            date: form.date,
-            description: form.description,
-            currency: form.currency,
-            original_amount: Number(form.originalAmount),
-            notes: form.notes,
-            entry_mode: selectedFile ? "pdf-upload" : "manual-form",
-          },
-          fileName: selectedFile?.name ?? null,
-          fileBase64,
-        }),
-      });
-      const payload = await response.json();
-      if (!response.ok || !payload.ok) {
-        throw new Error(payload.error || "Could not save the receipt.");
+      let payload: { entry: ManualReceiptRecord; commit: string };
+
+      if (githubConfigured) {
+        payload = await saveManualReceiptToGithub(githubConfig, {
+          tool: form.tool,
+          date: form.date,
+          description: form.description,
+          currency: form.currency,
+          originalAmount: Number(form.originalAmount),
+          notes: form.notes,
+          selectedFile,
+        });
+      } else {
+        const fileBase64 = selectedFile ? await readFileAsDataUrl(selectedFile) : null;
+        const response = await fetch(`${BRIDGE_URL}/manual-receipts`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            entry: {
+              tool: form.tool,
+              date: form.date,
+              description: form.description,
+              currency: form.currency,
+              original_amount: Number(form.originalAmount),
+              notes: form.notes,
+              entry_mode: selectedFile ? "pdf-upload" : "manual-form",
+            },
+            fileName: selectedFile?.name ?? null,
+            fileBase64,
+          }),
+        });
+        const localPayload = await response.json();
+        if (!response.ok || !localPayload.ok) {
+          throw new Error(localPayload.error || "Could not save the receipt.");
+        }
+        payload = localPayload;
       }
 
       startTransition(() => {
@@ -202,10 +212,14 @@ export function ManualReceiptImportClient({
         setSelectedFile(null);
         setParseResult(null);
         setSaveMessage(
-          `הקבלה נשמרה בהצלחה. האקסל והדשבורד נבנו מחדש וה־push עודכן בקומיט ${payload.commit}.`,
+          githubConfigured
+            ? `הקבלה נשמרה ב־GitHub בקומיט ${payload.commit}. תוך בערך דקה GitHub Actions יבנה מחדש את האקסל והדשבורד.`
+            : `הקבלה נשמרה בהצלחה. האקסל והדשבורד נבנו מחדש וה־push עודכן בקומיט ${payload.commit}.`,
         );
       });
-      await checkBridge();
+      if (!githubConfigured) {
+        await checkBridge();
+      }
     } catch (error) {
       setSaveError(error instanceof Error ? error.message : "שמירת הקבלה נכשלה.");
     } finally {
@@ -215,7 +229,7 @@ export function ManualReceiptImportClient({
 
   return (
     <div className="space-y-6">
-      <section className="grid gap-4 xl:grid-cols-[0.85fr_1.15fr]">
+      <section className="grid gap-4 xl:grid-cols-[0.8fr_0.9fr_1.3fr]">
         <Card className="border-white/8 bg-white/[0.03] p-5 shadow-none">
           <div className="flex items-start justify-between gap-3">
             <div>
@@ -247,6 +261,66 @@ export function ManualReceiptImportClient({
           >
             <RefreshCw className="size-4" />
             בדוק חיבור מחדש
+          </Button>
+        </Card>
+
+        <Card className="border-white/8 bg-white/[0.03] p-5 shadow-none">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs tracking-[0.18em] text-zinc-500">GitHub Sync</p>
+              <h2 className="mt-2 text-2xl font-semibold text-white">שמירה אונליין</h2>
+            </div>
+            <Badge
+              variant="outline"
+              className={
+                githubConfigured
+                  ? "border-cyan-400/20 bg-cyan-400/10 text-cyan-200"
+                  : "border-amber-400/20 bg-amber-400/10 text-amber-200"
+              }
+            >
+              {githubConfigured ? "מוכן" : "דורש טוקן"}
+            </Badge>
+          </div>
+          <p className="mt-4 text-sm leading-6 text-zinc-400">
+            כשהחיבור הזה מוגדר, אפשר להעלות קבלות מהנייד או מכל מכשיר. הנתונים נשמרים ישר ל־GitHub, ו־GitHub Actions
+            בונה מחדש את האקסל והדשבורד בענן.
+          </p>
+          <div className="mt-5 space-y-3">
+            <Input
+              value={githubConfig.owner}
+              onChange={(event) => setGithubConfig((current) => ({ ...current, owner: event.target.value }))}
+              placeholder="Owner"
+              className="h-11 border-white/10 bg-black/20 text-zinc-100"
+            />
+            <Input
+              value={githubConfig.repo}
+              onChange={(event) => setGithubConfig((current) => ({ ...current, repo: event.target.value }))}
+              placeholder="Repository"
+              className="h-11 border-white/10 bg-black/20 text-zinc-100"
+            />
+            <Input
+              value={githubConfig.branch}
+              onChange={(event) => setGithubConfig((current) => ({ ...current, branch: event.target.value }))}
+              placeholder="Branch"
+              className="h-11 border-white/10 bg-black/20 text-zinc-100"
+            />
+            <Input
+              type="password"
+              value={githubConfig.token}
+              onChange={(event) => setGithubConfig((current) => ({ ...current, token: event.target.value }))}
+              placeholder="GitHub fine-grained token"
+              className="h-11 border-white/10 bg-black/20 text-zinc-100"
+            />
+            <p className="text-xs leading-5 text-zinc-500">
+              מומלץ להשתמש ב־fine-grained token עם הרשאת `Contents: Read and write` רק לריפו הזה.
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            className="mt-5 border-white/10 bg-black/20 text-zinc-100 hover:bg-white/[0.08]"
+            onClick={persistGithubConfig}
+          >
+            שמור חיבור GitHub
           </Button>
         </Card>
 
@@ -384,7 +458,8 @@ export function ManualReceiptImportClient({
                 <div>
                   <p className="text-base font-medium text-white">העלה קבלת PDF</p>
                   <p className="mt-2 text-sm leading-6 text-zinc-400">
-                    הקובץ נשלח רק לגשר המקומי על המחשב שלך, לא לשירות חיצוני. אחרי החילוץ תוכל לעבור על השדות ולתקן.
+                    החילוץ מתבצע ישירות בדפדפן. אחרי החילוץ אפשר לעבור על השדות, לתקן אם צריך, ואז לשמור אונליין
+                    ל־GitHub או דרך הגשר המקומי.
                   </p>
                 </div>
                 <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-zinc-100 hover:bg-white/[0.06]">
@@ -406,7 +481,7 @@ export function ManualReceiptImportClient({
               <div className="mt-4 flex flex-wrap gap-3">
                 <Button
                   onClick={() => void handleParsePdf()}
-                  disabled={!selectedFile || isParsingPdf || bridgeStatus !== "online"}
+                  disabled={!selectedFile || isParsingPdf}
                   className="bg-cyan-400 text-black hover:bg-cyan-300"
                 >
                   {isParsingPdf ? <LoaderCircle className="size-4 animate-spin" /> : <FileUp className="size-4" />}

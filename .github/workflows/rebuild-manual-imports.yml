@@ -1,0 +1,70 @@
+name: Rebuild Manual Imports
+
+on:
+  push:
+    branches:
+      - master
+      - main
+    paths:
+      - manual_receipts.json
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rebuild-manual-imports-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        run: python -m pip install --upgrade pip openpyxl requests pdfplumber
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: dashboard-web/package-lock.json
+
+      - name: Install dashboard dependencies
+        working-directory: dashboard-web
+        run: npm ci
+
+      - name: Build Excel report
+        run: python build_report.py
+
+      - name: Build dashboard export
+        working-directory: dashboard-web
+        run: npm run build
+
+      - name: Commit rebuilt artifacts
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add AI_Tools_Expenses_2025_2026.xlsx docs dashboard-web/public/data.json
+          if git diff --cached --quiet; then
+            echo "No rebuilt artifacts changed."
+            exit 0
+          fi
+          git commit -m "Rebuild dashboard and Excel from manual imports"
+          git push origin HEAD:${GITHUB_REF_NAME}
+          if [ "${GITHUB_REF_NAME}" = "master" ]; then
+            git push origin HEAD:main
+          elif [ "${GITHUB_REF_NAME}" = "main" ]; then
+            git push origin HEAD:master
+          fi
