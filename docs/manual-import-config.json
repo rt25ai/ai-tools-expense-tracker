@@ -1,4 +1,7 @@
 {
-  "mode": "local-fallback",
-  "gatewayUrl": null
+  "mode": "github-direct",
+  "gatewayUrl": null,
+  "githubOwner": "rt25ai",
+  "githubRepo": "ai-tools-expense-tracker",
+  "githubBranch": "master"
 }

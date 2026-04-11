@@ -2,11 +2,21 @@
 
 import Link from "next/link";
 import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { FileUp, LoaderCircle, PencilLine, PlugZap, RefreshCw, ShieldCheck, Trash2, Upload, X } from "lucide-react";
+import { Eye, EyeOff, FileUp, Key, LoaderCircle, PencilLine, PlugZap, RefreshCw, ShieldCheck, Trash2, Upload, X } from "lucide-react";
 import { formatDateLabel } from "@/lib/formatters";
 import { parseManualReceiptPdf, type ManualReceiptParseResult } from "@/lib/manual-receipt-parser";
 import type { ManualReceiptRecord } from "@/lib/manual-receipts";
 import { monthReportHref } from "@/lib/report-links";
+import {
+  checkGithubDirectAccess,
+  clearStoredToken,
+  getStoredToken,
+  githubDirectCreate,
+  githubDirectDelete,
+  githubDirectUpdate,
+  setStoredToken,
+  type GithubDirectConfig,
+} from "@/lib/github-direct-client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -18,7 +28,13 @@ import { Textarea } from "@/components/ui/textarea";
 const LOCAL_BRIDGE_URL = "http://127.0.0.1:8765";
 type ConnectionStatus = "checking" | "online" | "offline" | "not-configured";
 type ReceiptAction = "created" | "updated" | "deleted";
-type RuntimeImportConfig = { gatewayUrl: string | null; mode: "gateway" | "local-fallback" };
+type RuntimeImportConfig = {
+  gatewayUrl: string | null;
+  mode: "gateway" | "local-fallback" | "github-direct";
+  githubOwner?: string;
+  githubRepo?: string;
+  githubBranch?: string;
+};
 type ReceiptFormState = {
   tool: string;
   date: string;
@@ -38,11 +54,11 @@ type MutationResult = {
   action: ReceiptAction;
   commit: string;
   entry: ManualReceiptRecord;
-  channel: "gateway" | "bridge";
+  channel: "gateway" | "bridge" | "github-direct";
 };
 
 const initialFormState: ReceiptFormState = { tool: "", date: "", description: "", currency: "USD", originalAmount: "", notes: "" };
-const defaultImportConfig: RuntimeImportConfig = { gatewayUrl: null, mode: "local-fallback" };
+const defaultImportConfig: RuntimeImportConfig = { gatewayUrl: null, mode: "github-direct" };
 
 function monthKeyFromDate(date: string) {
   return date.slice(0, 7);
@@ -65,12 +81,24 @@ function assetUrl(relativePath: string) {
   return `${getBasePath()}/${relativePath.replace(/^\/+/, "")}`.replace(/\/{2,}/g, "/");
 }
 
+function getGithubDirectConfig(config: RuntimeImportConfig): GithubDirectConfig | null {
+  if (!config.githubOwner || !config.githubRepo || !config.githubBranch) return null;
+  return { owner: config.githubOwner, repo: config.githubRepo, branch: config.githubBranch };
+}
+
 async function loadRuntimeImportConfig(): Promise<RuntimeImportConfig> {
   try {
     const response = await fetch(assetUrl("manual-import-config.json"), { cache: "no-store" });
     if (!response.ok) return defaultImportConfig;
     const payload = (await response.json()) as Partial<RuntimeImportConfig>;
-    return { gatewayUrl: payload.gatewayUrl?.trim() || null, mode: payload.mode === "gateway" ? "gateway" : "local-fallback" };
+    const mode = payload.mode === "gateway" ? "gateway" : payload.mode === "github-direct" ? "github-direct" : "local-fallback";
+    return {
+      gatewayUrl: payload.gatewayUrl?.trim() || null,
+      mode,
+      githubOwner: payload.githubOwner?.trim() || undefined,
+      githubRepo: payload.githubRepo?.trim() || undefined,
+      githubBranch: payload.githubBranch?.trim() || undefined,
+    };
   } catch {
     return defaultImportConfig;
   }
@@ -91,12 +119,12 @@ function statusBadgeClasses(status: ConnectionStatus) {
   return "border-rose-400/20 bg-rose-400/10 text-rose-200";
 }
 
-function mutationMessage(action: ReceiptAction, commit: string, channel: "gateway" | "bridge") {
+function mutationMessage(action: ReceiptAction, commit: string, channel: "gateway" | "bridge" | "github-direct") {
   if (commit === "no-change") return "לא זוהה שינוי לשמירה.";
   const verb = action === "created" ? "נשמרה" : action === "updated" ? "עודכנה" : "נמחקה";
-  return channel === "gateway"
-    ? `הקבלה ${verb} דרך השער המאובטח בקומיט ${commit}. GitHub Actions יבנה עכשיו מחדש את האקסל והדשבורד.`
-    : `הקבלה ${verb} דרך הגשר המקומי בקומיט ${commit}.`;
+  if (channel === "github-direct") return `הקבלה ${verb} ישירות ב-GitHub בקומיט ${commit}. GitHub Actions יבנה עכשיו מחדש את האקסל והדשבורד.`;
+  if (channel === "gateway") return `הקבלה ${verb} דרך השער המאובטח בקומיט ${commit}. GitHub Actions יבנה עכשיו מחדש את האקסל והדשבורד.`;
+  return `הקבלה ${verb} דרך הגשר המקומי בקומיט ${commit}.`;
 }
 
 export function ManualReceiptImportClient({ knownVendors, initialReceipts }: { knownVendors: string[]; initialReceipts: ManualReceiptRecord[] }) {
@@ -106,6 +134,12 @@ export function ManualReceiptImportClient({ knownVendors, initialReceipts }: { k
   const [gatewayMessage, setGatewayMessage] = useState("בודק אם שער הייבוא המאובטח זמין...");
   const [bridgeStatus, setBridgeStatus] = useState<ConnectionStatus>("checking");
   const [bridgeMessage, setBridgeMessage] = useState("בודק אם הגשר המקומי פעיל...");
+  const [githubDirectStatus, setGithubDirectStatus] = useState<ConnectionStatus>("checking");
+  const [githubDirectMessage, setGithubDirectMessage] = useState("בודק חיבור לגיטהאב...");
+  const [githubToken, setGithubToken] = useState<string | null>(null);
+  const [tokenInput, setTokenInput] = useState("");
+  const [showTokenInput, setShowTokenInput] = useState(false);
+  const [showTokenValue, setShowTokenValue] = useState(false);
   const [activeTab, setActiveTab] = useState<"manual" | "pdf">("manual");
   const [form, setForm] = useState<ReceiptFormState>(initialFormState);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -123,6 +157,25 @@ export function ManualReceiptImportClient({ knownVendors, initialReceipts }: { k
   const editingReceipt = editingReceiptId ? manualReceipts.find((receipt) => receipt.id === editingReceiptId) ?? null : null;
   const monthHref = useMemo(() => (form.date ? monthReportHref(monthKeyFromDate(form.date)) : null), [form.date]);
 
+  const checkGithubDirect = useCallback(async (config: RuntimeImportConfig, token: string | null) => {
+    const ghConfig = getGithubDirectConfig(config);
+    if (!ghConfig) {
+      setGithubDirectStatus("not-configured");
+      setGithubDirectMessage("ה-GitHub Repo לא הוגדר בקובץ ההגדרות.");
+      return;
+    }
+    if (!token) {
+      setGithubDirectStatus("not-configured");
+      setGithubDirectMessage("לא הוגדר GitHub Token. הוסף Personal Access Token כדי לשמור ישירות ב-GitHub.");
+      return;
+    }
+    setGithubDirectStatus("checking");
+    setGithubDirectMessage("בודק חיבור לגיטהאב...");
+    const result = await checkGithubDirectAccess(ghConfig, token);
+    setGithubDirectStatus(result.ok ? "online" : "offline");
+    setGithubDirectMessage(result.message);
+  }, []);
+
   const checkGatewayForConfig = useCallback(async (config: RuntimeImportConfig) => {
     if (!config.gatewayUrl) {
       setGatewayStatus("not-configured");
@@ -135,16 +188,12 @@ export function ManualReceiptImportClient({ knownVendors, initialReceipts }: { k
       const payload = (await response.json()) as { ok?: boolean; target?: string };
       if (!response.ok || !payload.ok) throw new Error();
       setGatewayStatus("online");
-      setGatewayMessage(`השער המאובטח פעיל ומוכן לשמירה אונליין ל־${payload.target ?? "GitHub"}.`);
+      setGatewayMessage(`השער המאובטח פעיל ומוכן לשמירה אונליין ל-${payload.target ?? "GitHub"}.`);
     } catch {
       setGatewayStatus("offline");
-      setGatewayMessage("השער המאובטח לא ענה כרגע. אם הוא אמור לעבוד, כדאי לבדוק את הפריסה או את ה־CORS.");
+      setGatewayMessage("השער המאובטח לא ענה כרגע. אם הוא אמור לעבוד, כדאי לבדוק את הפריסה או את ה-CORS.");
     }
   }, []);
-
-  const checkGateway = useCallback(async () => {
-    await checkGatewayForConfig(runtimeConfig);
-  }, [runtimeConfig, checkGatewayForConfig]);
 
   const checkBridge = useCallback(async () => {
     try {
@@ -155,7 +204,7 @@ export function ManualReceiptImportClient({ knownVendors, initialReceipts }: { k
       setBridgeMessage(`הגשר המקומי פעיל. כרגע שמורות ${payload.receiptsCount ?? 0} קבלות ידניות.`);
     } catch {
       setBridgeStatus("offline");
-      setBridgeMessage("הגשר המקומי לא פעיל. זה בסדר אם עובדים דרך השער המאובטח, אבל לא מספיק לשמירה מקומית.");
+      setBridgeMessage("הגשר המקומי לא פעיל. זה בסדר אם עובדים דרך GitHub ישירות.");
     }
   }, []);
 
@@ -164,22 +213,49 @@ export function ManualReceiptImportClient({ knownVendors, initialReceipts }: { k
     async function bootstrap() {
       const loadedConfig = await loadRuntimeImportConfig();
       if (cancelled) return;
+      const storedToken = getStoredToken();
+      setGithubToken(storedToken);
       setRuntimeConfig(loadedConfig);
-      await Promise.all([checkGatewayForConfig(loadedConfig), checkBridge()]);
+      if (loadedConfig.mode === "github-direct") {
+        await checkGithubDirect(loadedConfig, storedToken);
+      } else {
+        await Promise.all([checkGatewayForConfig(loadedConfig), checkBridge()]);
+      }
     }
     void bootstrap();
-    return () => {
-      cancelled = true;
-    };
-  }, [checkBridge, checkGatewayForConfig]);
+    return () => { cancelled = true; };
+  }, [checkBridge, checkGatewayForConfig, checkGithubDirect]);
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
-      void checkGateway();
-      void checkBridge();
-    }, 20000);
+      if (runtimeConfig.mode === "github-direct") {
+        void checkGithubDirect(runtimeConfig, githubToken);
+      } else {
+        void checkGatewayForConfig(runtimeConfig);
+        void checkBridge();
+      }
+    }, 30000);
     return () => window.clearInterval(intervalId);
-  }, [checkBridge, checkGateway]);
+  }, [checkBridge, checkGatewayForConfig, checkGithubDirect, runtimeConfig, githubToken]);
+
+  function saveTokenAndRefresh(token: string) {
+    setStoredToken(token);
+    setGithubToken(token);
+    setTokenInput("");
+    setShowTokenInput(false);
+    setShowTokenValue(false);
+    void checkGithubDirect(runtimeConfig, token);
+  }
+
+  function clearTokenAndRefresh() {
+    clearStoredToken();
+    setGithubToken(null);
+    setTokenInput("");
+    setShowTokenInput(false);
+    setShowTokenValue(false);
+    setGithubDirectStatus("not-configured");
+    setGithubDirectMessage("לא הוגדר GitHub Token. הוסף Personal Access Token כדי לשמור ישירות ב-GitHub.");
+  }
 
   function resetEditor() {
     setEditingReceiptId(null);
@@ -209,7 +285,42 @@ export function ManualReceiptImportClient({ knownVendors, initialReceipts }: { k
     return { action: payload.action, commit: payload.commit, entry: payload.entry, channel };
   }
 
+  async function githubDirectSaveMutation(method: "POST" | "PUT"): Promise<MutationResult> {
+    const token = githubToken;
+    if (!token) throw new Error("לא הוגדר GitHub Token. הוסף אותו בכרטיס החיבור למעלה.");
+    const ghConfig = getGithubDirectConfig(runtimeConfig);
+    if (!ghConfig) throw new Error("הגדרות GitHub חסרות. בדוק את קובץ ההגדרות.");
+    const entry = buildEntry();
+    const fields = {
+      tool: entry.tool,
+      date: entry.date,
+      description: entry.description,
+      currency: entry.currency as "USD" | "ILS",
+      original_amount: entry.original_amount,
+      notes: entry.notes || null,
+      entry_mode: entry.entry_mode,
+    };
+    if (method === "PUT" && editingReceiptId) {
+      const result = await githubDirectUpdate(ghConfig, token, editingReceiptId, fields);
+      return { action: "updated", commit: result.commit, entry: result.entry, channel: "github-direct" };
+    }
+    const result = await githubDirectCreate(ghConfig, token, fields);
+    return { action: "created", commit: result.commit, entry: result.entry, channel: "github-direct" };
+  }
+
+  async function githubDirectDeleteMutation(id: string): Promise<MutationResult> {
+    const token = githubToken;
+    if (!token) throw new Error("לא הוגדר GitHub Token. הוסף אותו בכרטיס החיבור למעלה.");
+    const ghConfig = getGithubDirectConfig(runtimeConfig);
+    if (!ghConfig) throw new Error("הגדרות GitHub חסרות. בדוק את קובץ ההגדרות.");
+    const result = await githubDirectDelete(ghConfig, token, id);
+    return { action: "deleted", commit: result.commit, entry: result.entry, channel: "github-direct" };
+  }
+
   async function saveMutation(method: "POST" | "PUT") {
+    if (runtimeConfig.mode === "github-direct") {
+      return githubDirectSaveMutation(method);
+    }
     const fileBase64 = selectedFile ? await readFileAsDataUrl(selectedFile) : null;
     const body = { id: editingReceiptId, entry: buildEntry(), fileName: selectedFile?.name ?? null, fileBase64 };
     if (gatewayStatus === "online") {
@@ -220,6 +331,9 @@ export function ManualReceiptImportClient({ knownVendors, initialReceipts }: { k
   }
 
   async function deleteMutation(id: string) {
+    if (runtimeConfig.mode === "github-direct") {
+      return githubDirectDeleteMutation(id);
+    }
     const body = { id };
     if (gatewayStatus === "online") {
       if (!runtimeConfig.gatewayUrl) throw new Error("שער הייבוא המאובטח לא מוגדר.");
@@ -244,9 +358,9 @@ export function ManualReceiptImportClient({ knownVendors, initialReceipts }: { k
         currency: payload.suggestedCurrency || current.currency,
         originalAmount: current.originalAmount || payload.suggestedAmount === null ? current.originalAmount : String(payload.suggestedAmount),
       }));
-      setSaveMessage("ה־PDF נותח והטופס מולא אוטומטית ככל האפשר. אפשר לעבור על השדות ואז לשמור.");
+      setSaveMessage("ה-PDF נותח והטופס מולא אוטומטית ככל האפשר. אפשר לעבור על השדות ואז לשמור.");
     } catch (error) {
-      setSaveError(error instanceof Error ? error.message : "חילוץ ה־PDF נכשל.");
+      setSaveError(error instanceof Error ? error.message : "חילוץ ה-PDF נכשל.");
     } finally {
       setIsParsingPdf(false);
     }
@@ -267,7 +381,9 @@ export function ManualReceiptImportClient({ knownVendors, initialReceipts }: { k
 
   async function handleSave() {
     if (!form.tool || !form.date || !form.description || !form.originalAmount) return setSaveError("יש למלא ספק, תאריך, תיאור וסכום לפני שמירה.");
-    if (gatewayStatus !== "online" && bridgeStatus !== "online") return setSaveError("אין כרגע נתיב שמירה זמין. צריך שער מאובטח פעיל או גשר מקומי פעיל.");
+    const isGithubDirect = runtimeConfig.mode === "github-direct";
+    if (isGithubDirect && githubDirectStatus !== "online") return setSaveError("חיבור ה-GitHub לא פעיל. בדוק את ה-Token בכרטיס החיבור למעלה.");
+    if (!isGithubDirect && gatewayStatus !== "online" && bridgeStatus !== "online") return setSaveError("אין כרגע נתיב שמירה זמין. צריך שער מאובטח פעיל או גשר מקומי פעיל.");
     setIsSaving(true);
     setSaveError(null);
     setSaveMessage(null);
@@ -278,7 +394,8 @@ export function ManualReceiptImportClient({ knownVendors, initialReceipts }: { k
         resetEditor();
         setSaveMessage(mutationMessage(result.action, result.commit, result.channel));
       });
-      await Promise.all([checkGateway(), checkBridge()]);
+      if (isGithubDirect) void checkGithubDirect(runtimeConfig, githubToken);
+      else await Promise.all([checkGatewayForConfig(runtimeConfig), checkBridge()]);
     } catch (error) {
       setSaveError(error instanceof Error ? error.message : "שמירת הקבלה נכשלה.");
     } finally {
@@ -287,7 +404,13 @@ export function ManualReceiptImportClient({ knownVendors, initialReceipts }: { k
   }
 
   async function handleDelete(receipt: ManualReceiptRecord) {
-    if (gatewayStatus !== "online" && bridgeStatus !== "online") {
+    const isGithubDirect = runtimeConfig.mode === "github-direct";
+    if (isGithubDirect && githubDirectStatus !== "online") {
+      setConfirmDeleteId(null);
+      setReceiptsError("חיבור ה-GitHub לא פעיל. בדוק את ה-Token בכרטיס החיבור למעלה.");
+      return;
+    }
+    if (!isGithubDirect && gatewayStatus !== "online" && bridgeStatus !== "online") {
       setConfirmDeleteId(null);
       setReceiptsError("אין כרגע נתיב שמירה זמין. צריך שער מאובטח פעיל או גשר מקומי פעיל.");
       return;
@@ -304,7 +427,8 @@ export function ManualReceiptImportClient({ knownVendors, initialReceipts }: { k
         if (editingReceiptId === receipt.id) resetEditor();
         setSaveMessage(mutationMessage(result.action, result.commit, result.channel));
       });
-      await Promise.all([checkGateway(), checkBridge()]);
+      if (isGithubDirect) void checkGithubDirect(runtimeConfig, githubToken);
+      else await Promise.all([checkGatewayForConfig(runtimeConfig), checkBridge()]);
     } catch (error) {
       setReceiptsError(error instanceof Error ? error.message : "מחיקת הקבלה נכשלה.");
     } finally {
@@ -314,22 +438,98 @@ export function ManualReceiptImportClient({ knownVendors, initialReceipts }: { k
 
   return (
     <div className="space-y-6">
-      <section className="grid gap-4 xl:grid-cols-3">
-        <Card className="border-white/8 bg-white/[0.03] p-5 shadow-none">
-          <div className="flex items-start justify-between gap-3"><div><p className="text-xs tracking-[0.18em] text-zinc-500">Secure Import</p><h2 className="mt-2 text-2xl font-semibold text-white">שער ייבוא מאובטח</h2></div><Badge variant="outline" className={statusBadgeClasses(gatewayStatus)}>{gatewayStatus === "online" ? "פעיל" : gatewayStatus === "checking" ? "בודק" : gatewayStatus === "not-configured" ? "לא הוגדר" : "לא זמין"}</Badge></div>
-          <p className="mt-4 text-sm leading-6 text-zinc-400">{gatewayMessage}</p>
-          <Button variant="outline" className="mt-5 border-white/10 bg-black/20 text-zinc-100 hover:bg-white/[0.08]" onClick={() => void checkGateway()}><RefreshCw className="size-4" />בדוק שער מאובטח</Button>
-        </Card>
-        <Card className="border-white/8 bg-white/[0.03] p-5 shadow-none">
-          <div className="flex items-start justify-between gap-3"><div><p className="text-xs tracking-[0.18em] text-zinc-500">Local Fallback</p><h2 className="mt-2 text-2xl font-semibold text-white">גשר מקומי</h2></div><Badge variant="outline" className={statusBadgeClasses(bridgeStatus)}>{bridgeStatus === "online" ? "פעיל" : bridgeStatus === "checking" ? "בודק" : "לא זמין"}</Badge></div>
-          <p className="mt-4 text-sm leading-6 text-zinc-400">{bridgeMessage}</p>
-          <code className="mt-5 block rounded-2xl border border-white/8 bg-black/20 p-4 text-sm text-cyan-200">python manual_receipt_bridge.py</code>
-        </Card>
-        <Card className="border-white/8 bg-white/[0.03] p-5 shadow-none">
-          <div className="flex items-start justify-between gap-3"><div><p className="text-xs tracking-[0.18em] text-zinc-500">Sync</p><h2 className="mt-2 text-2xl font-semibold text-white">מה מתעדכן</h2></div><PlugZap className="size-5 text-cyan-300" /></div>
-          <div className="mt-5 grid gap-3 text-sm text-zinc-400"><div className="rounded-2xl border border-white/8 bg-black/20 p-4">כל פעולה מעדכנת את מקור האמת ב־<code>manual_receipts.json</code>.</div><div className="rounded-2xl border border-white/8 bg-black/20 p-4">לאחר שמירה, עריכה או מחיקה נבנים מחדש האקסל והדשבורד.</div></div>
-        </Card>
-      </section>
+      {runtimeConfig.mode === "github-direct" ? (
+        <section className="grid gap-4 xl:grid-cols-2">
+          <Card className="border-white/8 bg-white/[0.03] p-5 shadow-none">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-xs tracking-[0.18em] text-zinc-500">GitHub Direct</p>
+                <h2 className="mt-2 text-2xl font-semibold text-white">חיבור ישיר לגיטהאב</h2>
+              </div>
+              <Badge variant="outline" className={statusBadgeClasses(githubDirectStatus)}>
+                {githubDirectStatus === "online" ? "פעיל" : githubDirectStatus === "checking" ? "בודק" : githubDirectStatus === "not-configured" ? "לא הוגדר" : "לא זמין"}
+              </Badge>
+            </div>
+            <p className="mt-4 text-sm leading-6 text-zinc-400">{githubDirectMessage}</p>
+            {githubToken && !showTokenInput ? (
+              <div className="mt-5 flex flex-wrap gap-2">
+                <Button variant="outline" size="sm" className="border-white/10 bg-black/20 text-zinc-100 hover:bg-white/[0.08]" onClick={() => void checkGithubDirect(runtimeConfig, githubToken)}>
+                  <RefreshCw className="size-4" />בדוק חיבור
+                </Button>
+                <Button variant="outline" size="sm" className="border-white/10 bg-black/20 text-zinc-100 hover:bg-white/[0.08]" onClick={() => { setShowTokenInput(true); setTokenInput(""); }}>
+                  <Key className="size-4" />החלף Token
+                </Button>
+                <Button variant="destructive" size="sm" onClick={clearTokenAndRefresh}>
+                  <X className="size-4" />הסר Token
+                </Button>
+              </div>
+            ) : (
+              <div className="mt-5 space-y-3">
+                <p className="text-xs text-zinc-500">
+                  צור <strong className="text-zinc-300">Fine-grained PAT</strong> ב-GitHub עם הרשאת{" "}
+                  <code className="text-cyan-300">Contents: Read and Write</code> על ריפו זה.
+                </p>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Input
+                      type={showTokenValue ? "text" : "password"}
+                      value={tokenInput}
+                      onChange={(event) => setTokenInput(event.target.value)}
+                      placeholder="github_pat_..."
+                      className="h-9 border-white/10 bg-black/20 pr-10 font-mono text-sm text-zinc-100"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowTokenValue((prev) => !prev)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
+                    >
+                      {showTokenValue ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                    </button>
+                  </div>
+                  <Button size="sm" disabled={!tokenInput.trim()} className="bg-cyan-400 text-black hover:bg-cyan-300" onClick={() => saveTokenAndRefresh(tokenInput.trim())}>
+                    שמור
+                  </Button>
+                  {githubToken ? (
+                    <Button variant="outline" size="sm" className="border-white/10 bg-black/20 text-zinc-100 hover:bg-white/[0.08]" onClick={() => { setShowTokenInput(false); setTokenInput(""); }}>
+                      ביטול
+                    </Button>
+                  ) : null}
+                </div>
+              </div>
+            )}
+          </Card>
+          <Card className="border-white/8 bg-white/[0.03] p-5 shadow-none">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-xs tracking-[0.18em] text-zinc-500">Sync</p>
+                <h2 className="mt-2 text-2xl font-semibold text-white">מה מתעדכן</h2>
+              </div>
+              <PlugZap className="size-5 text-cyan-300" />
+            </div>
+            <div className="mt-5 grid gap-3 text-sm text-zinc-400">
+              <div className="rounded-2xl border border-white/8 bg-black/20 p-4">כל פעולה מעדכנת את מקור האמת ב-<code>manual_receipts.json</code> ישירות ב-GitHub.</div>
+              <div className="rounded-2xl border border-white/8 bg-black/20 p-4">לאחר שמירה, עריכה או מחיקה, GitHub Actions בונה מחדש את האקסל והדשבורד.</div>
+            </div>
+          </Card>
+        </section>
+      ) : (
+        <section className="grid gap-4 xl:grid-cols-3">
+          <Card className="border-white/8 bg-white/[0.03] p-5 shadow-none">
+            <div className="flex items-start justify-between gap-3"><div><p className="text-xs tracking-[0.18em] text-zinc-500">Secure Import</p><h2 className="mt-2 text-2xl font-semibold text-white">שער ייבוא מאובטח</h2></div><Badge variant="outline" className={statusBadgeClasses(gatewayStatus)}>{gatewayStatus === "online" ? "פעיל" : gatewayStatus === "checking" ? "בודק" : gatewayStatus === "not-configured" ? "לא הוגדר" : "לא זמין"}</Badge></div>
+            <p className="mt-4 text-sm leading-6 text-zinc-400">{gatewayMessage}</p>
+            <Button variant="outline" className="mt-5 border-white/10 bg-black/20 text-zinc-100 hover:bg-white/[0.08]" onClick={() => void checkGatewayForConfig(runtimeConfig)}><RefreshCw className="size-4" />בדוק שער מאובטח</Button>
+          </Card>
+          <Card className="border-white/8 bg-white/[0.03] p-5 shadow-none">
+            <div className="flex items-start justify-between gap-3"><div><p className="text-xs tracking-[0.18em] text-zinc-500">Local Fallback</p><h2 className="mt-2 text-2xl font-semibold text-white">גשר מקומי</h2></div><Badge variant="outline" className={statusBadgeClasses(bridgeStatus)}>{bridgeStatus === "online" ? "פעיל" : bridgeStatus === "checking" ? "בודק" : "לא זמין"}</Badge></div>
+            <p className="mt-4 text-sm leading-6 text-zinc-400">{bridgeMessage}</p>
+            <code className="mt-5 block rounded-2xl border border-white/8 bg-black/20 p-4 text-sm text-cyan-200">python manual_receipt_bridge.py</code>
+          </Card>
+          <Card className="border-white/8 bg-white/[0.03] p-5 shadow-none">
+            <div className="flex items-start justify-between gap-3"><div><p className="text-xs tracking-[0.18em] text-zinc-500">Sync</p><h2 className="mt-2 text-2xl font-semibold text-white">מה מתעדכן</h2></div><PlugZap className="size-5 text-cyan-300" /></div>
+            <div className="mt-5 grid gap-3 text-sm text-zinc-400"><div className="rounded-2xl border border-white/8 bg-black/20 p-4">כל פעולה מעדכנת את מקור האמת ב-<code>manual_receipts.json</code>.</div><div className="rounded-2xl border border-white/8 bg-black/20 p-4">לאחר שמירה, עריכה או מחיקה נבנים מחדש האקסל והדשבורד.</div></div>
+          </Card>
+        </section>
+      )}
 
       <div ref={editorRef}>
         <Card className="border-white/8 bg-white/[0.03] p-6 shadow-none">
@@ -338,7 +538,7 @@ export function ManualReceiptImportClient({ knownVendors, initialReceipts }: { k
               <div><p className="text-[11px] tracking-[0.18em] text-zinc-500">{editingReceipt ? "עריכת קבלה" : "ייבוא חדש"}</p><h2 className="mt-2 text-2xl font-semibold text-white">{editingReceipt ? "ערוך את פרטי הקבלה" : "הוסף קבלה שלא הגיעה למייל"}</h2></div>
               <TabsList variant="line" className="bg-transparent p-0"><TabsTrigger value="manual" className="data-active:text-white">הזנת נתונים</TabsTrigger><TabsTrigger value="pdf" className="data-active:text-white">העלאת PDF</TabsTrigger></TabsList>
             </div>
-            {editingReceipt ? <div className="rounded-2xl border border-cyan-400/20 bg-cyan-400/10 px-4 py-3 text-sm text-cyan-100">עורך עכשיו את {editingReceipt.tool} מתאריך {formatDateLabel(editingReceipt.date)}. {editingReceipt.attachment_path ? "ה־PDF הקיים יישאר מחובר עד שתעלה חדש." : "אפשר לשמור רק שינויי שדות או לצרף PDF חדש."}</div> : null}
+            {editingReceipt ? <div className="rounded-2xl border border-cyan-400/20 bg-cyan-400/10 px-4 py-3 text-sm text-cyan-100">עורך עכשיו את {editingReceipt.tool} מתאריך {formatDateLabel(editingReceipt.date)}. {editingReceipt.attachment_path ? "ה-PDF הקיים יישאר מחובר עד שתעלה חדש." : "אפשר לשמור רק שינויי שדות או לצרף PDF חדש."}</div> : null}
 
             <TabsContent value="manual" className="space-y-6">
               <div className="grid gap-5 lg:grid-cols-2">
@@ -355,7 +555,7 @@ export function ManualReceiptImportClient({ knownVendors, initialReceipts }: { k
               <div className="rounded-[26px] border border-dashed border-cyan-400/20 bg-cyan-400/[0.04] p-5">
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"><div><p className="text-base font-medium text-white">העלה קבלת PDF</p><p className="mt-2 text-sm leading-6 text-zinc-400">אפשר לנתח את הקובץ, למלא את הטופס, ולשמור קבלה חדשה או לעדכן קיימת.</p></div><label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-zinc-100 hover:bg-white/[0.06]"><Upload className="size-4" />בחר PDF<input type="file" accept="application/pdf" className="hidden" onChange={(event) => setSelectedFile(event.target.files?.[0] ?? null)} /></label></div>
                 {selectedFile ? <div className="mt-4 rounded-2xl border border-white/8 bg-black/20 px-4 py-3 text-sm text-zinc-300">קובץ נבחר: {selectedFile.name}</div> : editingReceipt?.attachment_name ? <div className="mt-4 rounded-2xl border border-white/8 bg-black/20 px-4 py-3 text-sm text-zinc-400">כרגע מקושר: {editingReceipt.attachment_name}</div> : null}
-                <div className="mt-4 flex flex-wrap gap-3"><Button onClick={() => void handleParsePdf()} disabled={!selectedFile || isParsingPdf} className="bg-cyan-400 text-black hover:bg-cyan-300">{isParsingPdf ? <LoaderCircle className="size-4 animate-spin" /> : <FileUp className="size-4" />}חלץ נתונים מה־PDF</Button><p className="self-center text-sm text-zinc-500">אחרי החילוץ, השדות יתמלאו ככל האפשר.</p></div>
+                <div className="mt-4 flex flex-wrap gap-3"><Button onClick={() => void handleParsePdf()} disabled={!selectedFile || isParsingPdf} className="bg-cyan-400 text-black hover:bg-cyan-300">{isParsingPdf ? <LoaderCircle className="size-4 animate-spin" /> : <FileUp className="size-4" />}חלץ נתונים מה-PDF</Button><p className="self-center text-sm text-zinc-500">אחרי החילוץ, השדות יתמלאו ככל האפשר.</p></div>
               </div>
               {parseResult ? <div className="grid gap-4 xl:grid-cols-[0.8fr_1.2fr]"><Card className="border-white/8 bg-black/20 p-5 shadow-none"><p className="text-sm font-medium text-white">מה זוהה</p><div className="mt-4 space-y-3 text-sm text-zinc-400"><p>ספק: <span className="text-zinc-100">{parseResult.suggestedTool ?? "לא זוהה"}</span></p><p>שירות: <span className="text-zinc-100">{parseResult.suggestedDescription ?? "לא זוהה"}</span></p><p>תאריך: <span className="text-zinc-100">{parseResult.suggestedDate ?? "לא זוהה"}</span></p><p>מטבע: <span className="text-zinc-100">{parseResult.suggestedCurrency ?? "לא זוהה"}</span></p><p>סכום: <span className="text-zinc-100">{parseResult.suggestedAmount ?? "לא זוהה"}</span></p></div></Card><Card className="border-white/8 bg-black/20 p-5 shadow-none"><p className="text-sm font-medium text-white">תצוגה מקדימה</p><pre className="mt-4 max-h-[280px] overflow-auto whitespace-pre-wrap text-sm leading-6 text-zinc-400">{parseResult.textPreview || "לא נמצא טקסט קריא בקובץ."}</pre></Card></div> : null}
             </TabsContent>
@@ -364,7 +564,13 @@ export function ManualReceiptImportClient({ knownVendors, initialReceipts }: { k
           {saveMessage || saveError ? <div className={`mt-6 rounded-2xl border px-4 py-3 text-sm ${saveError ? "border-rose-400/20 bg-rose-400/10 text-rose-200" : "border-cyan-400/20 bg-cyan-400/10 text-cyan-100"}`}>{saveError ?? saveMessage}</div> : null}
 
           <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-white/6 pt-6">
-            <div className="text-sm text-zinc-500"><p>השמירה משתמשת קודם בשער המאובטח, ואם הוא לא זמין עוברת לגשר המקומי.</p><p className="mt-1">עריכה ומחיקה משתמשות באותו מסלול, כך שכל שינוי יעדכן גם את מקור הנתונים וגם את הדשבורד.</p></div>
+            <div className="text-sm text-zinc-500">
+              {runtimeConfig.mode === "github-direct" ? (
+                <p>השמירה משתמשת ב-GitHub API ישירות מהדפדפן. כל שינוי מקבל קומיט ועובר ב-GitHub Actions לבנייה מחדש.</p>
+              ) : (
+                <p>השמירה משתמשת קודם בשער המאובטח, ואם הוא לא זמין עוברת לגשר המקומי.</p>
+              )}
+            </div>
             <div className="flex flex-wrap gap-2">{editingReceipt ? <Button type="button" variant="outline" onClick={resetEditor} disabled={isSaving} className="border-white/10 bg-black/20 text-zinc-100 hover:bg-white/[0.08]"><X className="size-4" />בטל עריכה</Button> : null}<Button type="button" onClick={() => void handleSave()} disabled={isSaving} className="bg-cyan-400 text-black hover:bg-cyan-300">{isSaving ? <LoaderCircle className="size-4 animate-spin" /> : <ShieldCheck className="size-4" />}{editingReceipt ? "עדכן, בנה מחדש ופרסם" : "שמור, בנה מחדש ופרסם"}</Button></div>
           </div>
         </Card>
