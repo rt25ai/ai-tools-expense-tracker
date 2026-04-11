@@ -1078,7 +1078,11 @@ def generate_dashboard_json():
     from collections import defaultdict
     import datetime as dt
 
-    docs_dir = Path(r"C:\Users\roita\מעקב הוצאות כלים\docs")
+    docs_dir = (
+        Path("docs")
+        if os.environ.get("CI")
+        else Path(r"C:\Users\roita\מעקב הוצאות כלים\docs")
+    )
     docs_dir.mkdir(exist_ok=True)
 
     today = dt.date.today()
