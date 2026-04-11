@@ -118,6 +118,7 @@ MANUAL_TRANSACTIONS = [
     ("2026-01-30", "Eleven Labs",   "Starter monthly",                   5.00),
     ("2026-02-01", "Lovable",       "Upgrade Pro1 -> Pro2 (prorated)",  25.00),
     ("2026-02-02", "Google Workspace", "Business Plus – Jan 2026 (₪75.90)",  20.79),
+    ("2026-02-02", "Google Workspace", "Google Workspace (₪75.9)", 75.90, "ILS"),
     ("2026-02-03", "Meta (Ads)",    "Facebook Ads",                     31.42),
     ("2026-02-10", "CapCut",        "Pro – Feb 2026 (₪49.90)",          13.67),
     ("2026-02-12", "Meta (Ads)",    "Facebook Ads",                     47.00),
@@ -130,6 +131,7 @@ MANUAL_TRANSACTIONS = [
     ("2026-02-28", "Lovable",       "Cloud & AI Balance Top-up",        10.00),
     ("2026-03-01", "Lovable",       "Cloud & AI Balance Top-up",        10.00),
     ("2026-03-01", "Timeless",      "Pro monthly (50% off)",            14.50),
+    ("2026-03-01", "Google Workspace", "Google Workspace (₪75.9)", 75.90, "ILS"),
     ("2026-03-02", "Lovable",       "Cloud & AI Balance Top-up",        10.00),
     ("2026-03-02", "Google Workspace", "Business Plus – Feb 2026 (₪75.90)",  20.79),
     ("2026-03-03", "Meta (Ads)",    "Facebook Ads",                     40.11),
@@ -143,8 +145,11 @@ MANUAL_TRANSACTIONS = [
     ("2026-04-01", "Anthropic",     "Claude Pro",                       20.00),
     ("2026-04-01", "Anthropic",     "Credit purchase",                   5.00),
     ("2026-04-01", "Google Workspace", "Business Plus – Mar 2026 (₪75.90)",  20.79),
+    ("2026-04-01", "Google Workspace", "Google Workspace (₪75.9)", 75.90, "ILS"),
     ("2026-04-03", "Meta (Ads)",    "Facebook Ads",                      2.25),
     ("2026-04-05", "IONOS",         "Instant Domain",                   20.00),
+    ("2026-04-07", "Meta (Ads)", "Facebook Ads", 51.00),
+    ("2026-04-07", "Meta (Ads)", "Facebook Ads", 40.11),
 ]
 
 TRACKING_START = datetime.date(2025, 7, 1)
