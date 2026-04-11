@@ -176,12 +176,14 @@ def get_headers(msg):
 
 
 def get_body_text(payload):
-    """Recursively extract plain text from message payload."""
+    """Recursively extract text from message payload. Prefers text/plain; falls back to text/html."""
     if payload.get("mimeType") == "text/plain" and "data" in payload.get("body", {}):
         return base64.urlsafe_b64decode(payload["body"]["data"]).decode("utf-8", errors="replace")
     text = ""
     for part in payload.get("parts", []):
         text += get_body_text(part)
+    if not text and payload.get("mimeType") == "text/html" and "data" in payload.get("body", {}):
+        return base64.urlsafe_b64decode(payload["body"]["data"]).decode("utf-8", errors="replace")
     return text
 
 
@@ -245,18 +247,32 @@ def find_amount(text, currency):
     return None
 
 
+CAPCUT_FALLBACK_ILS = 49.90  # Monthly subscription price; update if CapCut changes pricing.
+
+
 def fetch_capcut_amount(body_text):
-    """Extract amount from CapCut's web invoice link."""
-    url_m = re.search(r"https://f-p\.sgsnssdk\.com/pipo_fe/invoice/preview\?[^\s]+", body_text)
-    if not url_m:
-        return None
-    try:
-        resp = requests.get(url_m.group(0), timeout=15)
-        m = re.search(r"([\d.]+)\s*ILS", resp.text)
-        if m:
-            return float(m.group(1))
-    except Exception as e:
-        log.warning(f"CapCut web fetch failed: {e}")
+    """Extract amount from CapCut's web invoice link.
+
+    CapCut's invoice preview page is a JS SPA that requires an authenticated browser
+    session — the static fetch always returns PAY000.  The email body also contains no
+    amount, so we fall back to the known fixed monthly price.
+    """
+    url_m = re.search(r"https://f-p\.sgsnssdk\.com/pipo_fe/invoice/preview\?[^\s\"<>]+", body_text)
+    if url_m:
+        try:
+            resp = requests.get(url_m.group(0), timeout=15)
+            m = re.search(r"([\d.]+)\s*ILS", resp.text)
+            if m:
+                return float(m.group(1))
+        except Exception as e:
+            log.warning(f"CapCut web fetch failed: {e}")
+    if url_m:  # URL was found but amount extraction failed → use known price
+        log.warning(
+            f"CapCut invoice page returned no amount (SPA requires browser session). "
+            f"Using fallback price: {CAPCUT_FALLBACK_ILS} ILS. "
+            f"Update CAPCUT_FALLBACK_ILS in auto_invoice.py if pricing changes."
+        )
+        return CAPCUT_FALLBACK_ILS
     return None
 
 
@@ -536,12 +552,19 @@ def main():
     if new_txns:
         log.info(f"Added {len(new_txns)} new transactions → rebuilding")
         rebuild_and_push(new_txns)
-        print(f"✅  {len(new_txns)} חשבוניות חדשות נוספו אוטומטית:")
-        for t in new_txns:
-            print(f"   • {t['tool']}  {t['date']}  ${t['amount_usd']}")
+        _out = sys.stdout if hasattr(sys.stdout, "buffer") else sys.stdout
+        try:
+            print(f"[OK]  {len(new_txns)} חשבוניות חדשות נוספו אוטומטית:")
+            for t in new_txns:
+                print(f"   - {t['tool']}  {t['date']}  ${t['amount_usd']}")
+        except UnicodeEncodeError:
+            pass  # log already captured everything important
     else:
         log.info("No new transactions")
-        print("✅  אין חשבוניות חדשות")
+        try:
+            print("[OK]  אין חשבוניות חדשות")
+        except UnicodeEncodeError:
+            pass
 
     log.info("Done")
 
