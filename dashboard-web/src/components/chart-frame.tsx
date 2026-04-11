@@ -13,7 +13,7 @@ export function ChartFrame({
 }: {
   eyebrow: string;
   title: string;
-  description: string;
+  description?: string;
   action?: ReactNode;
   className?: string;
   contentClassName?: string;
@@ -25,7 +25,7 @@ export function ChartFrame({
         <div>
           <p className="text-[11px] tracking-[0.18em] text-zinc-500">{eyebrow}</p>
           <h2 className="mt-2 text-2xl font-semibold text-white">{title}</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">{description}</p>
+          {description ? <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">{description}</p> : null}
         </div>
         {action ? <div className="shrink-0">{action}</div> : null}
       </div>

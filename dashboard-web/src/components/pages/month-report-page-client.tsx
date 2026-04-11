@@ -62,7 +62,6 @@ export function MonthReportPageClient({
       <PageHeader
         eyebrow="דוח חודשי"
         title={report.label}
-        description="דוח חודשי מלא עם כל העסקאות של החודש, ספקים מובילים, חלוקה בין חיובים חוזרים לחד-פעמיים וניווט לחודשים סמוכים."
         actions={
           <div className="flex flex-wrap gap-3">
             <Button
@@ -114,7 +113,6 @@ export function MonthReportPageClient({
         <ChartFrame
           eyebrow="הרכב חודשי"
           title="איך הסכום מתפרק בתוך החודש"
-          description="מפריד בין חיובים חוזרים לבין הוצאות חד-פעמיות, כדי להבין אם החריגה הגיעה מהבסיס הקבוע או ממשהו נקודתי."
         >
           <CompositionDonutChart data={compositionData} centerLabel="חלוקת החודש" />
         </ChartFrame>
@@ -122,7 +120,6 @@ export function MonthReportPageClient({
         <ChartFrame
           eyebrow="דירוג ספקים"
           title="מי בלט בהוצאה של החודש"
-          description="בר אופקי מדגיש את הספקים שדחפו את הסכום כלפי מעלה. הצבעים רק עוזרים לסריקה מהירה, בלי לשנות את הנתון עצמו."
         >
           <RankingBarChart data={vendorRankingData} valueLabel="סך חיובים" />
         </ChartFrame>

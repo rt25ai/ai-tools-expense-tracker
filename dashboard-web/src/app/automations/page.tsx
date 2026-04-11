@@ -1,4 +1,4 @@
-import { ArrowLeft, BadgeCheck, Clock3, Workflow } from "lucide-react";
+import { ArrowLeft, BadgeCheck, Workflow } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,6 @@ export default function AutomationsPage() {
       <PageHeader
         eyebrow="אוטומציות"
         title="חוקים פעילים ובריאות התהליך"
-        description="העמוד הזה הופך את הדשבורד למסך תפעול: רואים אילו חוקים קיימים, מתי הם רצים, מה יציב ואיפה עדיין צריך מגע אנושי."
         actions={<Button className="bg-cyan-400 text-black hover:bg-cyan-300">בדוק תהליך</Button>}
       />
 
@@ -81,16 +80,6 @@ export default function AutomationsPage() {
         </Card>
 
         <div className="space-y-6">
-          <Card className="border-white/8 bg-white/[0.03] p-6 shadow-none">
-            <div className="flex items-center gap-3">
-              <Clock3 className="size-4 text-zinc-300" />
-              <h2 className="text-xl font-semibold text-white">מה העמוד הזה פותר</h2>
-            </div>
-            <p className="mt-4 text-sm leading-6 text-zinc-400">
-              במקום להחביא אוטומציות בתוך סקריפטים, הממשק מתעד עכשיו את החוקים, התזמון והסטטוס התפעולי. כך הרבה יותר קל לשדרג את המערכת בהמשך.
-            </p>
-          </Card>
-
           <Card className="border-white/8 bg-white/[0.03] p-6 shadow-none">
             <div className="flex items-center gap-3">
               <Workflow className="size-4 text-cyan-300" />

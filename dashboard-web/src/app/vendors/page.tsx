@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { CheckCircle2, CircleAlert, CircleDot } from "lucide-react";
 import { ChartFrame } from "@/components/chart-frame";
 import { CompositionDonutChart } from "@/components/composition-donut-chart";
 import { PageHeader } from "@/components/page-header";
@@ -52,7 +51,6 @@ export default function VendorsPage() {
       <PageHeader
         eyebrow="ספקים"
         title="רישום ספקים ובריאות חיובים"
-        description="לכל ספק יש עכשיו גם סטטוס חיוב מפורש: מנוי פעיל, מנוי שהופסק או חיוב חד-פעמי. כך החיזוי העתידי לא נשען על ניחוש אלא על כלל רשמי אחד."
         actions={<Button className="bg-cyan-400 text-black hover:bg-cyan-300">בדוק כללי ספקים</Button>}
       />
 
@@ -77,7 +75,6 @@ export default function VendorsPage() {
         <ChartFrame
           eyebrow="קטגוריות"
           title="איפה הכסף מתרכז לפי סוג כלי"
-          description="הדונאט מתאים כאן כי הוא מראה מיד איזה סוגי כלים לוקחים את הנתח הגדול ביותר מתוך כלל הספקים."
         >
           <CompositionDonutChart data={categorySpendData} centerLabel="פילוח קטגוריות" />
         </ChartFrame>
@@ -85,7 +82,6 @@ export default function VendorsPage() {
         <ChartFrame
           eyebrow="ספקים מובילים"
           title="דירוג הספקים לפי הוצאה מצטברת"
-          description="ברים אופקיים נותנים השוואה נקייה בין ספקים, בלי צורך לעבור שורה-שורה בטבלה הארוכה שמתחת."
         >
           <RankingBarChart data={topVendorData} valueLabel="הוצאה מצטברת" />
         </ChartFrame>
@@ -163,35 +159,6 @@ export default function VendorsPage() {
         </div>
       </Card>
 
-      <section className="grid gap-6 xl:grid-cols-3">
-        <Card className="border-white/8 bg-white/[0.03] p-5 shadow-none">
-          <div className="flex items-center gap-3">
-            <CheckCircle2 className="size-4 text-cyan-300" />
-            <h3 className="font-semibold text-white">מנוי פעיל</h3>
-          </div>
-          <p className="mt-3 text-sm leading-6 text-zinc-400">
-            רק ספקים שמוגדרים כמנוי פעיל מציגים חיוב עתידי ומזינים את בסיס התחזית החודשית.
-          </p>
-        </Card>
-        <Card className="border-white/8 bg-white/[0.03] p-5 shadow-none">
-          <div className="flex items-center gap-3">
-            <CircleAlert className="size-4 text-amber-300" />
-            <h3 className="font-semibold text-white">מנוי שהופסק</h3>
-          </div>
-          <p className="mt-3 text-sm leading-6 text-zinc-400">
-            שומר היסטוריה של ספק שהיה מנוי, אבל מונע חיזוי שגוי של &quot;החיוב הבא&quot; כשהמנוי כבר לא פעיל.
-          </p>
-        </Card>
-        <Card className="border-white/8 bg-white/[0.03] p-5 shadow-none">
-          <div className="flex items-center gap-3">
-            <CircleDot className="size-4 text-zinc-300" />
-            <h3 className="font-semibold text-white">חד-פעמי / משתנה</h3>
-          </div>
-          <p className="mt-3 text-sm leading-6 text-zinc-400">
-            ספקים שהמערכת מתייחסת אליהם כהוצאה משתנה או חד-פעמית, בלי לצייר להם המשך עתידי מלאכותי.
-          </p>
-        </Card>
-      </section>
     </>
   );
 }

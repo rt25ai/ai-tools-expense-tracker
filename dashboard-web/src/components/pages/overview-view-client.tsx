@@ -2,11 +2,10 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
-import { ArrowUpLeft, CheckCircle2, CircleAlert, FileBarChart2, ShieldCheck } from "lucide-react";
+import { ArrowUpLeft, CheckCircle2, CircleAlert } from "lucide-react";
 import { BudgetBars } from "@/components/budget-bars";
 import { ChartFrame } from "@/components/chart-frame";
 import { CompositionDonutChart } from "@/components/composition-donut-chart";
-import { Heatmap } from "@/components/heatmap";
 import { OverviewKpiGrid } from "@/components/overview-kpi-grid";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
@@ -30,7 +29,6 @@ export function OverviewViewClient({ model }: { model: DashboardModel }) {
     () => [...budgetedMonthlySeries].sort((left, right) => right.key.localeCompare(left.key)).slice(0, 6),
     [budgetedMonthlySeries],
   );
-  const heatmapSeries = useMemo(() => budgetedMonthlySeries.slice(-12), [budgetedMonthlySeries]);
   const compositionData = useMemo(
     () =>
       model.recurringSeries.map((entry, index) => ({
@@ -46,7 +44,6 @@ export function OverviewViewClient({ model }: { model: DashboardModel }) {
       <PageHeader
         eyebrow="ראשי"
         title="תמונת מצב תפעולית"
-        description="מסך עבודה מהודק לניהול הוצאות, חיובים חוזרים, בדיקות ידניות ודוחות. המרכז נבנה כדי להרגיש כמו קונסולת תפעול אמיתית, לא עמוד תצוגה."
         actions={
           <Button asChild className="bg-cyan-400 text-black hover:bg-cyan-300">
             <Link href="/transactions">
@@ -65,9 +62,6 @@ export function OverviewViewClient({ model }: { model: DashboardModel }) {
             <div>
               <p className="text-[11px] tracking-[0.18em] text-zinc-500">דוחות</p>
               <h2 className="mt-2 text-2xl font-semibold text-white">מעבר מהיר לחודשים ולשנים</h2>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">
-                במקום מפת חום צפופה, הדף הראשי מציג עכשיו מסלולי כניסה ברורים לדוחות חודשיים ולדוחות שנתיים עם מעבר ישיר לכל חודש.
-              </p>
             </div>
             <div className="flex flex-col items-end gap-2">
               <Badge variant="outline" className="border-white/10 bg-black/20 text-zinc-300">
@@ -144,28 +138,12 @@ export function OverviewViewClient({ model }: { model: DashboardModel }) {
         </Card>
       </section>
 
-      <ChartFrame
-        action={
-          <Badge variant="outline" className="border-white/10 bg-black/20 text-zinc-300">
-            12 חודשים אחרונים
-          </Badge>
-        }
-        description="מבט מהיר על עוצמת ההוצאה בכל חודש. ככל שהאריח בהיר וחי יותר, כך אותו חודש היה כבד יותר בהוצאה."
-        eyebrow="מפת חום"
-        title="היסטוריית הוצאות בצבע"
-      >
-        <Heatmap data={heatmapSeries} />
-      </ChartFrame>
-
       <section className="grid gap-6 xl:grid-cols-[1.1fr_1fr]">
         <Card className="border-white/8 bg-white/[0.03] p-6 shadow-none">
           <div className="flex items-end justify-between gap-4">
             <div>
               <p className="text-[11px] tracking-[0.18em] text-zinc-500">תקציב מול בפועל</p>
               <h2 className="mt-2 text-2xl font-semibold text-white">פער חודשי מהיעד</h2>
-              <p className="mt-2 text-sm leading-6 text-zinc-400">
-                כל חודש ניתן ללחיצה ומוביל ישר לדוח החודשי שלו, עם צבע ברור יותר במקרים של חריגה מול היעד.
-              </p>
             </div>
             <Badge variant="outline" className="border-white/10 bg-black/20 text-zinc-300">
               תקציב עבודה
@@ -215,67 +193,31 @@ export function OverviewViewClient({ model }: { model: DashboardModel }) {
         </Card>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-        <Card className="border-white/8 bg-white/[0.03] p-6 shadow-none">
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <p className="text-[11px] tracking-[0.18em] text-zinc-500">יומן שינויים אחרון</p>
-              <h2 className="mt-2 text-2xl font-semibold text-white">מה השתנה בתהליך</h2>
-            </div>
-            <Badge variant="outline" className="border-cyan-400/15 bg-cyan-400/8 text-cyan-200">
-              {model.raw.generated}
-            </Badge>
+      <Card className="border-white/8 bg-white/[0.03] p-6 shadow-none">
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <p className="text-[11px] tracking-[0.18em] text-zinc-500">יומן שינויים אחרון</p>
+            <h2 className="mt-2 text-2xl font-semibold text-white">מה השתנה בתהליך</h2>
           </div>
-          <div className="mt-6 space-y-4">
-            {model.auditLog.map((event) => (
-              <div key={event.id} className="flex gap-4 rounded-[22px] border border-white/8 bg-black/20 p-4">
-                <div className="mt-1 rounded-full border border-cyan-400/15 bg-cyan-400/8 p-2 text-cyan-300">
-                  <CheckCircle2 className="size-4" />
-                </div>
-                <div>
-                  <p className="font-medium text-white">{event.title}</p>
-                  <p className="mt-2 text-sm leading-6 text-zinc-400">{event.detail}</p>
-                  <p className="mt-2 text-xs uppercase tracking-[0.2em] text-zinc-500">{event.timestamp}</p>
-                </div>
+          <Badge variant="outline" className="border-cyan-400/15 bg-cyan-400/8 text-cyan-200">
+            {model.raw.generated}
+          </Badge>
+        </div>
+        <div className="mt-6 space-y-4">
+          {model.auditLog.map((event) => (
+            <div key={event.id} className="flex gap-4 rounded-[22px] border border-white/8 bg-black/20 p-4">
+              <div className="mt-1 rounded-full border border-cyan-400/15 bg-cyan-400/8 p-2 text-cyan-300">
+                <CheckCircle2 className="size-4" />
               </div>
-            ))}
-          </div>
-        </Card>
-
-        <Card className="border-white/8 bg-white/[0.03] p-6 shadow-none">
-          <p className="text-[11px] tracking-[0.18em] text-zinc-500">מצב המערכת</p>
-          <h2 className="mt-2 text-2xl font-semibold text-white">מדדי איכות של הממשק</h2>
-          <div className="mt-6 space-y-4">
-            <div className="rounded-[22px] border border-white/8 bg-black/20 p-4">
-              <div className="flex items-center gap-3">
-                <ShieldCheck className="size-4 text-cyan-300" />
-                <p className="font-medium text-white">רישום הספקים מפורש וברור</p>
+              <div>
+                <p className="font-medium text-white">{event.title}</p>
+                <p className="mt-2 text-sm leading-6 text-zinc-400">{event.detail}</p>
+                <p className="mt-2 text-xs uppercase tracking-[0.2em] text-zinc-500">{event.timestamp}</p>
               </div>
-              <p className="mt-2 text-sm leading-6 text-zinc-400">
-                כל ספק מוצג עם סוג חיוב, מקור נתונים, בעלים ורמת אמינות של הזיהוי.
-              </p>
             </div>
-            <div className="rounded-[22px] border border-white/8 bg-black/20 p-4">
-              <div className="flex items-center gap-3">
-                <CircleAlert className="size-4 text-amber-300" />
-                <p className="font-medium text-white">זרימות ידניות מופרדות</p>
-              </div>
-              <p className="mt-2 text-sm leading-6 text-zinc-400">
-                חיובים ידניים וחד-פעמיים מופרדים בבירור מההוצאות החוזרות שמגיעות מהייבוא האוטומטי.
-              </p>
-            </div>
-            <div className="rounded-[22px] border border-white/8 bg-black/20 p-4">
-              <div className="flex items-center gap-3">
-                <FileBarChart2 className="size-4 text-sky-300" />
-                <p className="font-medium text-white">מוכנות לשכבת דוחות מלאה</p>
-              </div>
-              <p className="mt-2 text-sm leading-6 text-zinc-400">
-                כל חודש משמעותי בדשבורד מקושר עכשיו לדוח חודשי, ומהתפריט אפשר להיכנס גם לדוחות שנתיים מסודרים.
-              </p>
-            </div>
-          </div>
-        </Card>
-      </section>
+          ))}
+        </div>
+      </Card>
     </>
   );
 }

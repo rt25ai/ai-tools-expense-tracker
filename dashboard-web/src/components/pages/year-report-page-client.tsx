@@ -5,7 +5,6 @@ import Link from "next/link";
 import { ArrowUpLeft } from "lucide-react";
 import { BudgetTrendChart } from "@/components/budget-trend-chart";
 import { ChartFrame } from "@/components/chart-frame";
-import { Heatmap } from "@/components/heatmap";
 import { PageHeader } from "@/components/page-header";
 import { VendorChargeBreakdown } from "@/components/vendor-charge-breakdown";
 import { Badge } from "@/components/ui/badge";
@@ -56,25 +55,11 @@ export function YearReportPageClient({
         })),
     [budgetedReport.months],
   );
-  const heatmapData = useMemo(() => {
-    const maxMonthTotal = Math.max(...budgetedReport.months.map((month) => month.total), 1);
-    return budgetedReport.months
-      .slice()
-      .reverse()
-      .map((month) => ({
-        key: month.key,
-        label: month.label,
-        total: month.total,
-        intensity: month.total / maxMonthTotal,
-      }));
-  }, [budgetedReport.months]);
-
   return (
     <>
       <PageHeader
         eyebrow="דוח שנתי"
         title={`סיכום ${report.year}`}
-        description="הדוח השנתי מרכז את כל חודשי השנה למסך אחד. כל חודש כאן לחיץ ופותח את הדוח המלא שלו."
         actions={
           <Button asChild className="bg-cyan-400 text-black hover:bg-cyan-300">
             <Link href="/reports">
@@ -110,23 +95,12 @@ export function YearReportPageClient({
         </Card>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-        <ChartFrame
-          eyebrow="מגמה שנתית"
-          title="בפועל מול היעד, חודש אחרי חודש"
-          description="כאן רואים את הקו של היעד מול הביצוע בפועל. זה המקום הכי מהיר לזהות חודשים שיצאו משליטה לעומת חודשים רגועים יותר."
-        >
-          <BudgetTrendChart data={trendData} />
-        </ChartFrame>
-
-        <ChartFrame
-          eyebrow="חום שנתי"
-          title={`מפת חום של ${report.year}`}
-          description="האריחים מדגישים בעין אחת את החודשים הכבדים יותר. שימושי במיוחד כשרוצים לזהות עונתיות או שינויים חדים."
-        >
-          <Heatmap data={heatmapData} />
-        </ChartFrame>
-      </section>
+      <ChartFrame
+        eyebrow="מגמה שנתית"
+        title="בפועל מול היעד, חודש אחרי חודש"
+      >
+        <BudgetTrendChart data={trendData} />
+      </ChartFrame>
 
       <section className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
         <Card className="border-white/8 bg-white/[0.03] p-6 shadow-none">

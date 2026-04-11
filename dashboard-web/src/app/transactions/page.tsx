@@ -12,7 +12,6 @@ export default function TransactionsPage() {
       <PageHeader
         eyebrow="עסקאות"
         title="יומן עסקאות מלא"
-        description="הטבלה הישנה הוחלפה במסך עבודה אמיתי עם חיפוש, מיון, פילטרים, ייצוא ומטא־דאטה על כל ספק."
         actions={<Button className="bg-cyan-400 text-black hover:bg-cyan-300">בדוק חריגים</Button>}
       />
 
@@ -22,9 +21,6 @@ export default function TransactionsPage() {
             <p className="text-[11px] tracking-[0.18em] text-zinc-500">כלי טבלה</p>
             <h2 className="mt-2 text-2xl font-semibold text-white">ניווט ברמת תפעול</h2>
           </div>
-          <p className="max-w-xl text-sm leading-6 text-zinc-400">
-            הפאג׳ינציה המקומית כבר בנויה כמו מערכת נתונים אמיתית, כך שבהמשך יהיה אפשר לחבר פאג׳ינציה מהשרת בלי לעצב מחדש את הדף.
-          </p>
         </div>
         <TransactionsTable data={model.transactions} />
       </Card>

@@ -61,13 +61,11 @@ function groupTransactionsByVendor(transactions: DashboardModel["transactions"])
 function DetailShell({
   eyebrow,
   title,
-  description,
   action,
   children,
 }: {
   eyebrow: string;
   title: string;
-  description: string;
   action: ReactNode;
   children: ReactNode;
 }) {
@@ -77,7 +75,6 @@ function DetailShell({
         <div>
           <p className="text-[11px] tracking-[0.18em] text-cyan-200/80">{eyebrow}</p>
           <h3 className="mt-2 text-2xl font-semibold text-white">{title}</h3>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">{description}</p>
         </div>
         <div className="shrink-0">{action}</div>
       </div>
@@ -100,28 +97,24 @@ export function OverviewKpiGrid({ model }: { model: DashboardModel }) {
         <KpiCard
           label="סך מתחילת השנה"
           value={formatCurrencyIls(model.stats.totalYtd)}
-          hint="לחץ כדי לראות אילו ספקים מושכים את עיקר ההוצאה המצטברת השנה."
           active={activeKpi === "totalYtd"}
           onClick={() => setActiveKpi("totalYtd")}
         />
         <KpiCard
           label="החודש הנוכחי"
           value={formatCurrencyIls(model.stats.currentMonth)}
-          hint="לחץ כדי לפתוח את פירוט החיובים של החודש הפעיל ואת הסכומים בשקלים."
           active={activeKpi === "currentMonth"}
           onClick={() => setActiveKpi("currentMonth")}
         />
         <KpiCard
           label="בסיס חודשי קבוע"
           value={formatCurrencyIls(model.stats.recurringBaseline)}
-          hint="לחץ כדי לראות אילו חיובים קבועים מרכיבים את הבסיס ולמתי הם צפויים."
           active={activeKpi === "recurringBaseline"}
           onClick={() => setActiveKpi("recurringBaseline")}
         />
         <KpiCard
           label="חיובים לבדיקה"
           value={String(model.stats.unexpectedCharges)}
-          hint="לחץ כדי לקבל את כל הפריטים שמחכים לאישור או בדיקה ידנית."
           active={activeKpi === "needsReview"}
           onClick={() => setActiveKpi("needsReview")}
         />
@@ -131,7 +124,6 @@ export function OverviewKpiGrid({ model }: { model: DashboardModel }) {
         <DetailShell
           eyebrow="פירוט שנתי"
           title={`הסיכום של ${currentYear}`}
-          description="מבט מהיר על הספקים הכבדים ביותר השנה, עם מעבר ישיר לדוח השנתי שבו אפשר להיכנס גם לכל חודש בנפרד."
           action={
             <Button asChild className="bg-cyan-400 text-black hover:bg-cyan-300">
               <Link href={yearReportHref(currentYear)}>
@@ -165,7 +157,6 @@ export function OverviewKpiGrid({ model }: { model: DashboardModel }) {
         <DetailShell
           eyebrow="פירוט חודשי"
           title={`החיובים של ${currentMonthLabel}`}
-          description="החיובים של החודש מקובצים כאן לפי ספק, כך שאם יש כמה עסקאות לאותו ספק רואים שורה אחת ובלחיצה נפתח הפירוט."
           action={
             <Button asChild className="bg-cyan-400 text-black hover:bg-cyan-300">
               <Link href={monthReportHref(model.raw.current_month)}>
@@ -189,7 +180,6 @@ export function OverviewKpiGrid({ model }: { model: DashboardModel }) {
         <DetailShell
           eyebrow="בסיס קבוע"
           title="החיובים החוזרים שצפויים בכל חודש"
-          description="כאן רואים בקלות מהו בסיס ההוצאות הקבוע, מתי כל ספק אמור לחייב, ולאן כדאי להיכנס אם צריך לחקור פערים."
           action={
             <Button asChild className="bg-cyan-400 text-black hover:bg-cyan-300">
               <Link href="/vendors">
@@ -231,7 +221,6 @@ export function OverviewKpiGrid({ model }: { model: DashboardModel }) {
         <DetailShell
           eyebrow="בדיקה ידנית"
           title="הפריטים שדורשים החלטה אנושית"
-          description="חיובים משתנים, ידניים או בעלי אמינות נמוכה מרוכזים כאן כדי שלא יתפספסו."
           action={
             <Button asChild className="bg-cyan-400 text-black hover:bg-cyan-300">
               <Link href="/transactions">

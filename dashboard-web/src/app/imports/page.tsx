@@ -12,7 +12,6 @@ export default function ImportsPage() {
       <PageHeader
         eyebrow="ייבוא ידני"
         title="קבלות שלא מגיעות למייל"
-        description="כאן אפשר להזין ידנית חיוב שחסר במערכת, או להעלות קבלת PDF שנמשכה מחשבון הספק. הזרימה הזו מעדכנת את קובץ המקור, את האקסל ואת הדשבורד יחד."
       />
       <ManualReceiptImportClient
         knownVendors={model.settings.vendors.knownVendors}

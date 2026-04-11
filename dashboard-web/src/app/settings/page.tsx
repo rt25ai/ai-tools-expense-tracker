@@ -10,7 +10,6 @@ export default function SettingsPage() {
       <PageHeader
         eyebrow="הגדרות"
         title="הגדרות הפרויקט"
-        description="מסך הגדרות מסודר עם שורות קבועות, פריסת שני טורים ופעולה מרכזית אחת לכל אזור. זו התשתית שאפשר להרחיב עם עוד אוטומציות."
       />
       <SettingsPageClient initialSettings={model.settings} />
     </>

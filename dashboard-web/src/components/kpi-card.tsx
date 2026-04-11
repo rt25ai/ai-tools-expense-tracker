@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 type KpiCardProps = {
   label: string;
   value: string;
-  hint: string;
+  hint?: string;
   active?: boolean;
   onClick?: () => void;
 };
@@ -35,7 +35,7 @@ export function KpiCard({ label, value, hint, active = false, onClick }: KpiCard
           <ArrowUpLeft className="size-4" />
         </div>
       </div>
-      <p className="mt-4 text-sm leading-6 text-zinc-400">{hint}</p>
+      {hint ? <p className="mt-4 text-sm leading-6 text-zinc-400">{hint}</p> : null}
     </>
   );
 
