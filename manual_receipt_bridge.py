@@ -10,6 +10,7 @@ import subprocess
 import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from urllib.parse import urlparse
 
 from manual_receipts_store import (
     BASE_DIR,
@@ -53,7 +54,15 @@ def git(*args: str):
     return run_command(["git", *args], BASE_DIR)
 
 
-def rebuild_and_publish(summary: str):
+def sort_entries(entries: list[dict]) -> list[dict]:
+    return sorted(entries, key=lambda item: (item["date"], item["tool"], item["description"]))
+
+
+def receipt_commit_message(action: str, entry: dict) -> str:
+    return f"Manual import: {action} receipt for {entry['tool']} {entry['date']}"
+
+
+def rebuild_and_publish(commit_message: str):
     build_report = run_command([sys.executable, str(BASE_DIR / "build_report.py")], BASE_DIR)
     if build_report.returncode != 0:
         raise RuntimeError(build_report.stderr or build_report.stdout or "build_report.py failed.")
@@ -68,7 +77,7 @@ def rebuild_and_publish(summary: str):
     git("add", "docs")
     git("add", "dashboard-web/public/data.json")
 
-    commit = git("commit", "-m", f"Manual import: add receipt for {summary}")
+    commit = git("commit", "-m", commit_message)
     if commit.returncode != 0 and "nothing to commit" not in (commit.stdout + commit.stderr).lower():
         raise RuntimeError(commit.stderr or commit.stdout or "git commit failed.")
 
@@ -84,12 +93,38 @@ def rebuild_and_publish(summary: str):
     return (head.stdout or "").strip()
 
 
+def receipt_not_found(receipt_id: str) -> str:
+    return f"לא נמצאה קבלה ידנית עם המזהה {receipt_id}."
+
+
+def build_updated_entry(entry_payload: dict, existing_entry: dict, file_name: str | None) -> dict:
+    entry_mode = entry_payload.get("entry_mode") or existing_entry.get("entry_mode")
+    if not entry_mode:
+        entry_mode = "pdf-upload" if file_name or existing_entry.get("attachment_path") else "manual-form"
+
+    normalized_payload = {
+        **entry_payload,
+        "id": existing_entry["id"],
+        "created_at": existing_entry.get("created_at"),
+        "entry_source": existing_entry.get("entry_source", "manual"),
+        "attachment_path": existing_entry.get("attachment_path"),
+        "attachment_name": file_name or existing_entry.get("attachment_name"),
+        "entry_mode": entry_mode,
+    }
+    return normalize_manual_receipt(normalized_payload)
+
+
+def write_attachment(target_path: Path, content: bytes):
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+    target_path.write_bytes(content)
+
+
 class ManualReceiptHandler(BaseHTTPRequestHandler):
     server_version = "RTAIBridge/1.0"
 
     def end_headers(self):
         self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         super().end_headers()
 
@@ -109,12 +144,15 @@ class ManualReceiptHandler(BaseHTTPRequestHandler):
         raw = self.rfile.read(content_length) if content_length else b"{}"
         return json.loads(raw.decode("utf-8"))
 
+    def request_path(self):
+        return urlparse(self.path).path
+
     def do_OPTIONS(self):
         self.send_response(204)
         self.end_headers()
 
     def do_GET(self):
-        if self.path != "/health":
+        if self.request_path() != "/health":
             self.send_json(404, {"ok": False, "error": "Not found."})
             return
 
@@ -129,13 +167,26 @@ class ManualReceiptHandler(BaseHTTPRequestHandler):
         )
 
     def do_POST(self):
-        if self.path == "/parse-pdf":
+        path = self.request_path()
+        if path == "/parse-pdf":
             self.handle_parse_pdf()
             return
-        if self.path == "/manual-receipts":
-            self.handle_manual_receipt()
+        if path == "/manual-receipts":
+            self.handle_manual_receipt_create()
             return
         self.send_json(404, {"ok": False, "error": "Not found."})
+
+    def do_PUT(self):
+        if self.request_path() != "/manual-receipts":
+            self.send_json(404, {"ok": False, "error": "Not found."})
+            return
+        self.handle_manual_receipt_update()
+
+    def do_DELETE(self):
+        if self.request_path() != "/manual-receipts":
+            self.send_json(404, {"ok": False, "error": "Not found."})
+            return
+        self.handle_manual_receipt_delete()
 
     def handle_parse_pdf(self):
         payload = self.read_json_body()
@@ -154,13 +205,12 @@ class ManualReceiptHandler(BaseHTTPRequestHandler):
 
         self.send_json(200, {"ok": True, **suggestions})
 
-    def handle_manual_receipt(self):
+    def handle_manual_receipt_create(self):
         payload = self.read_json_body()
         entry_payload = payload.get("entry") or {}
         file_name = payload.get("fileName")
         file_data = payload.get("fileBase64")
         pdf_bytes = decode_data_url(file_data) if file_data else None
-
         existing_entries = load_manual_receipts()
 
         try:
@@ -175,23 +225,20 @@ class ManualReceiptHandler(BaseHTTPRequestHandler):
             self.send_json(409, {"ok": False, "error": "החיוב הזה כבר קיים במערכת."})
             return
 
-        saved_attachment = None
+        created_attachment_path = None
         try:
-            saved_attachment = archive_manual_invoice(entry, pdf_bytes, file_name)
-            if saved_attachment:
-                entry["attachment_path"] = saved_attachment
+            created_attachment_path = archive_manual_invoice(entry, pdf_bytes, file_name)
+            if created_attachment_path:
+                entry["attachment_path"] = created_attachment_path
                 entry["attachment_name"] = file_name
 
-            updated_entries = sorted(
-                [*existing_entries, entry],
-                key=lambda item: (item["date"], item["tool"], item["description"]),
-            )
+            updated_entries = sort_entries([*existing_entries, entry])
             save_manual_receipts(updated_entries)
-            commit_hash = rebuild_and_publish(f"{entry['tool']} {entry['date']}")
+            commit_hash = rebuild_and_publish(receipt_commit_message("add", entry))
         except Exception as error:
             save_manual_receipts(existing_entries)
-            if saved_attachment:
-                attachment_path = BASE_DIR / saved_attachment
+            if created_attachment_path:
+                attachment_path = BASE_DIR / created_attachment_path
                 if attachment_path.exists():
                     attachment_path.unlink()
             self.send_json(500, {"ok": False, "error": str(error)})
@@ -201,9 +248,126 @@ class ManualReceiptHandler(BaseHTTPRequestHandler):
             200,
             {
                 "ok": True,
-                "message": "הקבלה נשמרה, האקסל נבנה מחדש והדשבורד עודכן.",
+                "action": "created",
+                "message": "הקבלה נוספה והדשבורד נבנה מחדש.",
                 "commit": commit_hash,
                 "entry": entry,
+            },
+        )
+
+    def handle_manual_receipt_update(self):
+        payload = self.read_json_body()
+        receipt_id = payload.get("id") or payload.get("entry", {}).get("id")
+        entry_payload = payload.get("entry") or {}
+        file_name = payload.get("fileName")
+        file_data = payload.get("fileBase64")
+        pdf_bytes = decode_data_url(file_data) if file_data else None
+        existing_entries = load_manual_receipts()
+
+        current_index = next((index for index, item in enumerate(existing_entries) if item["id"] == receipt_id), None)
+        if current_index is None:
+            self.send_json(404, {"ok": False, "error": receipt_not_found(str(receipt_id))})
+            return
+
+        existing_entry = existing_entries[current_index]
+
+        try:
+            updated_entry = build_updated_entry(entry_payload, existing_entry, file_name)
+        except Exception as error:
+            self.send_json(400, {"ok": False, "error": str(error)})
+            return
+
+        all_existing_keys = {receipt_identity(item) for item in existing_entries if item["id"] != receipt_id}
+        all_existing_keys.update(load_existing_transaction_keys())
+        all_existing_keys.discard(receipt_identity(existing_entry))
+        if receipt_identity(updated_entry) in all_existing_keys:
+            self.send_json(409, {"ok": False, "error": "כבר קיימת קבלה ידנית אחרת עם אותם פרטים."})
+            return
+
+        attachment_path_str = existing_entry.get("attachment_path")
+        attachment_path = BASE_DIR / attachment_path_str if attachment_path_str else None
+        attachment_existed_before = bool(attachment_path and attachment_path.exists())
+        attachment_backup = attachment_path.read_bytes() if attachment_existed_before else None
+        created_attachment_path = None
+
+        try:
+            if pdf_bytes:
+                if attachment_path:
+                    write_attachment(attachment_path, pdf_bytes)
+                    updated_entry["attachment_path"] = attachment_path_str
+                    updated_entry["attachment_name"] = file_name
+                    updated_entry["entry_mode"] = "pdf-upload"
+                else:
+                    created_attachment_path = archive_manual_invoice(updated_entry, pdf_bytes, file_name)
+                    updated_entry["attachment_path"] = created_attachment_path
+                    updated_entry["attachment_name"] = file_name
+                    updated_entry["entry_mode"] = "pdf-upload"
+
+            updated_entries = existing_entries.copy()
+            updated_entries[current_index] = updated_entry
+            save_manual_receipts(sort_entries(updated_entries))
+            commit_hash = rebuild_and_publish(receipt_commit_message("update", updated_entry))
+        except Exception as error:
+            save_manual_receipts(existing_entries)
+            if created_attachment_path:
+                new_attachment = BASE_DIR / created_attachment_path
+                if new_attachment.exists():
+                    new_attachment.unlink()
+            if attachment_path:
+                if attachment_existed_before and attachment_backup is not None:
+                    write_attachment(attachment_path, attachment_backup)
+                elif attachment_path.exists():
+                    attachment_path.unlink()
+            self.send_json(500, {"ok": False, "error": str(error)})
+            return
+
+        self.send_json(
+            200,
+            {
+                "ok": True,
+                "action": "updated",
+                "message": "הקבלה עודכנה והדשבורד נבנה מחדש.",
+                "commit": commit_hash,
+                "entry": updated_entry,
+            },
+        )
+
+    def handle_manual_receipt_delete(self):
+        payload = self.read_json_body()
+        receipt_id = payload.get("id")
+        existing_entries = load_manual_receipts()
+        current_index = next((index for index, item in enumerate(existing_entries) if item["id"] == receipt_id), None)
+
+        if current_index is None:
+            self.send_json(404, {"ok": False, "error": receipt_not_found(str(receipt_id))})
+            return
+
+        deleted_entry = existing_entries[current_index]
+        attachment_path_str = deleted_entry.get("attachment_path")
+        attachment_path = BASE_DIR / attachment_path_str if attachment_path_str else None
+        attachment_backup = attachment_path.read_bytes() if attachment_path and attachment_path.exists() else None
+
+        try:
+            updated_entries = [item for item in existing_entries if item["id"] != receipt_id]
+            save_manual_receipts(sort_entries(updated_entries))
+            if attachment_path and attachment_path.exists():
+                attachment_path.unlink()
+            commit_hash = rebuild_and_publish(receipt_commit_message("delete", deleted_entry))
+        except Exception as error:
+            save_manual_receipts(existing_entries)
+            if attachment_path and attachment_backup is not None:
+                write_attachment(attachment_path, attachment_backup)
+            self.send_json(500, {"ok": False, "error": str(error)})
+            return
+
+        self.send_json(
+            200,
+            {
+                "ok": True,
+                "action": "deleted",
+                "message": "הקבלה נמחקה והדשבורד נבנה מחדש.",
+                "commit": commit_hash,
+                "entry": deleted_entry,
             },
         )
 

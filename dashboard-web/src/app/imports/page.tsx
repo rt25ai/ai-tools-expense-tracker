@@ -16,7 +16,7 @@ export default function ImportsPage() {
       />
       <ManualReceiptImportClient
         knownVendors={model.settings.vendors.knownVendors}
-        initialReceipts={manualReceipts.slice(0, 8)}
+        initialReceipts={manualReceipts}
       />
     </>
   );
