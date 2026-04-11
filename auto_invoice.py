@@ -29,6 +29,7 @@ PROCESSED_JSON = BASE_DIR / "processed_messages.json"
 CREDS_JSON     = BASE_DIR / "gmail_credentials.json"
 TOKEN_JSON     = BASE_DIR / "gmail_token.json"
 LOG_FILE       = BASE_DIR / "auto_invoice.log"
+STATUS_JSON    = BASE_DIR / "auto_invoice_status.json"
 
 SCOPES        = ["https://www.googleapis.com/auth/gmail.readonly"]
 EXCHANGE_RATE = FALLBACK_USD_ILS_RATE
@@ -468,6 +469,23 @@ def insert_transaction(txn):
     return True
 
 
+def write_status(new_txns, error=None):
+    """Write run status to auto_invoice_status.json for the dashboard."""
+    now = datetime.datetime.now()
+    next_run = (now + datetime.timedelta(days=1)).replace(
+        hour=8, minute=0, second=0, microsecond=0
+    )
+    status = {
+        "last_run": now.strftime("%Y-%m-%dT%H:%M:%S"),
+        "next_run": next_run.strftime("%Y-%m-%dT%H:%M:%S"),
+        "result": "error" if error else ("found" if new_txns else "ok"),
+        "new_count": len(new_txns),
+        "new_tools": [f"{t['tool']} {t['date']}" for t in new_txns],
+        "error": str(error) if error else None,
+    }
+    STATUS_JSON.write_text(json.dumps(status, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
 # ── Git helpers ───────────────────────────────────────────────────────────────
 
 def git(*args):
@@ -489,10 +507,25 @@ def rebuild_and_push(new_txns):
     git("add", "build_report.py", "AI_Tools_Expenses_2025_2026.xlsx")
     git("add", "invoices/")
     git("add", "docs/data.json")   # ← update live dashboard
+    git("add", "auto_invoice_status.json")
     git("commit", "-m", f"Auto: add invoices – {summary}\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>")
     git("push", "origin", "master:master")  # ← GitHub Pages builds from master
     git("push", "origin", "master:main")    # ← keep main in sync
     log.info(f"Pushed: {summary}")
+
+
+def push_status_only():
+    """Commit and push the status file even when no new invoices were found."""
+    git("add", "auto_invoice_status.json")
+    r = subprocess.run(
+        ["git", "diff", "--cached", "--quiet"],
+        cwd=str(BASE_DIR), capture_output=True
+    )
+    if r.returncode != 0:  # something staged → commit
+        git("commit", "-m", "Auto: Gmail scan – no new invoices\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>")
+        git("push", "origin", "master:master")
+        git("push", "origin", "master:main")
+        log.info("Pushed status update (no new invoices)")
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
@@ -566,8 +599,17 @@ def main():
         except UnicodeEncodeError:
             pass
 
+    write_status(new_txns)
+
+    if not new_txns:
+        push_status_only()
     log.info("Done")
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as exc:
+        log.exception("Fatal error in main()")
+        write_status([], error=exc)
+        raise

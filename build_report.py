@@ -1127,6 +1127,15 @@ def generate_dashboard_json():
     cur_usd    = round(monthly.get(cur_month, 0.0), 2)
     cur_ils    = round(monthly_ils.get(cur_month, 0.0), 2)
 
+    # Read auto_invoice run status if available
+    scanner_status = None
+    status_path = Path(__file__).resolve().parent / "auto_invoice_status.json"
+    if status_path.exists():
+        try:
+            scanner_status = json.loads(status_path.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+
     data = {
         "generated":              today.isoformat(),
         "usd_rate":               usd_rate,
@@ -1137,6 +1146,7 @@ def generate_dashboard_json():
         "current_month":          cur_month,
         "current_month_total":    cur_usd,
         "current_month_total_ils": cur_ils,
+        "scanner_status":         scanner_status,
         "transactions": sorted(txns, key=lambda x: x["date"], reverse=True),
         "monthly": dict(sorted((key, round(value, 2)) for key, value in monthly.items())),
         "monthly_ils": dict(sorted(monthly_ils.items())),

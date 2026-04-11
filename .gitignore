@@ -3,6 +3,7 @@
 !docs/data.json
 !docs/manifest.json
 !manual_receipts.json
+!auto_invoice_status.json
 __pycache__/
 *.pyc
 *.log

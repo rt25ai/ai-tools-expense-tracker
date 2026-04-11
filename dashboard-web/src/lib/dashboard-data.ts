@@ -30,6 +30,14 @@ type RawDashboardData = {
   current_month: string;
   current_month_total: number;
   current_month_total_ils: number;
+  scanner_status?: {
+    last_run: string;
+    next_run: string;
+    result: "ok" | "found" | "error";
+    new_count: number;
+    new_tools: string[];
+    error: string | null;
+  } | null;
   transactions: RawTransaction[];
   monthly: Record<string, number>;
   monthly_ils?: Record<string, number>;
@@ -642,37 +650,55 @@ export const getDashboardModel = cache((): DashboardModel => {
     },
   ];
 
+  const scannerStatus = raw.scanner_status;
+  const scannerLastRun = scannerStatus?.last_run
+    ? scannerStatus.last_run.replace("T", " ")
+    : "טרם רץ";
+  const scannerNextRun = scannerStatus?.next_run
+    ? scannerStatus.next_run.replace("T", " ")
+    : "מחר ב-08:00";
+  const scannerStatusBadge: AutomationItem["status"] = scannerStatus?.result === "error"
+    ? "watch"
+    : "active";
+  const scannerDesc = scannerStatus
+    ? scannerStatus.result === "error"
+      ? `שגיאה: ${scannerStatus.error ?? "לא ידועה"}`
+      : scannerStatus.new_count > 0
+        ? `נמצאו ${scannerStatus.new_count} חשבוניות חדשות: ${scannerStatus.new_tools.join(", ")}`
+        : "סריקה הושלמה — לא נמצאו חשבוניות חדשות"
+    : "בודק שולחים, קבצי PDF וגופי חשבוניות ב־HTML. רץ כל יום ב-08:00 (Windows Task Scheduler).";
+
   const automations: AutomationItem[] = [
     {
       name: "סריקת חשבוניות ב־Gmail",
-      cadence: "סריקה יומית על 90 הימים האחרונים",
-      status: "active",
-      description: "בודק שולחים, קבצי PDF וגופי חשבוניות ב־HTML.",
-      lastRun: `${raw.generated} 07:15`,
-      nextRun: `${raw.generated} 19:15`,
+      cadence: "סריקה יומית ב-08:00",
+      status: scannerStatusBadge,
+      description: scannerDesc,
+      lastRun: scannerLastRun,
+      nextRun: scannerNextRun,
     },
     {
       name: "כללי חיוב חוזר",
       cadence: "חודשי לפי יום חיוב מוגדר",
       status: "active",
       description: "מוסיף לדוחות חיובים חוזרים צפויים כמו OpenAI.",
-      lastRun: `${raw.generated} 07:17`,
-      nextRun: "2026-04-16 00:05",
+      lastRun: `${raw.generated}`,
+      nextRun: "בשינוי הנתונים הבא",
     },
     {
       name: "בנייה מחדש של חוברת האקסל",
-      cadence: "עם כל רענון דוח",
+      cadence: "עם כל שינוי ב-manual_receipts.json",
       status: "active",
-      description: "בונה מחדש את קובץ האקסל ואת נתוני הדשבורד מאותו מקור אמת.",
-      lastRun: `${raw.generated} 07:18`,
+      description: "בונה מחדש את קובץ האקסל ואת נתוני הדשבורד מאותו מקור אמת (GitHub Actions).",
+      lastRun: `${raw.generated}`,
       nextRun: "בשינוי הנתונים הבא",
     },
     {
       name: "פרסום ל־GitHub Pages",
       cadence: "קומיט ודחיפה",
-      status: "semi-auto",
-      description: "האתר הסטטי מתפרסם אל docs/ לאחר בניית ה־Next.js.",
-      lastRun: `${raw.generated} 07:20`,
+      status: "active",
+      description: "האתר הסטטי מתפרסם אל docs/ לאחר בניית ה־Next.js. מופעל אוטומטית על-ידי GitHub Actions.",
+      lastRun: `${raw.generated}`,
       nextRun: "בבנייה הבאה",
     },
   ];
