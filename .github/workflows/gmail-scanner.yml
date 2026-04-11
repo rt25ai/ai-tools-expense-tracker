@@ -1,0 +1,50 @@
+name: Gmail Invoice Scanner
+
+on:
+  schedule:
+    - cron: '0 3 * * *'  # 03:00 UTC = 05:00 Israel (winter) / 06:00 (summer) — before local 08:00 run
+  workflow_dispatch:      # Allow manual trigger from GitHub UI
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gmail-scanner
+  cancel-in-progress: false  # Never cancel mid-scan
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Write Gmail credentials from secrets
+        env:
+          GMAIL_CREDENTIALS: ${{ secrets.GMAIL_CREDENTIALS }}
+          GMAIL_TOKEN: ${{ secrets.GMAIL_TOKEN }}
+        run: |
+          printf '%s' "$GMAIL_CREDENTIALS" > gmail_credentials.json
+          printf '%s' "$GMAIL_TOKEN" > gmail_token.json
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        run: pip install google-auth google-auth-oauthlib google-api-python-client pdfplumber requests openpyxl
+
+      - name: Run Gmail scanner
+        run: python auto_invoice.py

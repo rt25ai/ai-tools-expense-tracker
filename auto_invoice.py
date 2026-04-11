@@ -508,6 +508,7 @@ def rebuild_and_push(new_txns):
     git("add", "invoices/")
     git("add", "docs/data.json")   # ← update live dashboard
     git("add", "auto_invoice_status.json")
+    git("add", "processed_messages.json")
     git("commit", "-m", f"Auto: add invoices – {summary}\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>")
     git("push", "origin", "master:master")  # ← GitHub Pages builds from master
     git("push", "origin", "master:main")    # ← keep main in sync
@@ -517,6 +518,7 @@ def rebuild_and_push(new_txns):
 def push_status_only():
     """Commit and push the status file even when no new invoices were found."""
     git("add", "auto_invoice_status.json")
+    git("add", "processed_messages.json")
     r = subprocess.run(
         ["git", "diff", "--cached", "--quiet"],
         cwd=str(BASE_DIR), capture_output=True
@@ -534,6 +536,9 @@ def main():
     log.info("=" * 60)
     log.info("auto_invoice scan started")
     INVOICES_DIR.mkdir(exist_ok=True)
+
+    # Sync with remote before scanning to avoid conflicts when both local and CI run
+    git("pull", "--rebase", "origin", "master")
 
     service = get_service()
     processed_state = load_processed_state()

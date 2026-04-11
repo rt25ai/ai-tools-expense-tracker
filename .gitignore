@@ -4,6 +4,7 @@
 !docs/manifest.json
 !manual_receipts.json
 !auto_invoice_status.json
+!processed_messages.json
 __pycache__/
 *.pyc
 *.log
