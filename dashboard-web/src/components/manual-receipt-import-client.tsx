@@ -138,11 +138,11 @@ export function ManualReceiptImportClient({
     return form.date ? monthReportHref(monthKeyFromDate(form.date)) : null;
   }, [form.date]);
 
-  const checkGatewayForConfig = useCallback(async (config: RuntimeImportConfig) => {
+  const checkGatewayForConfig = useCallback(async (config: RuntimeImportConfig): Promise<ConnectionStatus> => {
     if (!config.gatewayUrl) {
       setGatewayStatus("not-configured");
       setGatewayMessage("שער ייבוא מאובטח עדיין לא הוגדר. כרגע אפשר לעבוד דרך הגשר המקומי בלבד.");
-      return;
+      return "not-configured";
     }
 
     setGatewayStatus("checking");
@@ -159,9 +159,11 @@ export function ManualReceiptImportClient({
 
       setGatewayStatus("online");
       setGatewayMessage(`השער המאובטח פעיל ומוכן לשמירה אונליין ל־${payload.target ?? "GitHub"}.`);
+      return "online";
     } catch {
       setGatewayStatus("offline");
       setGatewayMessage("השער המאובטח לא ענה כרגע. אם הוא אמור לעבוד, כדאי לבדוק את הפריסה או את ה־CORS.");
+      return "offline";
     }
   }, []);
 

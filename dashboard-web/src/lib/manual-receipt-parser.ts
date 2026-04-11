@@ -89,6 +89,9 @@ const BLOCKED_DESCRIPTION_TOKENS = [
   "charged ",
   "using 1 usd",
   "page ",
+  "vat @",
+  "tax invoice",
+  "receipt for your purchase",
 ];
 
 const MONEY_PATTERN = String.raw`[0-9][0-9,]*(?:\.[0-9]{1,2})?`;
@@ -239,42 +242,52 @@ function extractAmountFromText(text: string) {
     {
       currency: "USD",
       priority: 0,
-      pattern: new RegExp(
-        `\\bamount paid\\b[\\s:.-]*(?:${USD_CURRENCY_PATTERN})?\\s*(${MONEY_PATTERN})\\s*(?:${USD_CURRENCY_PATTERN})?`,
-        "gi",
-      ),
+      pattern: new RegExp(`\\b(?:amount paid|paid on|paid)\\b\\D*(${MONEY_PATTERN})\\s*(?:${USD_CURRENCY_PATTERN})`, "gi"),
+    },
+    {
+      currency: "USD",
+      priority: 0,
+      pattern: new RegExp(`\\b(?:amount paid|paid on|paid)\\b\\D*(?:${USD_CURRENCY_PATTERN})\\s*(${MONEY_PATTERN})`, "gi"),
     },
     {
       currency: "USD",
       priority: 1,
-      pattern: new RegExp(
-        `\\btotal\\b[\\s:.-]*(?:${USD_CURRENCY_PATTERN})?\\s*(${MONEY_PATTERN})\\s*(?:${USD_CURRENCY_PATTERN})?`,
-        "gi",
-      ),
+      pattern: new RegExp(`\\btotal\\b\\D*(${MONEY_PATTERN})\\s*(?:${USD_CURRENCY_PATTERN})`, "gi"),
+    },
+    {
+      currency: "USD",
+      priority: 1,
+      pattern: new RegExp(`\\btotal\\b\\D*(?:${USD_CURRENCY_PATTERN})\\s*(${MONEY_PATTERN})`, "gi"),
     },
     {
       currency: "ILS",
       priority: 0,
-      pattern: new RegExp(
-        `\\bamount paid\\b[\\s:.-]*(?:${ILS_CURRENCY_PATTERN})?\\s*(${MONEY_PATTERN})\\s*(?:${ILS_CURRENCY_PATTERN})?`,
-        "gi",
-      ),
+      pattern: new RegExp(`\\b(?:amount paid|paid on|paid)\\b\\D*(${MONEY_PATTERN})\\s*(?:${ILS_CURRENCY_PATTERN})`, "gi"),
+    },
+    {
+      currency: "ILS",
+      priority: 0,
+      pattern: new RegExp(`\\b(?:amount paid|paid on|paid)\\b\\D*(?:${ILS_CURRENCY_PATTERN})\\s*(${MONEY_PATTERN})`, "gi"),
     },
     {
       currency: "ILS",
       priority: 1,
-      pattern: new RegExp(
-        `\\btotal\\b[\\s:.-]*(?:${ILS_CURRENCY_PATTERN})?\\s*(${MONEY_PATTERN})\\s*(?:${ILS_CURRENCY_PATTERN})?`,
-        "gi",
-      ),
+      pattern: new RegExp(`\\btotal\\b\\D*(${MONEY_PATTERN})\\s*(?:${ILS_CURRENCY_PATTERN})`, "gi"),
+    },
+    {
+      currency: "ILS",
+      priority: 1,
+      pattern: new RegExp(`\\btotal\\b\\D*(?:${ILS_CURRENCY_PATTERN})\\s*(${MONEY_PATTERN})`, "gi"),
     },
     {
       currency: "ILS",
       priority: 2,
-      pattern: new RegExp(
-        `\\bcharged\\b[\\s:.-]*(?:${ILS_CURRENCY_PATTERN})?\\s*(${MONEY_PATTERN})\\s*(?:${ILS_CURRENCY_PATTERN})?`,
-        "gi",
-      ),
+      pattern: new RegExp(`\\bcharged\\b\\D*(${MONEY_PATTERN})\\s*(?:${ILS_CURRENCY_PATTERN})`, "gi"),
+    },
+    {
+      currency: "ILS",
+      priority: 2,
+      pattern: new RegExp(`\\bcharged\\b\\D*(?:${ILS_CURRENCY_PATTERN})\\s*(${MONEY_PATTERN})`, "gi"),
     },
   ];
 
@@ -325,8 +338,28 @@ function cleanDescriptionCandidate(value: string) {
       "",
     )
     .replace(new RegExp(`(?:\\s+${MONEY_PATTERN}\\s*(?:${ANY_CURRENCY_PATTERN}))+\\s*$`, "i"), "")
+    .replace(/\s+this is (?:an?\s+)?receipt\b.*$/i, "")
+    .replace(/\s+not a tax invoice\b.*$/i, "")
     .replace(/\s+(?:Qty|Unit price|Amount)\b.*$/i, "")
     .replace(/^[\-:\s]+|[\-:\s]+$/g, "");
+}
+
+function isAmountOnlyLine(value: string) {
+  return new RegExp(`^(?:${ANY_CURRENCY_PATTERN}\\s*)?${MONEY_PATTERN}(?:\\s*(?:${ANY_CURRENCY_PATTERN}))?$`, "i").test(
+    normalizeWhitespace(value),
+  );
+}
+
+function isDescriptionHeading(value: string) {
+  return /^description\b[:\s]*$/i.test(normalizeWhitespace(value));
+}
+
+function startsWithDescriptionHeading(value: string) {
+  return /^description\b/i.test(normalizeWhitespace(value));
+}
+
+function isAmountHeading(value: string) {
+  return /^amount(?:\s+in\s*\([^)]+\))?[:\s]*$/i.test(normalizeWhitespace(value));
 }
 
 function finalizeDescriptionCandidate(value: string, tool: string | null) {
@@ -351,13 +384,33 @@ function finalizeDescriptionCandidate(value: string, tool: string | null) {
 }
 
 function extractDescriptionFromTable(text: string, tool: string | null) {
+  const lines = text.split(/\r?\n/).map(normalizeWhitespace);
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    if (!startsWithDescriptionHeading(line)) continue;
+
+    const inlineCandidate = finalizeDescriptionCandidate(line.replace(/^description\b[:\s]*/i, ""), tool);
+    if (inlineCandidate && !isAmountHeading(inlineCandidate) && !isAmountOnlyLine(inlineCandidate)) {
+      return inlineCandidate;
+    }
+
+    for (let nextIndex = index + 1; nextIndex < Math.min(lines.length, index + 5); nextIndex += 1) {
+      const nextLine = lines[nextIndex];
+      if (!nextLine || isAmountHeading(nextLine) || isAmountOnlyLine(nextLine)) continue;
+
+      const candidate = finalizeDescriptionCandidate(nextLine, tool);
+      if (candidate) return candidate;
+    }
+  }
+
   const rowPatterns = [
     new RegExp(
-      `\\bDescription(?:\\s+Qty)?(?:\\s+Unit price)?(?:\\s+Amount)?\\b\\s+(.+?)\\s+\\d+\\s+${MONEY_PATTERN}\\s*(?:${ANY_CURRENCY_PATTERN})(?:\\s+${MONEY_PATTERN}\\s*(?:${ANY_CURRENCY_PATTERN}))?`,
+      `\\bDescription(?:\\s+Qty)?(?:\\s+Unit price)?(?:\\s+Amount)?\\b[:\\s]+(.+?)\\s+\\d+\\s+${MONEY_PATTERN}\\s*(?:${ANY_CURRENCY_PATTERN})(?:\\s+${MONEY_PATTERN}\\s*(?:${ANY_CURRENCY_PATTERN}))?`,
       "iu",
     ),
     new RegExp(
-      `\\bDescription(?:\\s+Qty)?(?:\\s+Unit price)?(?:\\s+Amount)?\\b\\s+(.+?)\\s+${MONEY_PATTERN}\\s*(?:${ANY_CURRENCY_PATTERN})`,
+      `\\bDescription(?:\\s+Qty)?(?:\\s+Unit price)?(?:\\s+Amount)?\\b[:\\s]+(.+?)\\s+${MONEY_PATTERN}\\s*(?:${ANY_CURRENCY_PATTERN})`,
       "iu",
     ),
   ];
@@ -383,6 +436,7 @@ function extractDescriptionFromText(text: string, tool: string | null) {
 
     const lowered = line.toLowerCase();
     if (BLOCKED_DESCRIPTION_TOKENS.some((token) => lowered.includes(token))) continue;
+    if (isDescriptionHeading(line) || isAmountHeading(line) || isAmountOnlyLine(line)) continue;
     if (!/[A-Za-z\u0590-\u05FF]/.test(line)) continue;
     if (!new RegExp(`\\d+(?:\\.\\d{1,2})?\\s*(?:${ANY_CURRENCY_PATTERN})`, "i").test(line)) continue;
 

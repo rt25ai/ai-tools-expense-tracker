@@ -1,13 +1,13 @@
 {
   "generated": "2026-04-09",
-  "usd_rate": 3.087,
-  "exchange_rate_updated_at": "2026-04-09T12:21:03.1867453Z",
+  "usd_rate": 3.057,
+  "exchange_rate_updated_at": "2026-04-10T09:22:03.0073772Z",
   "exchange_rate_source": "Bank of Israel Public API",
   "grand_total": 1893.76,
-  "grand_total_ils": 5954.09,
+  "grand_total_ils": 5903.02,
   "current_month": "2026-04",
   "current_month_total": 137.04,
-  "current_month_total_ils": 434.78,
+  "current_month_total_ils": 431.29,
   "transactions": [
     {
       "date": "2026-04-05",
@@ -16,7 +16,7 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 61.74,
+      "amount_ils": 61.14,
       "entry_source": null
     },
     {
@@ -26,7 +26,7 @@
       "currency": "USD",
       "original_amount": 2.25,
       "amount_usd": 2.25,
-      "amount_ils": 6.95,
+      "amount_ils": 6.88,
       "entry_source": null
     },
     {
@@ -36,7 +36,7 @@
       "currency": "USD",
       "original_amount": 18,
       "amount_usd": 18,
-      "amount_ils": 55.57,
+      "amount_ils": 55.03,
       "entry_source": "manual"
     },
     {
@@ -46,7 +46,7 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 61.74,
+      "amount_ils": 61.14,
       "entry_source": null
     },
     {
@@ -56,7 +56,7 @@
       "currency": "USD",
       "original_amount": 5,
       "amount_usd": 5,
-      "amount_ils": 15.44,
+      "amount_ils": 15.29,
       "entry_source": null
     },
     {
@@ -76,7 +76,7 @@
       "currency": "USD",
       "original_amount": 51,
       "amount_usd": 51,
-      "amount_ils": 157.44,
+      "amount_ils": 155.91,
       "entry_source": null
     },
     {
@@ -86,7 +86,7 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 61.74,
+      "amount_ils": 61.14,
       "entry_source": "manual"
     },
     {
@@ -96,7 +96,7 @@
       "currency": "USD",
       "original_amount": 5,
       "amount_usd": 5,
-      "amount_ils": 15.44,
+      "amount_ils": 15.29,
       "entry_source": null
     },
     {
@@ -106,7 +106,7 @@
       "currency": "USD",
       "original_amount": 9,
       "amount_usd": 9,
-      "amount_ils": 27.78,
+      "amount_ils": 27.51,
       "entry_source": "manual"
     },
     {
@@ -116,7 +116,7 @@
       "currency": "USD",
       "original_amount": 10,
       "amount_usd": 10,
-      "amount_ils": 30.87,
+      "amount_ils": 30.57,
       "entry_source": null
     },
     {
@@ -126,7 +126,7 @@
       "currency": "USD",
       "original_amount": 11,
       "amount_usd": 11,
-      "amount_ils": 33.96,
+      "amount_ils": 33.63,
       "entry_source": null
     },
     {
@@ -136,7 +136,7 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 61.74,
+      "amount_ils": 61.14,
       "entry_source": "auto"
     },
     {
@@ -146,7 +146,7 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 61.74,
+      "amount_ils": 61.14,
       "entry_source": null
     },
     {
@@ -156,7 +156,7 @@
       "currency": "USD",
       "original_amount": 51,
       "amount_usd": 51,
-      "amount_ils": 157.44,
+      "amount_ils": 155.91,
       "entry_source": null
     },
     {
@@ -176,7 +176,7 @@
       "currency": "USD",
       "original_amount": 40.11,
       "amount_usd": 40.11,
-      "amount_ils": 123.82,
+      "amount_ils": 122.62,
       "entry_source": null
     },
     {
@@ -196,7 +196,7 @@
       "currency": "USD",
       "original_amount": 10,
       "amount_usd": 10,
-      "amount_ils": 30.87,
+      "amount_ils": 30.57,
       "entry_source": null
     },
     {
@@ -206,7 +206,7 @@
       "currency": "USD",
       "original_amount": 10,
       "amount_usd": 10,
-      "amount_ils": 30.87,
+      "amount_ils": 30.57,
       "entry_source": null
     },
     {
@@ -216,7 +216,7 @@
       "currency": "USD",
       "original_amount": 14.5,
       "amount_usd": 14.5,
-      "amount_ils": 44.76,
+      "amount_ils": 44.33,
       "entry_source": null
     },
     {
@@ -226,7 +226,7 @@
       "currency": "USD",
       "original_amount": 5,
       "amount_usd": 5,
-      "amount_ils": 15.44,
+      "amount_ils": 15.29,
       "entry_source": null
     },
     {
@@ -236,7 +236,7 @@
       "currency": "USD",
       "original_amount": 10,
       "amount_usd": 10,
-      "amount_ils": 30.87,
+      "amount_ils": 30.57,
       "entry_source": null
     },
     {
@@ -246,7 +246,7 @@
       "currency": "USD",
       "original_amount": 50,
       "amount_usd": 50,
-      "amount_ils": 154.35,
+      "amount_ils": 152.85,
       "entry_source": null
     },
     {
@@ -256,7 +256,7 @@
       "currency": "USD",
       "original_amount": 51,
       "amount_usd": 51,
-      "amount_ils": 157.44,
+      "amount_ils": 155.91,
       "entry_source": null
     },
     {
@@ -266,7 +266,7 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 61.74,
+      "amount_ils": 61.14,
       "entry_source": null
     },
     {
@@ -276,7 +276,7 @@
       "currency": "USD",
       "original_amount": 5,
       "amount_usd": 5,
-      "amount_ils": 15.44,
+      "amount_ils": 15.29,
       "entry_source": null
     },
     {
@@ -286,7 +286,7 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 61.74,
+      "amount_ils": 61.14,
       "entry_source": "auto"
     },
     {
@@ -296,7 +296,7 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 61.74,
+      "amount_ils": 61.14,
       "entry_source": null
     },
     {
@@ -306,7 +306,7 @@
       "currency": "USD",
       "original_amount": 47,
       "amount_usd": 47,
-      "amount_ils": 145.09,
+      "amount_ils": 143.68,
       "entry_source": null
     },
     {
@@ -326,7 +326,7 @@
       "currency": "USD",
       "original_amount": 31.42,
       "amount_usd": 31.42,
-      "amount_ils": 96.99,
+      "amount_ils": 96.05,
       "entry_source": null
     },
     {
@@ -346,7 +346,7 @@
       "currency": "USD",
       "original_amount": 25,
       "amount_usd": 25,
-      "amount_ils": 77.18,
+      "amount_ils": 76.42,
       "entry_source": null
     },
     {
@@ -356,7 +356,7 @@
       "currency": "USD",
       "original_amount": 5,
       "amount_usd": 5,
-      "amount_ils": 15.44,
+      "amount_ils": 15.29,
       "entry_source": null
     },
     {
@@ -366,7 +366,7 @@
       "currency": "USD",
       "original_amount": 14.5,
       "amount_usd": 14.5,
-      "amount_ils": 44.76,
+      "amount_ils": 44.33,
       "entry_source": null
     },
     {
@@ -376,7 +376,7 @@
       "currency": "USD",
       "original_amount": 43,
       "amount_usd": 43,
-      "amount_ils": 132.74,
+      "amount_ils": 131.45,
       "entry_source": null
     },
     {
@@ -386,7 +386,7 @@
       "currency": "USD",
       "original_amount": 25,
       "amount_usd": 25,
-      "amount_ils": 77.18,
+      "amount_ils": 76.42,
       "entry_source": null
     },
     {
@@ -396,7 +396,7 @@
       "currency": "USD",
       "original_amount": 39,
       "amount_usd": 39,
-      "amount_ils": 120.39,
+      "amount_ils": 119.22,
       "entry_source": null
     },
     {
@@ -406,7 +406,7 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 61.74,
+      "amount_ils": 61.14,
       "entry_source": "auto"
     },
     {
@@ -426,7 +426,7 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 61.74,
+      "amount_ils": 61.14,
       "entry_source": null
     },
     {
@@ -436,7 +436,7 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 61.74,
+      "amount_ils": 61.14,
       "entry_source": null
     },
     {
@@ -446,7 +446,7 @@
       "currency": "USD",
       "original_amount": 139.92,
       "amount_usd": 139.92,
-      "amount_ils": 431.93,
+      "amount_ils": 427.74,
       "entry_source": null
     },
     {
@@ -456,7 +456,7 @@
       "currency": "USD",
       "original_amount": 15,
       "amount_usd": 15,
-      "amount_ils": 46.3,
+      "amount_ils": 45.85,
       "entry_source": null
     },
     {
@@ -466,7 +466,7 @@
       "currency": "USD",
       "original_amount": 19.43,
       "amount_usd": 19.43,
-      "amount_ils": 59.98,
+      "amount_ils": 59.4,
       "entry_source": null
     },
     {
@@ -486,7 +486,7 @@
       "currency": "USD",
       "original_amount": 5,
       "amount_usd": 5,
-      "amount_ils": 15.44,
+      "amount_ils": 15.29,
       "entry_source": null
     },
     {
@@ -496,7 +496,7 @@
       "currency": "USD",
       "original_amount": 36,
       "amount_usd": 36,
-      "amount_ils": 111.13,
+      "amount_ils": 110.05,
       "entry_source": null
     },
     {
@@ -506,7 +506,7 @@
       "currency": "USD",
       "original_amount": 33,
       "amount_usd": 33,
-      "amount_ils": 101.87,
+      "amount_ils": 100.88,
       "entry_source": null
     },
     {
@@ -516,7 +516,7 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 61.74,
+      "amount_ils": 61.14,
       "entry_source": "auto"
     },
     {
@@ -526,7 +526,7 @@
       "currency": "USD",
       "original_amount": 30,
       "amount_usd": 30,
-      "amount_ils": 92.61,
+      "amount_ils": 91.71,
       "entry_source": null
     },
     {
@@ -536,7 +536,7 @@
       "currency": "USD",
       "original_amount": 15,
       "amount_usd": 15,
-      "amount_ils": 46.3,
+      "amount_ils": 45.85,
       "entry_source": null
     },
     {
@@ -546,7 +546,7 @@
       "currency": "USD",
       "original_amount": 9.72,
       "amount_usd": 9.72,
-      "amount_ils": 30.01,
+      "amount_ils": 29.71,
       "entry_source": null
     },
     {
@@ -566,7 +566,7 @@
       "currency": "USD",
       "original_amount": 5,
       "amount_usd": 5,
-      "amount_ils": 15.44,
+      "amount_ils": 15.29,
       "entry_source": null
     },
     {
@@ -576,7 +576,7 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 61.74,
+      "amount_ils": 61.14,
       "entry_source": null
     },
     {
@@ -586,7 +586,7 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 61.74,
+      "amount_ils": 61.14,
       "entry_source": "auto"
     },
     {
@@ -596,7 +596,7 @@
       "currency": "USD",
       "original_amount": 10,
       "amount_usd": 10,
-      "amount_ils": 30.87,
+      "amount_ils": 30.57,
       "entry_source": null
     },
     {
@@ -606,7 +606,7 @@
       "currency": "USD",
       "original_amount": 11.8,
       "amount_usd": 11.8,
-      "amount_ils": 36.43,
+      "amount_ils": 36.07,
       "entry_source": null
     },
     {
@@ -616,7 +616,7 @@
       "currency": "USD",
       "original_amount": 15,
       "amount_usd": 15,
-      "amount_ils": 46.3,
+      "amount_ils": 45.85,
       "entry_source": null
     },
     {
@@ -626,7 +626,7 @@
       "currency": "USD",
       "original_amount": 12,
       "amount_usd": 12,
-      "amount_ils": 37.04,
+      "amount_ils": 36.68,
       "entry_source": null
     },
     {
@@ -636,7 +636,7 @@
       "currency": "USD",
       "original_amount": 5,
       "amount_usd": 5,
-      "amount_ils": 15.44,
+      "amount_ils": 15.29,
       "entry_source": null
     },
     {
@@ -646,7 +646,7 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 61.74,
+      "amount_ils": 61.14,
       "entry_source": null
     },
     {
@@ -656,7 +656,7 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 61.74,
+      "amount_ils": 61.14,
       "entry_source": "auto"
     },
     {
@@ -676,7 +676,7 @@
       "currency": "USD",
       "original_amount": 5,
       "amount_usd": 5,
-      "amount_ils": 15.44,
+      "amount_ils": 15.29,
       "entry_source": null
     },
     {
@@ -686,7 +686,7 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 61.74,
+      "amount_ils": 61.14,
       "entry_source": null
     },
     {
@@ -696,7 +696,7 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 61.74,
+      "amount_ils": 61.14,
       "entry_source": "auto"
     },
     {
@@ -706,7 +706,7 @@
       "currency": "USD",
       "original_amount": 10.59,
       "amount_usd": 10.59,
-      "amount_ils": 32.69,
+      "amount_ils": 32.37,
       "entry_source": null
     },
     {
@@ -716,7 +716,7 @@
       "currency": "USD",
       "original_amount": 2.79,
       "amount_usd": 2.79,
-      "amount_ils": 8.61,
+      "amount_ils": 8.53,
       "entry_source": null
     },
     {
@@ -736,7 +736,7 @@
       "currency": "USD",
       "original_amount": 5,
       "amount_usd": 5,
-      "amount_ils": 15.44,
+      "amount_ils": 15.29,
       "entry_source": null
     },
     {
@@ -746,7 +746,7 @@
       "currency": "USD",
       "original_amount": 11.25,
       "amount_usd": 11.25,
-      "amount_ils": 34.73,
+      "amount_ils": 34.39,
       "entry_source": null
     },
     {
@@ -756,7 +756,7 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 61.74,
+      "amount_ils": 61.14,
       "entry_source": "auto"
     },
     {
@@ -766,7 +766,7 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 61.74,
+      "amount_ils": 61.14,
       "entry_source": null
     },
     {
@@ -776,7 +776,7 @@
       "currency": "USD",
       "original_amount": 10.59,
       "amount_usd": 10.59,
-      "amount_ils": 32.69,
+      "amount_ils": 32.37,
       "entry_source": null
     },
     {
@@ -786,7 +786,7 @@
       "currency": "USD",
       "original_amount": 19,
       "amount_usd": 19,
-      "amount_ils": 58.65,
+      "amount_ils": 58.08,
       "entry_source": null
     },
     {
@@ -796,7 +796,7 @@
       "currency": "USD",
       "original_amount": 0.9,
       "amount_usd": 0.9,
-      "amount_ils": 2.78,
+      "amount_ils": 2.75,
       "entry_source": null
     },
     {
@@ -806,7 +806,7 @@
       "currency": "USD",
       "original_amount": 12,
       "amount_usd": 12,
-      "amount_ils": 37.04,
+      "amount_ils": 36.68,
       "entry_source": null
     },
     {
@@ -816,7 +816,7 @@
       "currency": "USD",
       "original_amount": 15,
       "amount_usd": 15,
-      "amount_ils": 46.3,
+      "amount_ils": 45.85,
       "entry_source": null
     },
     {
@@ -836,7 +836,7 @@
       "currency": "USD",
       "original_amount": 113.14,
       "amount_usd": 113.14,
-      "amount_ils": 349.26,
+      "amount_ils": 345.87,
       "entry_source": null
     },
     {
@@ -846,7 +846,7 @@
       "currency": "USD",
       "original_amount": 10,
       "amount_usd": 10,
-      "amount_ils": 30.87,
+      "amount_ils": 30.57,
       "entry_source": null
     },
     {
@@ -856,7 +856,7 @@
       "currency": "USD",
       "original_amount": 13.5,
       "amount_usd": 13.5,
-      "amount_ils": 41.67,
+      "amount_ils": 41.27,
       "entry_source": null
     },
     {
@@ -866,7 +866,7 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 61.74,
+      "amount_ils": 61.14,
       "entry_source": "auto"
     },
     {
@@ -876,7 +876,7 @@
       "currency": "USD",
       "original_amount": 20,
       "amount_usd": 20,
-      "amount_ils": 61.74,
+      "amount_ils": 61.14,
       "entry_source": null
     },
     {
@@ -886,7 +886,7 @@
       "currency": "USD",
       "original_amount": 10.59,
       "amount_usd": 10.59,
-      "amount_ils": 32.69,
+      "amount_ils": 32.37,
       "entry_source": null
     },
     {
@@ -896,7 +896,7 @@
       "currency": "USD",
       "original_amount": 72,
       "amount_usd": 72,
-      "amount_ils": 222.26,
+      "amount_ils": 220.1,
       "entry_source": null
     },
     {
@@ -906,7 +906,7 @@
       "currency": "USD",
       "original_amount": 1,
       "amount_usd": 1,
-      "amount_ils": 3.09,
+      "amount_ils": 3.06,
       "entry_source": null
     }
   ],
@@ -923,16 +923,16 @@
     "2026-04": 137.04
   },
   "monthly_ils": {
-    "2026-04": 434.78,
-    "2026-03": 806.83,
-    "2026-02": 1003.82,
-    "2026-01": 1239.74,
-    "2025-12": 535,
-    "2025-11": 289.56,
-    "2025-10": 195.85,
-    "2025-09": 237.15,
-    "2025-08": 408.04,
-    "2025-07": 803.32
+    "2026-04": 431.29,
+    "2026-03": 800.22,
+    "2026-02": 995.28,
+    "2026-01": 1228.92,
+    "2025-12": 530.53,
+    "2025-11": 286.74,
+    "2025-10": 194.5,
+    "2025-09": 235.4,
+    "2025-08": 404.62,
+    "2025-07": 795.52
   },
   "by_tool": {
     "Meta (Ads)": 483.93,
@@ -958,26 +958,26 @@
     "Hedra": 10
   },
   "by_tool_ils": {
-    "Meta (Ads)": 1493.9,
-    "Ideogram AI": 571.52,
-    "Anthropic": 555.67,
-    "OpenAI": 555.66,
-    "Genspark": 555.41,
+    "Meta (Ads)": 1479.38,
+    "Ideogram AI": 565.97,
     "Google Workspace": 550.29,
-    "Lovable": 416.76,
-    "Runway ML": 169,
+    "Anthropic": 550.27,
+    "OpenAI": 550.26,
+    "Genspark": 550.02,
+    "Lovable": 412.69,
+    "Runway ML": 167.36,
     "CapCut": 149.7,
-    "Dzine": 145.09,
-    "Eleven Labs": 142.04,
-    "Make": 98.07,
-    "Manychat": 92.6,
-    "Timeless": 89.52,
-    "Recraft": 77.17,
-    "IONOS": 61.74,
-    "Higgsfield": 61.74,
-    "Manus AI": 58.65,
-    "Replicate": 42.26,
-    "Astria": 36.43,
-    "Hedra": 30.87
+    "Dzine": 143.68,
+    "Eleven Labs": 140.66,
+    "Make": 97.11,
+    "Manychat": 91.7,
+    "Timeless": 88.66,
+    "Recraft": 76.42,
+    "IONOS": 61.14,
+    "Higgsfield": 61.14,
+    "Manus AI": 58.08,
+    "Replicate": 41.85,
+    "Astria": 36.07,
+    "Hedra": 30.57
   }
 }

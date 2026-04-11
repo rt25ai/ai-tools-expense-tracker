@@ -119,6 +119,9 @@ BLOCKED_DESCRIPTION_TOKENS = (
     "charged ",
     "using 1 usd",
     "page ",
+    "vat @",
+    "tax invoice",
+    "receipt for your purchase",
 )
 
 
@@ -383,18 +386,65 @@ def extract_tool_from_text(text: str, file_name: str | None = None) -> str | Non
 
 def clean_description_candidate(value: str) -> str:
     candidate = normalize_text_for_matching(value)
+    candidate = re.sub(r"^description\b[:\s]*", "", candidate, flags=re.IGNORECASE)
     candidate = re.sub(
         r"(?:\s+(?:[0-9]+\.[0-9]{1,2}\s*(?:USD|\$|₪|ILS|NIS)?|[0-9]+\s*(?:USD|\$|₪|ILS|NIS)))+\s*$",
         "",
         candidate,
         flags=re.IGNORECASE,
     )
+    candidate = re.sub(r"\s+this is (?:an?\s+)?receipt\b.*$", "", candidate, flags=re.IGNORECASE)
+    candidate = re.sub(r"\s+not a tax invoice\b.*$", "", candidate, flags=re.IGNORECASE)
     candidate = re.sub(r"\s+(?:Qty|Unit price|Amount)\b.*$", "", candidate, flags=re.IGNORECASE)
     return candidate.strip(" -:")
 
 
+def is_amount_only_line(value: str) -> bool:
+    return bool(
+        re.fullmatch(
+            r"(?:USD|\$|ג‚×|ILS|NIS)?\s*[0-9][0-9,]*(?:\.[0-9]{1,2})?(?:\s*(?:USD|\$|ג‚×|ILS|NIS))?",
+            normalize_text_for_matching(value),
+            flags=re.IGNORECASE,
+        )
+    )
+
+
+def is_description_heading(value: str) -> bool:
+    return bool(re.fullmatch(r"description\b[:\s]*", normalize_text_for_matching(value), flags=re.IGNORECASE))
+
+
+def starts_with_description_heading(value: str) -> bool:
+    return bool(re.match(r"description\b", normalize_text_for_matching(value), flags=re.IGNORECASE))
+
+
+def is_amount_heading(value: str) -> bool:
+    return bool(
+        re.fullmatch(
+            r"amount(?:\s+in\s*\([^)]+\))?[:\s]*",
+            normalize_text_for_matching(value),
+            flags=re.IGNORECASE,
+        )
+    )
+
+
 def extract_description_from_text(text: str, tool: str | None = None) -> str | None:
     lines = [normalize_text_for_matching(line) for line in text.splitlines()]
+
+    for index, line in enumerate(lines):
+        if not starts_with_description_heading(line):
+            continue
+
+        inline_candidate = clean_description_candidate(line)
+        if inline_candidate and not is_amount_heading(inline_candidate) and not is_amount_only_line(inline_candidate):
+            return inline_candidate
+
+        for next_line in lines[index + 1:index + 5]:
+            if not next_line or is_amount_heading(next_line) or is_amount_only_line(next_line):
+                continue
+
+            candidate = clean_description_candidate(next_line)
+            if candidate:
+                return candidate
 
     for line in lines:
         if not line or len(line) < 4:
@@ -402,6 +452,8 @@ def extract_description_from_text(text: str, tool: str | None = None) -> str | N
 
         lowered = line.casefold()
         if any(token in lowered for token in BLOCKED_DESCRIPTION_TOKENS):
+            continue
+        if is_description_heading(line) or is_amount_heading(line) or is_amount_only_line(line):
             continue
         if tool and tool.casefold() not in lowered:
             continue
