@@ -1,5 +1,19 @@
 [
   {
+    "id": "manual-2026-01-10-capcut-10dbeb2d40",
+    "date": "2026-01-10",
+    "tool": "CapCut",
+    "description": "capcut_pro_discount1",
+    "currency": "ILS",
+    "original_amount": 49.9,
+    "attachment_path": "manual_invoices/2026-01-10-capcut-manual-2026-01-10-capcut-10dbeb2d40.pdf",
+    "attachment_name": "invoice (3).pdf",
+    "entry_mode": "pdf-upload",
+    "notes": null,
+    "created_at": "2026-04-11T10:43:35",
+    "entry_source": "manual"
+  },
+  {
     "id": "manual-2026-02-10-capcut-f16054d0b0",
     "date": "2026-02-10",
     "tool": "CapCut",
