@@ -116,6 +116,8 @@ export function ManualReceiptImportClient({ knownVendors, initialReceipts }: { k
   const [isParsingPdf, setIsParsingPdf] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [deletingReceiptId, setDeletingReceiptId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [receiptsError, setReceiptsError] = useState<string | null>(null);
   const [manualReceipts, setManualReceipts] = useState(() => sortReceipts(initialReceipts));
 
   const editingReceipt = editingReceiptId ? manualReceipts.find((receipt) => receipt.id === editingReceiptId) ?? null : null;
@@ -185,6 +187,7 @@ export function ManualReceiptImportClient({ knownVendors, initialReceipts }: { k
     setSelectedFile(null);
     setParseResult(null);
     setActiveTab("manual");
+    setReceiptsError(null);
   }
 
   function buildEntry() {
@@ -250,6 +253,8 @@ export function ManualReceiptImportClient({ knownVendors, initialReceipts }: { k
   }
 
   function handleEdit(receipt: ManualReceiptRecord) {
+    setConfirmDeleteId(null);
+    setReceiptsError(null);
     setEditingReceiptId(receipt.id);
     setForm({ tool: receipt.tool, date: receipt.date, description: receipt.description, currency: receipt.currency, originalAmount: String(receipt.original_amount), notes: receipt.notes ?? "" });
     setSelectedFile(null);
@@ -282,9 +287,14 @@ export function ManualReceiptImportClient({ knownVendors, initialReceipts }: { k
   }
 
   async function handleDelete(receipt: ManualReceiptRecord) {
-    if (!window.confirm(`למחוק את הקבלה של ${receipt.tool} מתאריך ${formatDateLabel(receipt.date)}?`)) return;
-    if (gatewayStatus !== "online" && bridgeStatus !== "online") return setSaveError("אין כרגע נתיב שמירה זמין. צריך שער מאובטח פעיל או גשר מקומי פעיל.");
+    if (gatewayStatus !== "online" && bridgeStatus !== "online") {
+      setConfirmDeleteId(null);
+      setReceiptsError("אין כרגע נתיב שמירה זמין. צריך שער מאובטח פעיל או גשר מקומי פעיל.");
+      return;
+    }
     setDeletingReceiptId(receipt.id);
+    setConfirmDeleteId(null);
+    setReceiptsError(null);
     setSaveError(null);
     setSaveMessage(null);
     try {
@@ -296,7 +306,7 @@ export function ManualReceiptImportClient({ knownVendors, initialReceipts }: { k
       });
       await Promise.all([checkGateway(), checkBridge()]);
     } catch (error) {
-      setSaveError(error instanceof Error ? error.message : "מחיקת הקבלה נכשלה.");
+      setReceiptsError(error instanceof Error ? error.message : "מחיקת הקבלה נכשלה.");
     } finally {
       setDeletingReceiptId(null);
     }
@@ -362,8 +372,9 @@ export function ManualReceiptImportClient({ knownVendors, initialReceipts }: { k
 
       <Card className="border-white/8 bg-white/[0.03] p-6 shadow-none">
         <div className="flex items-end justify-between gap-4 border-b border-white/6 pb-6"><div><p className="text-[11px] tracking-[0.18em] text-zinc-500">קבלות ידניות</p><h2 className="mt-2 text-2xl font-semibold text-white">כל הקבלות הידניות שהוזנו</h2></div><Badge variant="outline" className="border-white/10 bg-black/20 text-zinc-300">{manualReceipts.length} פריטים</Badge></div>
+        {receiptsError ? <div className="mt-4 rounded-2xl border border-rose-400/20 bg-rose-400/10 px-4 py-3 text-sm text-rose-200">{receiptsError}</div> : null}
         <div className="mt-6 space-y-3">
-          {manualReceipts.length ? manualReceipts.map((receipt) => <div key={receipt.id} className="rounded-[22px] border border-white/8 bg-black/20 p-4"><div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between"><div><div className="flex flex-wrap items-center gap-2"><p className="font-medium text-white">{receipt.tool}</p>{editingReceiptId === receipt.id ? <Badge variant="outline" className="border-cyan-400/20 bg-cyan-400/10 text-cyan-200">בעריכה</Badge> : null}</div><p className="mt-1 text-sm text-zinc-400">{receipt.description}</p>{receipt.notes ? <p className="mt-3 text-sm text-zinc-500">{receipt.notes}</p> : null}</div><div className="text-right"><p className="font-medium text-cyan-200">{formatOriginalAmount(receipt.original_amount, receipt.currency)}</p><p className="mt-1 text-sm text-zinc-500">{formatDateLabel(receipt.date)}</p></div></div><div className="mt-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between"><div className="flex flex-wrap gap-2"><Badge variant="outline" className="border-white/10 bg-black/20 text-zinc-300">{receipt.entry_mode === "pdf-upload" ? "PDF" : "ידני"}</Badge><Badge variant="outline" className="border-white/10 bg-black/20 text-zinc-300">{receipt.currency}</Badge><Link href={monthReportHref(monthKeyFromDate(receipt.date))} className="inline-flex rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs text-cyan-200 transition-colors hover:bg-cyan-400/15">לדוח {monthKeyFromDate(receipt.date)}</Link></div><div className="flex flex-wrap gap-2"><Button type="button" variant="outline" size="sm" onClick={() => handleEdit(receipt)} disabled={isSaving || deletingReceiptId !== null} className="border-white/10 bg-black/20 text-zinc-100 hover:bg-white/[0.08]"><PencilLine className="size-4" />עריכה</Button><Button type="button" variant="destructive" size="sm" onClick={() => void handleDelete(receipt)} disabled={isSaving || deletingReceiptId !== null}>{deletingReceiptId === receipt.id ? <LoaderCircle className="size-4 animate-spin" /> : <Trash2 className="size-4" />}מחיקה</Button></div></div></div>) : <div className="rounded-[22px] border border-white/8 bg-black/20 p-4 text-sm text-zinc-400">עדיין לא נשמרו קבלות ידניות. ברגע שתוסיף אחת, היא תופיע כאן יחד עם אפשרויות עריכה ומחיקה.</div>}
+          {manualReceipts.length ? manualReceipts.map((receipt) => <div key={receipt.id} className="rounded-[22px] border border-white/8 bg-black/20 p-4"><div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between"><div><div className="flex flex-wrap items-center gap-2"><p className="font-medium text-white">{receipt.tool}</p>{editingReceiptId === receipt.id ? <Badge variant="outline" className="border-cyan-400/20 bg-cyan-400/10 text-cyan-200">בעריכה</Badge> : null}</div><p className="mt-1 text-sm text-zinc-400">{receipt.description}</p>{receipt.notes ? <p className="mt-3 text-sm text-zinc-500">{receipt.notes}</p> : null}</div><div className="text-right"><p className="font-medium text-cyan-200">{formatOriginalAmount(receipt.original_amount, receipt.currency)}</p><p className="mt-1 text-sm text-zinc-500">{formatDateLabel(receipt.date)}</p></div></div><div className="mt-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between"><div className="flex flex-wrap gap-2"><Badge variant="outline" className="border-white/10 bg-black/20 text-zinc-300">{receipt.entry_mode === "pdf-upload" ? "PDF" : "ידני"}</Badge><Badge variant="outline" className="border-white/10 bg-black/20 text-zinc-300">{receipt.currency}</Badge><Link href={monthReportHref(monthKeyFromDate(receipt.date))} className="inline-flex rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs text-cyan-200 transition-colors hover:bg-cyan-400/15">לדוח {monthKeyFromDate(receipt.date)}</Link></div><div className="flex flex-wrap gap-2">{confirmDeleteId !== receipt.id ? (<><Button type="button" variant="outline" size="sm" onClick={() => handleEdit(receipt)} disabled={isSaving || deletingReceiptId !== null} className="border-white/10 bg-black/20 text-zinc-100 hover:bg-white/[0.08]"><PencilLine className="size-4" />עריכה</Button><Button type="button" variant="destructive" size="sm" onClick={() => { setConfirmDeleteId(receipt.id); setReceiptsError(null); }} disabled={isSaving || deletingReceiptId !== null}><Trash2 className="size-4" />מחיקה</Button></>) : (<><span className="self-center text-sm text-rose-300">למחוק את הקבלה?</span><Button type="button" variant="destructive" size="sm" onClick={() => void handleDelete(receipt)} disabled={deletingReceiptId !== null}>{deletingReceiptId === receipt.id ? <LoaderCircle className="size-4 animate-spin" /> : <Trash2 className="size-4" />}אישור</Button><Button type="button" variant="outline" size="sm" onClick={() => setConfirmDeleteId(null)} className="border-white/10 bg-black/20 text-zinc-100 hover:bg-white/[0.08]"><X className="size-4" />ביטול</Button></>)}</div></div></div>) : <div className="rounded-[22px] border border-white/8 bg-black/20 p-4 text-sm text-zinc-400">עדיין לא נשמרו קבלות ידניות. ברגע שתוסיף אחת, היא תופיע כאן יחד עם אפשרויות עריכה ומחיקה.</div>}
         </div>
       </Card>
     </div>

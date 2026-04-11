@@ -9,6 +9,12 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { SettingsModel } from "@/lib/dashboard-data";
+import {
+  DASHBOARD_SETTINGS_STORAGE_KEY,
+  DEFAULT_MONTHLY_BUDGET,
+  sanitizeMonthlyBudget,
+} from "@/lib/monthly-budget";
+import { dispatchSettingsUpdated } from "@/lib/use-monthly-budget";
 
 type SectionKey = keyof SettingsModel;
 
@@ -36,23 +42,66 @@ export function SettingsPageClient({ initialSettings }: { initialSettings: Setti
   const [settings, setSettings] = useState(() => {
     if (typeof window === "undefined") return initialSettings;
 
-    const raw = window.localStorage.getItem("rt-ai-console-settings");
+    const raw = window.localStorage.getItem(DASHBOARD_SETTINGS_STORAGE_KEY);
     if (!raw) return initialSettings;
 
     try {
-      return JSON.parse(raw) as SettingsModel;
+      const parsed = JSON.parse(raw) as Partial<SettingsModel>;
+      return {
+        finance: {
+          ...initialSettings.finance,
+          ...parsed.finance,
+          monthlyBudget: sanitizeMonthlyBudget(
+            parsed.finance?.monthlyBudget,
+            initialSettings.finance.monthlyBudget,
+          ),
+        },
+        detection: {
+          ...initialSettings.detection,
+          ...parsed.detection,
+        },
+        vendors: {
+          ...initialSettings.vendors,
+          ...parsed.vendors,
+        },
+        recurringRules: {
+          ...initialSettings.recurringRules,
+          ...parsed.recurringRules,
+        },
+      };
     } catch {
-      window.localStorage.removeItem("rt-ai-console-settings");
+      window.localStorage.removeItem(DASHBOARD_SETTINGS_STORAGE_KEY);
       return initialSettings;
     }
   });
   const [savedSection, setSavedSection] = useState<SectionKey | null>(null);
 
-  function saveSection(section: SectionKey) {
+  function normalizeSettingsForStorage(nextSettings: SettingsModel) {
+    return {
+      ...nextSettings,
+      finance: {
+        ...nextSettings.finance,
+        monthlyBudget: sanitizeMonthlyBudget(
+          nextSettings.finance.monthlyBudget,
+          DEFAULT_MONTHLY_BUDGET,
+        ),
+      },
+    } satisfies SettingsModel;
+  }
+
+  function markSectionSaved(section: SectionKey) {
+    setSavedSection(section);
+    window.setTimeout(() => setSavedSection((current) => (current === section ? null : current)), 2200);
+  }
+
+  function saveSection(section: SectionKey, nextSettings = settings) {
     startTransition(() => {
-      window.localStorage.setItem("rt-ai-console-settings", JSON.stringify(settings));
-      setSavedSection(section);
-      window.setTimeout(() => setSavedSection((current) => (current === section ? null : current)), 2200);
+      const settingsToSave = normalizeSettingsForStorage(nextSettings);
+
+      setSettings(settingsToSave);
+      window.localStorage.setItem(DASHBOARD_SETTINGS_STORAGE_KEY, JSON.stringify(settingsToSave));
+      dispatchSettingsUpdated();
+      markSectionSaved(section);
     });
   }
 
@@ -92,6 +141,15 @@ export function SettingsPageClient({ initialSettings }: { initialSettings: Setti
                   finance: { ...settings.finance, defaultBillingDay: Number(event.target.value) || 1 },
                 })
               }
+              onBlur={(event) =>
+                saveSection("finance", {
+                  ...settings,
+                  finance: {
+                    ...settings.finance,
+                    defaultBillingDay: Number(event.currentTarget.value) || 1,
+                  },
+                })
+              }
               className="h-11 border-white/10 bg-black/20 text-zinc-100"
             />
           </SettingsRow>
@@ -104,9 +162,24 @@ export function SettingsPageClient({ initialSettings }: { initialSettings: Setti
               onChange={(event) =>
                 setSettings({
                   ...settings,
-                  finance: { ...settings.finance, monthlyBudget: Number(event.target.value) || 0 },
+                  finance: {
+                    ...settings.finance,
+                    monthlyBudget: Number(event.target.value) || 0,
+                  },
                 })
               }
+              onBlur={(event) =>
+                saveSection("finance", {
+                  ...settings,
+                  finance: {
+                    ...settings.finance,
+                    monthlyBudget: Number(event.currentTarget.value) || 0,
+                  },
+                })
+              }
+              type="number"
+              min={1}
+              step="0.01"
               className="h-11 border-white/10 bg-black/20 text-zinc-100"
             />
           </SettingsRow>

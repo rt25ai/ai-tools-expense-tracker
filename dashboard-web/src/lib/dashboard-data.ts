@@ -2,6 +2,7 @@ import { cache } from "react";
 import fs from "node:fs";
 import path from "node:path";
 import { convertUsdToIls, formatMonthLabel } from "@/lib/formatters";
+import { DEFAULT_MONTHLY_BUDGET } from "@/lib/monthly-budget";
 
 export type TransactionSource = "manual" | "auto" | "email-imported" | "ai-extracted";
 export type ChargeType = "recurring" | "one-time";
@@ -543,7 +544,7 @@ export const getDashboardModel = cache((): DashboardModel => {
       key,
       label: monthLabel(key),
       total,
-      budget: recurringBaselineIls + convertUsdToIls(key >= raw.current_month ? 36 : 88, raw.usd_rate),
+      budget: DEFAULT_MONTHLY_BUDGET,
       intensity: 0,
     }))
     .sort((left, right) => left.key.localeCompare(right.key));
@@ -686,7 +687,7 @@ export const getDashboardModel = cache((): DashboardModel => {
       exchangeRateUpdatedAt: raw.exchange_rate_updated_at ?? null,
       exchangeRateSource: raw.exchange_rate_source ?? "Bank of Israel Public API",
       defaultBillingDay: 16,
-      monthlyBudget: Math.round(recurringBaselineIls + convertUsdToIls(90, raw.usd_rate)),
+      monthlyBudget: DEFAULT_MONTHLY_BUDGET,
     },
     detection: {
       scanWindowDays: 90,

@@ -1,9 +1,13 @@
 import Link from "next/link";
 import { CheckCircle2, CircleAlert, CircleDot } from "lucide-react";
+import { ChartFrame } from "@/components/chart-frame";
+import { CompositionDonutChart } from "@/components/composition-donut-chart";
 import { PageHeader } from "@/components/page-header";
+import { RankingBarChart } from "@/components/ranking-bar-chart";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { getChartColor } from "@/lib/chart-palette";
 import { getBillingStatusLabel, getDashboardModel, getSourceLabel } from "@/lib/dashboard-data";
 import { formatCurrencyIls, formatDateLabel, formatMonthLabel } from "@/lib/formatters";
 import { monthReportHref } from "@/lib/report-links";
@@ -23,6 +27,25 @@ export default function VendorsPage() {
   const model = getDashboardModel();
   const activeSubscriptions = model.vendors.filter((vendor) => vendor.billingStatus === "active").length;
   const currentMonthLabel = formatMonthLabel(model.raw.current_month);
+  const categoryTotals = new Map<string, number>();
+
+  for (const vendor of model.vendors) {
+    categoryTotals.set(vendor.category, (categoryTotals.get(vendor.category) ?? 0) + vendor.totalSpend);
+  }
+
+  const categorySpendData = [...categoryTotals.entries()]
+    .sort((left, right) => right[1] - left[1])
+    .slice(0, 6)
+    .map(([label, value], index) => ({
+      label,
+      value,
+      color: getChartColor(index),
+    }));
+  const topVendorData = model.vendors.slice(0, 8).map((vendor, index) => ({
+    label: vendor.name,
+    value: vendor.totalSpend,
+    color: getChartColor(index),
+  }));
 
   return (
     <>
@@ -48,6 +71,24 @@ export default function VendorsPage() {
             {model.vendors.filter((vendor) => vendor.status !== "healthy").length}
           </p>
         </Card>
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-[0.92fr_1.08fr]">
+        <ChartFrame
+          eyebrow="קטגוריות"
+          title="איפה הכסף מתרכז לפי סוג כלי"
+          description="הדונאט מתאים כאן כי הוא מראה מיד איזה סוגי כלים לוקחים את הנתח הגדול ביותר מתוך כלל הספקים."
+        >
+          <CompositionDonutChart data={categorySpendData} centerLabel="פילוח קטגוריות" />
+        </ChartFrame>
+
+        <ChartFrame
+          eyebrow="ספקים מובילים"
+          title="דירוג הספקים לפי הוצאה מצטברת"
+          description="ברים אופקיים נותנים השוואה נקייה בין ספקים, בלי צורך לעבור שורה-שורה בטבלה הארוכה שמתחת."
+        >
+          <RankingBarChart data={topVendorData} valueLabel="הוצאה מצטברת" />
+        </ChartFrame>
       </section>
 
       <Card className="border-white/8 bg-white/[0.03] p-6 shadow-none">
