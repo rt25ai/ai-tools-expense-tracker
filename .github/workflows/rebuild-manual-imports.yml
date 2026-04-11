@@ -56,7 +56,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add AI_Tools_Expenses_2025_2026.xlsx docs dashboard-web/public/data.json
+          git add AI_Tools_Expenses_2025_2026.xlsx docs
+          git add -f dashboard-web/public/data.json || true
           if git diff --cached --quiet; then
             echo "No rebuilt artifacts changed."
             exit 0
