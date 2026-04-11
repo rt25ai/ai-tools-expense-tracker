@@ -15,7 +15,11 @@ from pathlib import Path
 from exchange_rate import fetch_usd_to_ils_rate
 from manual_receipts_store import load_manual_receipts, receipt_identity, to_transaction_tuple
 
-OUTPUT_PATH = r"C:\Users\roita\מעקב הוצאות כלים\AI_Tools_Expenses_2025_2026.xlsx"
+OUTPUT_PATH = (
+    "AI_Tools_Expenses_2025_2026.xlsx"
+    if os.environ.get("CI")
+    else r"C:\Users\roita\מעקב הוצאות כלים\AI_Tools_Expenses_2025_2026.xlsx"
+)
 VENDOR_RULES_PATH = Path(__file__).with_name("vendor_rules.json")
 
 # ── Color palette ──────────────────────────────────────────────────────────────
@@ -1059,7 +1063,9 @@ def main():
         if sheet.title == "\u05d3\u05d5\u05d7 \u05e9\u05e0\u05ea\u05d9":
             wb.active = i
 
-    os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
+    output_dir = os.path.dirname(OUTPUT_PATH)
+    if output_dir:
+        os.makedirs(output_dir, exist_ok=True)
     wb.save(OUTPUT_PATH)
     print(f"Saved: {OUTPUT_PATH}")
     generate_dashboard_json()
