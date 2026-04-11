@@ -3,8 +3,8 @@
   "usd_rate": 3.057,
   "exchange_rate_updated_at": "2026-04-10T09:22:03.0073772Z",
   "exchange_rate_source": "Bank of Israel Public API",
-  "grand_total": 1959.05,
-  "grand_total_ils": 6102.62,
+  "grand_total": 1730.08,
+  "grand_total_ils": 5402.66,
   "current_month": "2026-04",
   "current_month_total": 153.36,
   "current_month_total_ils": 481.19,
@@ -140,16 +140,6 @@
       "entry_source": null
     },
     {
-      "date": "2026-03-16",
-      "tool": "OpenAI",
-      "description": "ChatGPT Plus",
-      "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 61.14,
-      "entry_source": "auto"
-    },
-    {
       "date": "2026-03-15",
       "tool": "Anthropic",
       "description": "Claude Pro",
@@ -178,16 +168,6 @@
       "amount_usd": 13.67,
       "amount_ils": 49.9,
       "entry_source": null
-    },
-    {
-      "date": "2026-03-10",
-      "tool": "CapCut",
-      "description": "capcut_pro_discount1",
-      "currency": "ILS",
-      "original_amount": 49.9,
-      "amount_usd": 16.323193,
-      "amount_ils": 49.9,
-      "entry_source": "manual"
     },
     {
       "date": "2026-03-03",
@@ -300,16 +280,6 @@
       "entry_source": null
     },
     {
-      "date": "2026-02-16",
-      "tool": "OpenAI",
-      "description": "ChatGPT Plus",
-      "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 61.14,
-      "entry_source": "auto"
-    },
-    {
       "date": "2026-02-15",
       "tool": "Anthropic",
       "description": "Claude Pro",
@@ -338,16 +308,6 @@
       "amount_usd": 13.67,
       "amount_ils": 49.9,
       "entry_source": null
-    },
-    {
-      "date": "2026-02-10",
-      "tool": "CapCut",
-      "description": "capcut_pro_discount1",
-      "currency": "ILS",
-      "original_amount": 49.9,
-      "amount_usd": 16.323193,
-      "amount_ils": 49.9,
-      "entry_source": "manual"
     },
     {
       "date": "2026-02-03",
@@ -430,16 +390,6 @@
       "entry_source": null
     },
     {
-      "date": "2026-01-16",
-      "tool": "OpenAI",
-      "description": "ChatGPT Plus",
-      "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 61.14,
-      "entry_source": "auto"
-    },
-    {
       "date": "2026-01-10",
       "tool": "CapCut",
       "description": "Pro – Jan 2026 (₪49.90)",
@@ -448,16 +398,6 @@
       "amount_usd": 13.67,
       "amount_ils": 49.9,
       "entry_source": null
-    },
-    {
-      "date": "2026-01-10",
-      "tool": "CapCut",
-      "description": "capcut_pro_discount1",
-      "currency": "ILS",
-      "original_amount": 49.9,
-      "amount_usd": 16.323193,
-      "amount_ils": 49.9,
-      "entry_source": "manual"
     },
     {
       "date": "2026-01-08",
@@ -550,16 +490,6 @@
       "entry_source": null
     },
     {
-      "date": "2025-12-16",
-      "tool": "OpenAI",
-      "description": "ChatGPT Plus",
-      "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 61.14,
-      "entry_source": "auto"
-    },
-    {
       "date": "2025-12-08",
       "tool": "Meta (Ads)",
       "description": "Facebook Ads",
@@ -618,16 +548,6 @@
       "amount_usd": 20,
       "amount_ils": 61.14,
       "entry_source": null
-    },
-    {
-      "date": "2025-11-16",
-      "tool": "OpenAI",
-      "description": "ChatGPT Plus",
-      "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 61.14,
-      "entry_source": "auto"
     },
     {
       "date": "2025-11-13",
@@ -690,16 +610,6 @@
       "entry_source": null
     },
     {
-      "date": "2025-10-16",
-      "tool": "OpenAI",
-      "description": "ChatGPT Plus",
-      "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 61.14,
-      "entry_source": "auto"
-    },
-    {
       "date": "2025-10-02",
       "tool": "Google Workspace",
       "description": "Business Plus – Sep 2025 (₪56.93)",
@@ -728,16 +638,6 @@
       "amount_usd": 20,
       "amount_ils": 61.14,
       "entry_source": null
-    },
-    {
-      "date": "2025-09-16",
-      "tool": "OpenAI",
-      "description": "ChatGPT Plus",
-      "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 61.14,
-      "entry_source": "auto"
     },
     {
       "date": "2025-09-10",
@@ -788,16 +688,6 @@
       "amount_usd": 11.25,
       "amount_ils": 34.39,
       "entry_source": null
-    },
-    {
-      "date": "2025-08-16",
-      "tool": "OpenAI",
-      "description": "ChatGPT Plus",
-      "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 61.14,
-      "entry_source": "auto"
     },
     {
       "date": "2025-08-11",
@@ -900,16 +790,6 @@
       "entry_source": null
     },
     {
-      "date": "2025-07-16",
-      "tool": "OpenAI",
-      "description": "ChatGPT Plus",
-      "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 61.14,
-      "entry_source": "auto"
-    },
-    {
       "date": "2025-07-11",
       "tool": "Anthropic",
       "description": "Claude Pro",
@@ -951,38 +831,37 @@
     }
   ],
   "monthly": {
-    "2025-07": 260.23,
-    "2025-08": 129.34,
-    "2025-09": 73.98,
-    "2025-10": 60.6,
-    "2025-11": 93.8,
-    "2025-12": 169.51,
-    "2026-01": 411.63,
-    "2026-02": 335.2,
-    "2026-03": 271.39,
+    "2025-07": 240.23,
+    "2025-08": 109.34,
+    "2025-09": 53.98,
+    "2025-10": 40.6,
+    "2025-11": 73.8,
+    "2025-12": 149.51,
+    "2026-01": 375.31,
+    "2026-02": 298.88,
+    "2026-03": 235.07,
     "2026-04": 153.36
   },
   "monthly_ils": {
     "2026-04": 481.19,
-    "2026-03": 850.12,
-    "2026-02": 1045.18,
-    "2026-01": 1278.82,
-    "2025-12": 530.53,
-    "2025-11": 286.74,
-    "2025-10": 194.5,
-    "2025-09": 235.4,
-    "2025-08": 404.62,
-    "2025-07": 795.52
+    "2026-03": 739.08,
+    "2026-02": 934.14,
+    "2026-01": 1167.78,
+    "2025-12": 469.39,
+    "2025-11": 225.6,
+    "2025-10": 133.36,
+    "2025-09": 174.26,
+    "2025-08": 343.48,
+    "2025-07": 734.38
   },
   "by_tool": {
     "Meta (Ads)": 483.93,
     "Ideogram AI": 185.14,
     "Anthropic": 180,
-    "OpenAI": 180,
     "Genspark": 179.92,
     "Google Workspace": 150.75,
     "Lovable": 135,
-    "CapCut": 106.3,
+    "CapCut": 57.33,
     "Runway ML": 54.75,
     "Dzine": 47,
     "Eleven Labs": 46,
@@ -1002,10 +881,9 @@
     "Ideogram AI": 565.97,
     "Google Workspace": 550.29,
     "Anthropic": 550.27,
-    "OpenAI": 550.26,
     "Genspark": 550.02,
     "Lovable": 412.69,
-    "CapCut": 349.3,
+    "CapCut": 199.6,
     "Runway ML": 167.36,
     "Dzine": 143.68,
     "Eleven Labs": 140.66,
