@@ -40,5 +40,19 @@
     "notes": "Imported after fixing Windows bridge command resolution.",
     "created_at": "2026-04-09T21:42:30",
     "entry_source": "manual"
+  },
+  {
+    "id": "manual-2026-04-10-capcut-6412bc537d",
+    "date": "2026-04-10",
+    "tool": "CapCut",
+    "description": "capcut_pro_discount1",
+    "currency": "ILS",
+    "original_amount": 49.9,
+    "attachment_path": "manual_invoices/2026-04-10-capcut-manual-2026-04-10-capcut-6412bc537d.pdf",
+    "attachment_name": "invoice.pdf",
+    "entry_mode": "pdf-upload",
+    "notes": null,
+    "created_at": "2026-04-11T10:35:18",
+    "entry_source": "manual"
   }
 ]
