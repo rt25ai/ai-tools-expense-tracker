@@ -3,11 +3,11 @@
   "usd_rate": 3.057,
   "exchange_rate_updated_at": "2026-04-10T09:22:03.0073772Z",
   "exchange_rate_source": "Bank of Israel Public API",
-  "grand_total": 2075.68,
-  "grand_total_ils": 6459.15,
+  "grand_total": 2028.09,
+  "grand_total_ils": 6313.66,
   "current_month": "2026-04",
-  "current_month_total": 269.3,
-  "current_month_total_ils": 835.62,
+  "current_month_total": 221.71,
+  "current_month_total_ils": 690.13,
   "scanner_status": {
     "last_run": "2026-04-12T10:03:09",
     "next_run": "2026-04-13T08:00:00",
@@ -26,16 +26,6 @@
       "amount_usd": 16.323193,
       "amount_ils": 49.9,
       "entry_source": "manual"
-    },
-    {
-      "date": "2026-04-07",
-      "tool": "Meta (Ads)",
-      "description": "Facebook Ads",
-      "currency": "USD",
-      "original_amount": 51.0,
-      "amount_usd": 51.0,
-      "amount_ils": 155.91,
-      "entry_source": null
     },
     {
       "date": "2026-04-07",
@@ -121,10 +111,10 @@
       "date": "2026-04-01",
       "tool": "Meta (Ads)",
       "description": "Facebook Ads",
-      "currency": "USD",
-      "original_amount": 51.0,
-      "amount_usd": 51.0,
-      "amount_ils": 155.91,
+      "currency": "ILS",
+      "original_amount": 166.33,
+      "amount_usd": 54.409552,
+      "amount_ils": 166.33,
       "entry_source": null
     },
     {
@@ -988,7 +978,7 @@
     "2026-01": 395.31,
     "2026-02": 343.71,
     "2026-03": 279.9,
-    "2026-04": 269.3
+    "2026-04": 221.71
   },
   "monthly_ils": {
     "2025-07": 795.52,
@@ -1000,10 +990,10 @@
     "2026-01": 1228.92,
     "2026-02": 1071.18,
     "2026-03": 876.12,
-    "2026-04": 835.62
+    "2026-04": 690.13
   },
   "by_tool": {
-    "Meta (Ads)": 575.04,
+    "Meta (Ads)": 527.45,
     "Google Workspace": 225.23,
     "Ideogram AI": 185.14,
     "Anthropic": 180.0,
@@ -1026,7 +1016,7 @@
     "Hedra": 10.0
   },
   "by_tool_ils": {
-    "Meta (Ads)": 1757.91,
+    "Meta (Ads)": 1612.42,
     "Google Workspace": 777.99,
     "Ideogram AI": 565.97,
     "Anthropic": 550.27,

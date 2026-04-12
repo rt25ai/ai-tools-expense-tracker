@@ -207,3 +207,24 @@ cd dashboard-web && npm run dev
 - **Branch ראשי:** `master` (משוכפל ל-`main` אחרי כל push)
 - **GitHub Pages:** מגיש מ-`docs/` ב-branch `master`
 - **Task Scheduler:** משימה בשם `"AI Tools Invoice Scanner"` — רצה כל יום ב-08:00
+
+---
+
+## Graphify
+
+- `Graphify` מוגדר בפרויקט הזה כגרף ידע ממוקד-קוד, לא על ארטיפקטים בנויים.
+- קובץ `.graphifyignore` מוציא מהריצה את `docs/`, `graphify-out/`, `tmp/`, קבצי PDF וארטיפקטים כבדים כדי שהגרף יתמקד בארכיטקטורה ובקוד המקור.
+- כדי לרענן את הגרף, הרץ מה-root:
+  ```bash
+  python rebuild_graphify.py
+  ```
+- הפלט נכתב ל-`graphify-out/`:
+  - `GRAPH_REPORT.md` — סיכום קהילות, god nodes ושאלות מעניינות
+  - `graph.json` — הגרף עצמו
+  - `graph.html` — ויזואליזציה לפתיחה בדפדפן
+- לפני מענה על שאלות ארכיטקטורה/קודבייס, עדיף לקרוא קודם את `graphify-out/GRAPH_REPORT.md`.
+- לשאילתות ממוקדות על הגרף אפשר להריץ:
+  ```bash
+  python -m graphify query "your question" --graph graphify-out/graph.json
+  ```
+- אחרי שינויי קוד, רענן שוב עם `python rebuild_graphify.py`.
