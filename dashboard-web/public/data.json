@@ -3,11 +3,11 @@
   "usd_rate": 3.057,
   "exchange_rate_updated_at": "2026-04-10T09:22:03.0073772Z",
   "exchange_rate_source": "Bank of Israel Public API",
-  "grand_total": 2028.09,
-  "grand_total_ils": 6313.66,
+  "grand_total": 1987.98,
+  "grand_total_ils": 6191.04,
   "current_month": "2026-04",
-  "current_month_total": 221.71,
-  "current_month_total_ils": 690.13,
+  "current_month_total": 181.6,
+  "current_month_total_ils": 567.51,
   "scanner_status": {
     "last_run": "2026-04-12T10:03:09",
     "next_run": "2026-04-13T08:00:00",
@@ -26,16 +26,6 @@
       "amount_usd": 16.323193,
       "amount_ils": 49.9,
       "entry_source": "manual"
-    },
-    {
-      "date": "2026-04-07",
-      "tool": "Meta (Ads)",
-      "description": "Facebook Ads",
-      "currency": "USD",
-      "original_amount": 40.11,
-      "amount_usd": 40.11,
-      "amount_ils": 122.62,
-      "entry_source": null
     },
     {
       "date": "2026-04-05",
@@ -978,7 +968,7 @@
     "2026-01": 395.31,
     "2026-02": 343.71,
     "2026-03": 279.9,
-    "2026-04": 221.71
+    "2026-04": 181.6
   },
   "monthly_ils": {
     "2025-07": 795.52,
@@ -990,10 +980,10 @@
     "2026-01": 1228.92,
     "2026-02": 1071.18,
     "2026-03": 876.12,
-    "2026-04": 690.13
+    "2026-04": 567.51
   },
   "by_tool": {
-    "Meta (Ads)": 527.45,
+    "Meta (Ads)": 487.34,
     "Google Workspace": 225.23,
     "Ideogram AI": 185.14,
     "Anthropic": 180.0,
@@ -1016,7 +1006,7 @@
     "Hedra": 10.0
   },
   "by_tool_ils": {
-    "Meta (Ads)": 1612.42,
+    "Meta (Ads)": 1489.8,
     "Google Workspace": 777.99,
     "Ideogram AI": 565.97,
     "Anthropic": 550.27,

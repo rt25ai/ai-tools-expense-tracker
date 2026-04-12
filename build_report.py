@@ -148,7 +148,6 @@ MANUAL_TRANSACTIONS = [
     ("2026-04-01", "Google Workspace", "Google Workspace (₪75.9)", 75.90, "ILS"),
     ("2026-04-03", "Meta (Ads)",    "Facebook Ads",                      2.25),
     ("2026-04-05", "IONOS",         "Instant Domain",                   20.00),
-    ("2026-04-07", "Meta (Ads)", "Facebook Ads", 40.11),
 ]
 
 TRACKING_START = datetime.date(2025, 7, 1)
