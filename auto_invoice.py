@@ -496,7 +496,8 @@ def git(*args):
         log.warning(f"git {' '.join(args)} failed (rc={r.returncode}): {r.stderr.strip()}")
 
 
-def rebuild_and_push(new_txns):
+def rebuild_excel():
+    """Rebuild the Excel file from build_report.py. Returns True on success."""
     log.info("Rebuilding Excel...")
     r = subprocess.run(
         ["python", str(REPORT_PY)],
@@ -504,6 +505,12 @@ def rebuild_and_push(new_txns):
     )
     if r.returncode != 0:
         log.error(f"Build failed:\n{r.stderr}")
+        return False
+    return True
+
+
+def rebuild_and_push(new_txns):
+    if not rebuild_excel():
         return
 
     summary = ", ".join(f"{t['tool']} {t['date']}" for t in new_txns)
@@ -535,13 +542,86 @@ def push_status_only():
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
+def get_current_commit():
+    r = subprocess.run(["git", "rev-parse", "HEAD"],
+                       cwd=str(BASE_DIR), capture_output=True, text=True)
+    return r.stdout.strip()
+
+
+def parse_ci_transactions_from_diff(diff_text):
+    """Extract newly added transaction tuples from a git diff of build_report.py."""
+    added = []
+    for line in diff_text.splitlines():
+        if not line.startswith("+"):
+            continue
+        line = line[1:].strip()
+        # Match lines like: ("2026-04-10", "Anthropic", "Anthropic", 20.00),
+        m = re.match(r'\("(\d{4}-\d{2}-\d{2})", "([^"]+)", "([^"]+)", ([\d.]+)(?:, "(\w+)")?\)', line)
+        if m:
+            date, tool, description, amount, currency = m.groups()
+            added.append({
+                "date": date,
+                "tool": tool,
+                "description": description,
+                "original_amount": float(amount),
+                "currency": currency or "USD",
+            })
+    return added
+
+
+def sync_ci_changes():
+    """
+    After git pull, check if CI added new transactions while the computer was off.
+    If so, rebuild the local Excel and send Telegram notifications.
+    Returns list of synced transactions.
+    """
+    r = subprocess.run(
+        ["git", "log", "--oneline", "--author=github-actions", "ORIG_HEAD..HEAD", "--", "build_report.py"],
+        cwd=str(BASE_DIR), capture_output=True, text=True
+    )
+    ci_commits = [l.strip() for l in r.stdout.splitlines() if l.strip()]
+    if not ci_commits:
+        return []
+
+    log.info(f"CI added {len(ci_commits)} commit(s) while computer was off: {ci_commits}")
+
+    # Get the diff to find what transactions were added
+    diff_r = subprocess.run(
+        ["git", "diff", "ORIG_HEAD", "HEAD", "--", "build_report.py"],
+        cwd=str(BASE_DIR), capture_output=True, text=True
+    )
+    ci_txns = parse_ci_transactions_from_diff(diff_r.stdout)
+
+    if not ci_txns:
+        # build_report.py changed but couldn't parse — still rebuild Excel
+        log.info("CI changed build_report.py — rebuilding local Excel")
+        rebuild_excel()
+        return []
+
+    log.info(f"Syncing {len(ci_txns)} CI transaction(s) to local Excel: "
+             + ", ".join(f"{t['tool']} {t['date']}" for t in ci_txns))
+    rebuild_excel()
+
+    # Send Telegram for each CI transaction with "sync from cloud" note
+    from telegram_notify import notify_new_charge as _notify
+    for txn in ci_txns:
+        _notify(txn, source="ci_sync")
+
+    return ci_txns
+
+
 def main():
     log.info("=" * 60)
     log.info("auto_invoice scan started")
     INVOICES_DIR.mkdir(exist_ok=True)
 
     # Sync with remote before scanning to avoid conflicts when both local and CI run
+    commit_before_pull = get_current_commit()
     git("pull", "--rebase", "origin", "master")
+    commit_after_pull = get_current_commit()
+
+    if commit_before_pull != commit_after_pull:
+        sync_ci_changes()
 
     service = get_service()
     processed_state = load_processed_state()

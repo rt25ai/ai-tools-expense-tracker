@@ -31,11 +31,23 @@ def notify_new_charge(entry: dict, source: str = "auto") -> bool:
     source: "auto"   — scanned from Gmail automatically
             "manual" — added manually via the dashboard
     """
-    source_label = "סריקת Gmail" if source == "auto" else "הוספה ידנית"
+    source_labels = {
+        "auto": "סריקת Gmail (מקומי)",
+        "manual": "הוספה ידנית",
+        "ci_sync": "סריקת Gmail (ענן) — סונכרן כעת למחשב",
+    }
+    source_label = source_labels.get(source, source)
     amount_str = _format_amount(entry)
 
+    if source == "ci_sync":
+        title = "☁️ *חיוב סונכרן מהענן!*"
+        footer = "✅ עודכן בממשק הניהול\n✅ גליון האקסל עודכן כעת במחשב"
+    else:
+        title = "💳 *חיוב חדש נרשם!*"
+        footer = "✅ עודכן בממשק הניהול\n✅ עודכן בגליון האקסל"
+
     text = (
-        f"💳 *חיוב חדש נרשם!*\n"
+        f"{title}\n"
         f"\n"
         f"🏢 *ספק:* {entry.get('tool', '?')}\n"
         f"📝 *תיאור:* {entry.get('description', '?')}\n"
@@ -43,8 +55,7 @@ def notify_new_charge(entry: dict, source: str = "auto") -> bool:
         f"💰 *סכום:* {amount_str}\n"
         f"🔍 *מקור:* {source_label}\n"
         f"\n"
-        f"✅ עודכן בממשק הניהול\n"
-        f"✅ עודכן בגליון האקסל"
+        f"{footer}"
     )
 
     try:
