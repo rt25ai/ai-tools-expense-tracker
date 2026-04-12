@@ -1,0 +1,115 @@
+{
+  "OpenAI": {
+    "subscription": true,
+    "billing_status": "active",
+    "billing_day": 16,
+    "expected_amount": 20,
+    "billing_currency": "USD",
+    "auto_add_to_sheet": true,
+    "start_month": "2025-07",
+    "sheet_description": "ChatGPT Plus"
+  },
+  "Anthropic": {
+    "subscription": true,
+    "billing_status": "active",
+    "billing_day": 15,
+    "expected_amount": 20,
+    "billing_currency": "USD"
+  },
+  "Google Workspace": {
+    "subscription": true,
+    "billing_status": "active",
+    "billing_day": 2,
+    "expected_amount": 75.9,
+    "billing_currency": "ILS"
+  },
+  "CapCut": {
+    "subscription": true,
+    "billing_status": "active",
+    "billing_day": 10,
+    "expected_amount": 49.9,
+    "billing_currency": "ILS"
+  },
+  "Eleven Labs": {
+    "subscription": true,
+    "billing_status": "active",
+    "billing_day": 30,
+    "expected_amount": 5,
+    "billing_currency": "USD"
+  },
+  "Make": {
+    "subscription": true,
+    "billing_status": "stopped",
+    "billing_day": 10,
+    "expected_amount": 10.59,
+    "billing_currency": "USD"
+  },
+  "Manychat": {
+    "subscription": true,
+    "billing_status": "stopped",
+    "billing_day": 3,
+    "expected_amount": 15,
+    "billing_currency": "USD"
+  },
+  "Timeless": {
+    "subscription": true,
+    "billing_status": "stopped",
+    "billing_day": 1,
+    "expected_amount": 14.5,
+    "billing_currency": "USD"
+  },
+  "Lovable": {
+    "subscription": true,
+    "billing_status": "active",
+    "billing_day": 25,
+    "expected_amount": 5,
+    "billing_currency": "USD"
+  },
+  "Runway ML": {
+    "subscription": false,
+    "billing_status": "one-time"
+  },
+  "Replicate": {
+    "subscription": false,
+    "billing_status": "one-time"
+  },
+  "Recraft": {
+    "subscription": false,
+    "billing_status": "one-time"
+  },
+  "Ideogram AI": {
+    "subscription": false,
+    "billing_status": "one-time"
+  },
+  "Genspark": {
+    "subscription": false,
+    "billing_status": "one-time"
+  },
+  "Meta (Ads)": {
+    "subscription": false,
+    "billing_status": "one-time"
+  },
+  "IONOS": {
+    "subscription": false,
+    "billing_status": "one-time"
+  },
+  "Manus AI": {
+    "subscription": true,
+    "billing_status": "stopped",
+    "billing_day": 9,
+    "expected_amount": 19,
+    "billing_currency": "USD"
+  },
+  "Higgsfield": {
+    "subscription": false,
+    "billing_status": "one-time"
+  },
+  "Astria": {
+    "subscription": false,
+    "billing_status": "one-time"
+  },
+  "Hedra": {
+    "subscription": false,
+    "billing_status": "one-time"
+  }
+}

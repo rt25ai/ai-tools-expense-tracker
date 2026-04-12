@@ -1,4 +1,5 @@
 import type { ManualReceiptRecord } from "@/lib/manual-receipts";
+import type { VendorRule } from "@/lib/dashboard-data";
 
 const GITHUB_API_BASE = "https://api.github.com";
 const TOKEN_STORAGE_KEY = "manual_import_github_token";
@@ -246,6 +247,41 @@ export async function githubDirectUpdate(
   );
 
   return { entry: updated, commit: result.commit.sha.slice(0, 7) };
+}
+
+// ── Vendor rules CRUD ─────────────────────────────────────────────────────
+
+export async function githubReadVendorRules(
+  config: GithubDirectConfig,
+  token: string,
+): Promise<{ rules: Record<string, VendorRule>; sha: string }> {
+  const file = await getRepoFile(config, token, "vendor_rules.json");
+  if (!file) return { rules: {}, sha: "" };
+  return {
+    rules: JSON.parse(decodeBase64Utf8(file.content)) as Record<string, VendorRule>,
+    sha: file.sha,
+  };
+}
+
+export async function githubUpdateVendorRule(
+  config: GithubDirectConfig,
+  token: string,
+  vendorName: string,
+  patch: Partial<VendorRule>,
+): Promise<{ commit: string }> {
+  const file = await getRepoFile(config, token, "vendor_rules.json");
+  if (!file) throw new Error("vendor_rules.json לא נמצא בריפו.");
+  const rules = JSON.parse(decodeBase64Utf8(file.content)) as Record<string, VendorRule>;
+  rules[vendorName] = { ...(rules[vendorName] ?? {}), ...patch };
+  const result = await putRepoFile(
+    config,
+    token,
+    "vendor_rules.json",
+    `Vendor rule update: ${vendorName}`,
+    encodeUtf8Base64(JSON.stringify(rules, null, 2) + "\n"),
+    file.sha,
+  );
+  return { commit: result.commit.sha.slice(0, 7) };
 }
 
 export async function githubDirectDelete(

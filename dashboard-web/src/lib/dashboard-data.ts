@@ -53,7 +53,7 @@ type VendorMetadata = {
   notes: string;
 };
 
-type VendorRule = {
+export type VendorRule = {
   subscription?: boolean;
   billing_status?: BillingStatus;
   billing_day?: number;
@@ -210,6 +210,10 @@ function readVendorRules(): Record<string, VendorRule> {
   }
 
   return JSON.parse(fs.readFileSync(filePath, "utf-8")) as Record<string, VendorRule>;
+}
+
+export function getVendorRules(): Record<string, VendorRule> {
+  return readVendorRules();
 }
 
 const vendorRules = readVendorRules();

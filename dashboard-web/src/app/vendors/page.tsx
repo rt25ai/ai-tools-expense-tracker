@@ -3,11 +3,12 @@ import { ChartFrame } from "@/components/chart-frame";
 import { CompositionDonutChart } from "@/components/composition-donut-chart";
 import { PageHeader } from "@/components/page-header";
 import { RankingBarChart } from "@/components/ranking-bar-chart";
+import { VendorRuleEditor } from "@/components/vendor-rule-editor";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getChartColor } from "@/lib/chart-palette";
-import { getBillingStatusLabel, getDashboardModel, getSourceLabel } from "@/lib/dashboard-data";
+import { getBillingStatusLabel, getDashboardModel, getSourceLabel, getVendorRules } from "@/lib/dashboard-data";
 import { formatCurrencyIls, formatDateLabel, formatMonthLabel } from "@/lib/formatters";
 import { monthReportHref } from "@/lib/report-links";
 
@@ -24,6 +25,7 @@ function billingTone(status: "active" | "stopped" | "one-time") {
 
 export default function VendorsPage() {
   const model = getDashboardModel();
+  const vendorRules = getVendorRules();
   const activeSubscriptions = model.vendors.filter((vendor) => vendor.billingStatus === "active").length;
   const currentMonthLabel = formatMonthLabel(model.raw.current_month);
   const categoryTotals = new Map<string, number>();
@@ -118,6 +120,10 @@ export default function VendorsPage() {
                   >
                     {vendor.status === "healthy" ? "תקין" : vendor.status === "watch" ? "לבדיקה" : "ידני"}
                   </Badge>
+                  <VendorRuleEditor
+                    vendorName={vendor.name}
+                    initialRule={vendorRules[vendor.name] ?? {}}
+                  />
                 </div>
                 <p className="mt-2 text-sm text-zinc-500">{vendor.category}</p>
                 <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-400">{vendor.notes}</p>

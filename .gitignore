@@ -5,8 +5,10 @@
 !manual_receipts.json
 !auto_invoice_status.json
 !processed_messages.json
+!vendor_rules.json
 __pycache__/
 *.pyc
 *.log
 ~$*.xlsx
 tmp/
+graphify-out/
