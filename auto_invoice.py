@@ -489,8 +489,10 @@ def write_status(new_txns, error=None):
 # ── Git helpers ───────────────────────────────────────────────────────────────
 
 def git(*args):
-    subprocess.run(["git", *args], cwd=str(BASE_DIR),
-                   capture_output=True, text=True)
+    r = subprocess.run(["git", *args], cwd=str(BASE_DIR),
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        log.warning(f"git {' '.join(args)} failed (rc={r.returncode}): {r.stderr.strip()}")
 
 
 def rebuild_and_push(new_txns):
@@ -510,8 +512,8 @@ def rebuild_and_push(new_txns):
     git("add", "auto_invoice_status.json")
     git("add", "processed_messages.json")
     git("commit", "-m", f"Auto: add invoices – {summary}\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>")
-    git("push", "origin", "master:master")  # ← GitHub Pages builds from master
-    git("push", "origin", "master:main")    # ← keep main in sync
+    git("push", "origin", "HEAD:master")  # ← GitHub Pages builds from master
+    git("push", "origin", "HEAD:main")    # ← keep main in sync
     log.info(f"Pushed: {summary}")
 
 
@@ -525,8 +527,8 @@ def push_status_only():
     )
     if r.returncode != 0:  # something staged → commit
         git("commit", "-m", "Auto: Gmail scan – no new invoices\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>")
-        git("push", "origin", "master:master")
-        git("push", "origin", "master:main")
+        git("push", "origin", "HEAD:master")
+        git("push", "origin", "HEAD:main")
         log.info("Pushed status update (no new invoices)")
 
 
