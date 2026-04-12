@@ -10,7 +10,7 @@ First run: opens browser for Gmail authorization (one-time).
 After that: fully silent, runs as scheduled task.
 """
 
-import os, io, json, re, base64, subprocess, datetime, logging, time
+import os, io, json, re, base64, subprocess, datetime, logging, time, sys
 from pathlib import Path
 
 from google.auth.transport.requests import Request
@@ -20,6 +20,7 @@ from googleapiclient.discovery import build
 import pdfplumber
 import requests
 from exchange_rate import FALLBACK_USD_ILS_RATE, fetch_usd_to_ils_rate
+from telegram_notify import notify_multiple_charges
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 BASE_DIR       = Path(__file__).resolve().parent
@@ -592,7 +593,7 @@ def main():
     if new_txns:
         log.info(f"Added {len(new_txns)} new transactions → rebuilding")
         rebuild_and_push(new_txns)
-        _out = sys.stdout if hasattr(sys.stdout, "buffer") else sys.stdout
+        notify_multiple_charges(new_txns, source="auto")
         try:
             print(f"[OK]  {len(new_txns)} חשבוניות חדשות נוספו אוטומטית:")
             for t in new_txns:

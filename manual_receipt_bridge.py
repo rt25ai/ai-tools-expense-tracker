@@ -12,6 +12,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
 
+from telegram_notify import notify_new_charge
 from manual_receipts_store import (
     BASE_DIR,
     archive_manual_invoice,
@@ -244,6 +245,7 @@ class ManualReceiptHandler(BaseHTTPRequestHandler):
             self.send_json(500, {"ok": False, "error": str(error)})
             return
 
+        notify_new_charge(entry, source="manual")
         self.send_json(
             200,
             {
@@ -321,6 +323,7 @@ class ManualReceiptHandler(BaseHTTPRequestHandler):
             self.send_json(500, {"ok": False, "error": str(error)})
             return
 
+        notify_new_charge(updated_entry, source="manual")
         self.send_json(
             200,
             {
