@@ -31,12 +31,18 @@ def notify_new_charge(entry: dict, source: str = "auto") -> bool:
     source: "auto"   — scanned from Gmail automatically
             "manual" — added manually via the dashboard
     """
-    source_labels = {
-        "auto": "סריקת Gmail (מקומי)",
-        "manual": "הוספה ידנית",
-        "ci_sync": "סריקת Gmail (ענן) — סונכרן כעת למחשב",
-    }
-    source_label = source_labels.get(source, source)
+    if source == "auto":
+        source_label = "סריקת Gmail (מקומי)"
+    elif source == "ci_sync":
+        source_label = "סריקת Gmail (ענן) — סונכרן כעת למחשב"
+    elif source == "manual":
+        entry_mode = entry.get("entry_mode", "manual-form")
+        if entry_mode == "pdf-upload":
+            source_label = "העלאת חשבונית (PDF)"
+        else:
+            source_label = "הזנה ידנית"
+    else:
+        source_label = source
     amount_str = _format_amount(entry)
 
     if source == "ci_sync":
