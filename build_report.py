@@ -34,6 +34,35 @@ C_GREEN    = "70AD47"
 C_ORANGE   = "ED7D31"
 _EXCHANGE_RATE_CACHE = None
 
+# Historical USD/ILS rates locked on the date of each charge.
+# Source: Bank of Israel / fawazahmed0/currency-api.
+# These ensure past transactions always display the rate from the charge date.
+HISTORICAL_RATES = {
+    "2025-07-04": 3.3365, "2025-07-09": 3.3483, "2025-07-10": 3.3092,
+    "2025-07-11": 3.3151, "2025-07-16": 3.3656, "2025-07-20": 3.3579, "2025-07-30": 3.3663,
+    "2025-08-01": 3.3944, "2025-08-02": 3.4127, "2025-08-04": 3.4102,
+    "2025-08-05": 3.4176, "2025-08-09": 3.4338, "2025-08-10": 3.4332,
+    "2025-08-11": 3.4215, "2025-08-16": 3.3771, "2025-08-30": 3.3421,
+    "2025-09-01": 3.3362, "2025-09-05": 3.3481, "2025-09-10": 3.3434,
+    "2025-09-16": 3.3506, "2025-09-24": 3.3429, "2025-09-30": 3.3013,
+    "2025-10-02": 3.3163, "2025-10-16": 3.2858, "2025-10-24": 3.2902, "2025-10-30": 3.2531,
+    "2025-11-09": 3.2599, "2025-11-11": 3.229,  "2025-11-13": 3.1955,
+    "2025-11-16": 3.2342, "2025-11-24": 3.276,  "2025-11-30": 3.2617,
+    "2025-12-01": 3.2583, "2025-12-03": 3.252,  "2025-12-08": 3.232,
+    "2025-12-16": 3.2129, "2025-12-29": 3.1893, "2025-12-30": 3.1857,
+    "2026-01-01": 3.1857, "2026-01-03": 3.1856, "2026-01-05": 3.1753,
+    "2026-01-08": 3.1667, "2026-01-10": 3.1491, "2026-01-16": 3.1405,
+    "2026-01-19": 3.1488, "2026-01-25": 3.1283, "2026-01-27": 3.1163, "2026-01-30": 3.0853,
+    "2026-02-01": 3.1023, "2026-02-02": 3.1006, "2026-02-03": 3.099,
+    "2026-02-10": 3.0831, "2026-02-12": 3.0771, "2026-02-15": 3.0863,
+    "2026-02-16": 3.0886, "2026-02-24": 3.128,  "2026-02-25": 3.0992, "2026-02-28": 3.1354,
+    "2026-03-01": 3.1283, "2026-03-02": 3.1204, "2026-03-03": 3.0772,
+    "2026-03-10": 3.0952, "2026-03-12": 3.1308, "2026-03-15": 3.1436,
+    "2026-03-16": 3.1433, "2026-03-19": 3.1112, "2026-03-24": 3.1177,
+    "2026-03-25": 3.1249, "2026-03-26": 3.1184,
+    "2026-04-01": 3.1433, "2026-04-02": 3.1385, "2026-04-03": 3.1329, "2026-04-05": 3.1414,
+}
+
 
 def get_current_usd_to_ils_rate():
     global _EXCHANGE_RATE_CACHE
@@ -66,88 +95,88 @@ def left_al():
 
 # ── All transactions data ────────────────────────────────────────────────────
 MANUAL_TRANSACTIONS = [
-    # (date, tool, description, usd_amount)
-    ("2025-07-04", "Recraft",       "Basic – first month promo",         1.00),
-    ("2025-07-09", "Ideogram AI",   "Ideogram Basic – annual",          72.00),
-    ("2025-07-10", "Make",          "Core plan 10k ops/month",          10.59),
-    ("2025-07-11", "Anthropic",     "Claude Pro",                       20.00),
-    ("2025-07-20", "Runway ML",     "Standard (10% affiliate off)",     13.50),
-    ("2025-07-30", "Replicate",     "Early card charge",                10.00),
-    ("2025-07-30", "Ideogram AI",   "Upgrade -> Plus Annual",          113.14),
-    ("2025-08-01", "Google Workspace", "Business Plus – Jul 2025 (₪56.93)",  15.60),
-    ("2025-08-02", "Runway ML",     "Credits 1,500",                    15.00),
-    ("2025-08-04", "Recraft",       "Basic monthly",                    12.00),
-    ("2025-08-05", "Replicate",     "Usage - July",                      0.90),
-    ("2025-08-09", "Manus AI",      "Basic monthly",                    19.00),
-    ("2025-08-10", "Make",          "Core plan 10k ops/month",          10.59),
-    ("2025-08-11", "Anthropic",     "Claude Pro",                       20.00),
-    ("2025-08-30", "Runway ML",     "Standard (25% off)",               11.25),
-    ("2025-08-30", "Eleven Labs",   "Starter monthly",                   5.00),
-    ("2025-09-01", "Google Workspace", "Business Plus – Aug 2025 (₪56.93)",  15.60),
-    ("2025-09-05", "Replicate",     "Usage - August",                    2.79),
-    ("2025-09-10", "Make",          "Core plan 10k ops/month",          10.59),
-    ("2025-09-24", "Anthropic",     "Claude Pro",                       20.00),
-    ("2025-09-30", "Eleven Labs",   "Starter monthly",                   5.00),
-    ("2025-10-02", "Google Workspace", "Business Plus – Sep 2025 (₪56.93)",  15.60),
-    ("2025-10-24", "Anthropic",     "Claude Pro",                       20.00),
-    ("2025-10-30", "Eleven Labs",   "Starter monthly",                   5.00),
-    ("2025-11-09", "Recraft",       "Pro 1k credits",                   12.00),
-    ("2025-11-11", "Astria",        "Credits x10 + 18% VAT",            11.80),
-    ("2025-11-11", "Runway ML",     "Standard monthly",                 15.00),
-    ("2025-11-13", "Hedra",         "Extra Small Credit Pack",          10.00),
-    ("2025-11-24", "Anthropic",     "Claude Pro",                       20.00),
-    ("2025-11-30", "Eleven Labs",   "Starter monthly",                   5.00),
-    ("2025-12-01", "Google Workspace", "Business Plus – Nov 2025 (₪75.90)",  20.79),
-    ("2025-12-03", "Manychat",      "Pro monthly",                      15.00),
-    ("2025-12-03", "Meta (Ads)",    "Facebook Ads",                      9.72),
-    ("2025-12-08", "Meta (Ads)",    "Facebook Ads",                     30.00),
-    ("2025-12-16", "Meta (Ads)",    "Facebook Ads",                     33.00),
-    ("2025-12-29", "Meta (Ads)",    "Facebook Ads",                     36.00),
-    ("2025-12-30", "Eleven Labs",   "Starter monthly",                   5.00),
-    ("2026-01-01", "Google Workspace", "Business Plus – Dec 2025 (₪75.90)",  20.79),
-    ("2026-01-03", "Genspark",      "Plus Annual (happynewyear26 promo)", 139.92),
-    ("2026-01-03", "Manychat",      "Pro monthly",                      15.00),
-    ("2026-01-03", "Meta (Ads)",    "Facebook Ads",                     19.43),
-    ("2026-01-05", "Genspark",      "Credits Pack",                     20.00),
-    ("2026-01-08", "Genspark",      "Credits Pack",                     20.00),
-    ("2026-01-10", "CapCut",        "Pro – Jan 2026 (₪49.90)",          13.67),
-    ("2026-01-19", "Meta (Ads)",    "Facebook Ads",                     39.00),
-    ("2026-01-25", "Lovable",       "Pro 1 monthly",                    25.00),
-    ("2026-01-27", "Meta (Ads)",    "Facebook Ads",                     43.00),
-    ("2026-01-30", "Timeless",      "Pro monthly (50% off)",            14.50),
-    ("2026-01-30", "Eleven Labs",   "Starter monthly",                   5.00),
-    ("2026-02-01", "Lovable",       "Upgrade Pro1 -> Pro2 (prorated)",  25.00),
-    ("2026-02-02", "Google Workspace", "Business Plus – Jan 2026 (₪75.90)",  20.79),
-    ("2026-02-02", "Google Workspace", "Google Workspace (₪75.9)", 75.90, "ILS"),
-    ("2026-02-03", "Meta (Ads)",    "Facebook Ads",                     31.42),
-    ("2026-02-10", "CapCut",        "Pro – Feb 2026 (₪49.90)",          13.67),
-    ("2026-02-12", "Meta (Ads)",    "Facebook Ads",                     47.00),
-    ("2026-02-15", "Anthropic",     "Claude Pro",                       20.00),
-    ("2026-02-16", "Anthropic",     "Credit purchase",                   5.00),
-    ("2026-02-24", "Higgsfield",    "On-Demand credits 500",            20.00),
-    ("2026-02-25", "Meta (Ads)",    "Facebook Ads",                     51.00),
-    ("2026-02-25", "Lovable",       "Pro2 monthly",                     50.00),
-    ("2026-02-28", "Eleven Labs",   "Starter monthly",                   5.00),
-    ("2026-02-28", "Lovable",       "Cloud & AI Balance Top-up",        10.00),
-    ("2026-03-01", "Lovable",       "Cloud & AI Balance Top-up",        10.00),
-    ("2026-03-01", "Timeless",      "Pro monthly (50% off)",            14.50),
-    ("2026-03-01", "Google Workspace", "Google Workspace (₪75.9)", 75.90, "ILS"),
-    ("2026-03-02", "Lovable",       "Cloud & AI Balance Top-up",        10.00),
-    ("2026-03-02", "Google Workspace", "Business Plus – Feb 2026 (₪75.90)",  20.79),
-    ("2026-03-03", "Meta (Ads)",    "Facebook Ads",                     40.11),
-    ("2026-03-10", "CapCut",        "Pro – Mar 2026 (₪49.90)",          13.67),
-    ("2026-03-12", "Meta (Ads)",    "Facebook Ads",                     51.00),
-    ("2026-03-15", "Anthropic",     "Claude Pro",                       20.00),
-    ("2026-03-19", "Anthropic",     "Credit purchase",                  10.00),
-    ("2026-03-19", "Eleven Labs",   "Creator (first month 50% off)",    11.00),
-    ("2026-03-25", "Lovable",       "Lite plan",                         5.00),
-    ("2026-04-01", "Meta (Ads)",    "Facebook Ads",                    166.33, "ILS"),
-    ("2026-04-01", "Anthropic",     "Claude Pro",                       20.00),
-    ("2026-04-01", "Anthropic",     "Credit purchase",                   5.00),
-    ("2026-04-01", "Google Workspace", "Business Plus – Mar 2026 (₪75.90)",  20.79),
-    ("2026-04-01", "Google Workspace", "Google Workspace (₪75.9)", 75.90, "ILS"),
-    ("2026-04-03", "Meta (Ads)",    "Facebook Ads",                      2.25),
-    ("2026-04-05", "IONOS",         "Instant Domain",                   20.00),
+    # All amounts stored in ILS at the historical exchange rate on the day of charge.
+    # Format: (date, tool, description, ils_amount, "ILS")
+    # Rates source: Bank of Israel / fawazahmed0/currency-api historical data.
+    ("2025-07-04", "Recraft",       "Basic – first month promo",              3.34, "ILS"),  # $1.00 @ 3.3365
+    ("2025-07-09", "Ideogram AI",   "Ideogram Basic – annual",              241.08, "ILS"),  # $72.00 @ 3.3483
+    ("2025-07-10", "Make",          "Core plan 10k ops/month",               35.04, "ILS"),  # $10.59 @ 3.3092
+    ("2025-07-11", "Anthropic",     "Claude Pro",                            66.30, "ILS"),  # $20.00 @ 3.3151
+    ("2025-07-20", "Runway ML",     "Standard (10% affiliate off)",          45.33, "ILS"),  # $13.50 @ 3.3579
+    ("2025-07-30", "Replicate",     "Early card charge",                     33.66, "ILS"),  # $10.00 @ 3.3663
+    ("2025-07-30", "Ideogram AI",   "Upgrade -> Plus Annual",               380.86, "ILS"),  # $113.14 @ 3.3663
+    ("2025-08-01", "Google Workspace", "Business Plus – Jul 2025 (₪56.93)", 56.93, "ILS"),  # billed in ILS
+    ("2025-08-02", "Runway ML",     "Credits 1,500",                         51.19, "ILS"),  # $15.00 @ 3.4127
+    ("2025-08-04", "Recraft",       "Basic monthly",                         40.92, "ILS"),  # $12.00 @ 3.4102
+    ("2025-08-05", "Replicate",     "Usage - July",                           3.08, "ILS"),  # $0.90 @ 3.4176
+    ("2025-08-09", "Manus AI",      "Basic monthly",                         65.24, "ILS"),  # $19.00 @ 3.4338
+    ("2025-08-10", "Make",          "Core plan 10k ops/month",               36.36, "ILS"),  # $10.59 @ 3.4332
+    ("2025-08-11", "Anthropic",     "Claude Pro",                            68.43, "ILS"),  # $20.00 @ 3.4215
+    ("2025-08-30", "Runway ML",     "Standard (25% off)",                    37.60, "ILS"),  # $11.25 @ 3.3421
+    ("2025-08-30", "Eleven Labs",   "Starter monthly",                       16.71, "ILS"),  # $5.00 @ 3.3421
+    ("2025-09-01", "Google Workspace", "Business Plus – Aug 2025 (₪56.93)", 56.93, "ILS"),  # billed in ILS
+    ("2025-09-05", "Replicate",     "Usage - August",                         9.34, "ILS"),  # $2.79 @ 3.3481
+    ("2025-09-10", "Make",          "Core plan 10k ops/month",               35.41, "ILS"),  # $10.59 @ 3.3434
+    ("2025-09-24", "Anthropic",     "Claude Pro",                            66.86, "ILS"),  # $20.00 @ 3.3429
+    ("2025-09-30", "Eleven Labs",   "Starter monthly",                       16.51, "ILS"),  # $5.00 @ 3.3013
+    ("2025-10-02", "Google Workspace", "Business Plus – Sep 2025 (₪56.93)", 56.93, "ILS"),  # billed in ILS
+    ("2025-10-24", "Anthropic",     "Claude Pro",                            65.80, "ILS"),  # $20.00 @ 3.2902
+    ("2025-10-30", "Eleven Labs",   "Starter monthly",                       16.27, "ILS"),  # $5.00 @ 3.2531
+    ("2025-11-09", "Recraft",       "Pro 1k credits",                        39.12, "ILS"),  # $12.00 @ 3.2599
+    ("2025-11-11", "Astria",        "Credits x10 + 18% VAT",                38.10, "ILS"),  # $11.80 @ 3.229
+    ("2025-11-11", "Runway ML",     "Standard monthly",                      48.44, "ILS"),  # $15.00 @ 3.229
+    ("2025-11-13", "Hedra",         "Extra Small Credit Pack",               31.95, "ILS"),  # $10.00 @ 3.1955
+    ("2025-11-24", "Anthropic",     "Claude Pro",                            65.52, "ILS"),  # $20.00 @ 3.276
+    ("2025-11-30", "Eleven Labs",   "Starter monthly",                       16.31, "ILS"),  # $5.00 @ 3.2617
+    ("2025-12-01", "Google Workspace", "Business Plus – Nov 2025 (₪75.90)", 75.90, "ILS"),  # billed in ILS
+    ("2025-12-03", "Manychat",      "Pro monthly",                           48.78, "ILS"),  # $15.00 @ 3.252
+    ("2025-12-03", "Meta (Ads)",    "Facebook Ads",                          31.61, "ILS"),  # $9.72 @ 3.252
+    ("2025-12-08", "Meta (Ads)",    "Facebook Ads",                          96.96, "ILS"),  # $30.00 @ 3.232
+    ("2025-12-16", "Meta (Ads)",    "Facebook Ads",                         106.03, "ILS"),  # $33.00 @ 3.2129
+    ("2025-12-29", "Meta (Ads)",    "Facebook Ads",                         114.81, "ILS"),  # $36.00 @ 3.1893
+    ("2025-12-30", "Eleven Labs",   "Starter monthly",                       15.93, "ILS"),  # $5.00 @ 3.1857
+    ("2026-01-01", "Google Workspace", "Business Plus – Dec 2025 (₪75.90)", 75.90, "ILS"),  # billed in ILS
+    ("2026-01-03", "Genspark",      "Plus Annual (happynewyear26 promo)",   445.73, "ILS"),  # $139.92 @ 3.1856
+    ("2026-01-03", "Manychat",      "Pro monthly",                           47.78, "ILS"),  # $15.00 @ 3.1856
+    ("2026-01-03", "Meta (Ads)",    "Facebook Ads",                          61.90, "ILS"),  # $19.43 @ 3.1856
+    ("2026-01-05", "Genspark",      "Credits Pack",                          63.51, "ILS"),  # $20.00 @ 3.1753
+    ("2026-01-08", "Genspark",      "Credits Pack",                          63.33, "ILS"),  # $20.00 @ 3.1667
+    ("2026-01-10", "CapCut",        "Pro – Jan 2026 (₪49.90)",     49.90, "ILS"),  # billed in ILS
+    ("2026-01-19", "Meta (Ads)",    "Facebook Ads",                         122.80, "ILS"),  # $39.00 @ 3.1488
+    ("2026-01-25", "Lovable",       "Pro 1 monthly",                         78.21, "ILS"),  # $25.00 @ 3.1283
+    ("2026-01-27", "Meta (Ads)",    "Facebook Ads",                         134.00, "ILS"),  # $43.00 @ 3.1163
+    ("2026-01-30", "Timeless",      "Pro monthly (50% off)",                 44.74, "ILS"),  # $14.50 @ 3.0853
+    ("2026-01-30", "Eleven Labs",   "Starter monthly",                       15.43, "ILS"),  # $5.00 @ 3.0853
+    ("2026-02-01", "Lovable",       "Upgrade Pro1 -> Pro2 (prorated)",       77.56, "ILS"),  # $25.00 @ 3.1023
+    ("2026-02-02", "Google Workspace", "Business Plus – Jan 2026 (₪75.90)", 75.90, "ILS"),  # billed in ILS
+    ("2026-02-03", "Meta (Ads)",    "Facebook Ads",                          97.37, "ILS"),  # $31.42 @ 3.099
+    ("2026-02-10", "CapCut",        "Pro – Feb 2026 (₪49.90)",     49.90, "ILS"),  # billed in ILS
+    ("2026-02-12", "Meta (Ads)",    "Facebook Ads",                         144.62, "ILS"),  # $47.00 @ 3.0771
+    ("2026-02-15", "Anthropic",     "Claude Pro",                            61.73, "ILS"),  # $20.00 @ 3.0863
+    ("2026-02-16", "Anthropic",     "Credit purchase",                       15.44, "ILS"),  # $5.00 @ 3.0886
+    ("2026-02-24", "Higgsfield",    "On-Demand credits 500",                 62.56, "ILS"),  # $20.00 @ 3.128
+    ("2026-02-25", "Meta (Ads)",    "Facebook Ads",                         158.06, "ILS"),  # $51.00 @ 3.0992
+    ("2026-02-25", "Lovable",       "Pro2 monthly",                         154.96, "ILS"),  # $50.00 @ 3.0992
+    ("2026-02-28", "Eleven Labs",   "Starter monthly",                       15.68, "ILS"),  # $5.00 @ 3.1354
+    ("2026-02-28", "Lovable",       "Cloud & AI Balance Top-up",             31.35, "ILS"),  # $10.00 @ 3.1354
+    ("2026-03-01", "Lovable",       "Cloud & AI Balance Top-up",             31.28, "ILS"),  # $10.00 @ 3.1283
+    ("2026-03-01", "Timeless",      "Pro monthly (50% off)",                 45.36, "ILS"),  # $14.50 @ 3.1283
+    ("2026-03-01", "Google Workspace", "Google Workspace (₪75.9)",      75.90, "ILS"),  # billed in ILS
+    ("2026-03-02", "Lovable",       "Cloud & AI Balance Top-up",             31.20, "ILS"),  # $10.00 @ 3.1204
+    ("2026-03-02", "Google Workspace", "Business Plus – Feb 2026 (₪75.90)", 75.90, "ILS"),  # billed in ILS
+    ("2026-03-03", "Meta (Ads)",    "Facebook Ads",                         123.43, "ILS"),  # $40.11 @ 3.0772
+    ("2026-03-10", "CapCut",        "Pro – Mar 2026 (₪49.90)",     49.90, "ILS"),  # billed in ILS
+    ("2026-03-12", "Meta (Ads)",    "Facebook Ads",                         159.67, "ILS"),  # $51.00 @ 3.1308
+    ("2026-03-15", "Anthropic",     "Claude Pro",                            62.87, "ILS"),  # $20.00 @ 3.1436
+    ("2026-03-19", "Anthropic",     "Credit purchase",                       31.11, "ILS"),  # $10.00 @ 3.1112
+    ("2026-03-19", "Eleven Labs",   "Creator (first month 50% off)",         34.22, "ILS"),  # $11.00 @ 3.1112
+    ("2026-03-25", "Lovable",       "Lite plan",                             15.62, "ILS"),  # $5.00 @ 3.1249
+    ("2026-04-01", "Meta (Ads)",    "Facebook Ads",                         166.33, "ILS"),  # actual credit card charge
+    ("2026-04-01", "Anthropic",     "Claude Pro",                            62.87, "ILS"),  # $20.00 @ 3.1433
+    ("2026-04-01", "Anthropic",     "Credit purchase",                       15.72, "ILS"),  # $5.00 @ 3.1433
+    ("2026-04-01", "Google Workspace", "Business Plus – Mar 2026 (₪75.90)", 75.90, "ILS"),  # billed in ILS
+    ("2026-04-03", "Meta (Ads)",    "Facebook Ads",                           7.05, "ILS"),  # $2.25 @ 3.1329
+    ("2026-04-05", "IONOS",         "Instant Domain",                        62.83, "ILS"),  # $20.00 @ 3.1414
 ]
 
 TRACKING_START = datetime.date(2025, 7, 1)
@@ -247,7 +276,10 @@ def normalize_transaction(txn):
         amount_usd = float(txn[3]) if len(txn) == 4 else round(original_amount / usd_rate, 6)
     else:
         amount_usd = float(original_amount)
-        amount_ils = round(amount_usd * usd_rate, 2)
+        # Use the locked historical rate for past charges; fall back to today's rate.
+        hist_rate = HISTORICAL_RATES.get(date)
+        effective_rate = hist_rate if hist_rate else usd_rate
+        amount_ils = round(amount_usd * effective_rate, 2)
 
     return {
         "date": date,
