@@ -1154,9 +1154,14 @@ def generate_dashboard_json():
         "by_tool_ils": dict(sorted(by_tool_ils.items(), key=lambda x: -x[1]))
     }
 
-    (docs_dir / "data.json").write_text(
-        json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
+    json_content = json.dumps(data, ensure_ascii=False, indent=2)
+    (docs_dir / "data.json").write_text(json_content, encoding="utf-8")
+
+    # Keep dashboard-web/public/data.json in sync
+    dashboard_public = Path(__file__).resolve().parent / "dashboard-web" / "public" / "data.json"
+    if dashboard_public.parent.exists():
+        dashboard_public.write_text(json_content, encoding="utf-8")
+
     print(f"Generated docs/data.json (grand total: ${data['grand_total']} / ₪{data['grand_total_ils']})")
 
 
