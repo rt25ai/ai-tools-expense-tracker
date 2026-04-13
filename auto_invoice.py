@@ -473,8 +473,11 @@ def insert_transaction(txn):
 def write_status(new_txns, error=None):
     """Write run status to auto_invoice_status.json for the dashboard."""
     now = datetime.datetime.now()
+    # GitHub Actions runs at 03:00 UTC = 05:00 Israel time.
+    # Local Windows Task Scheduler runs at 08:00.
+    next_hour = 5 if os.environ.get("CI") else 8
     next_run = (now + datetime.timedelta(days=1)).replace(
-        hour=8, minute=0, second=0, microsecond=0
+        hour=next_hour, minute=0, second=0, microsecond=0
     )
     status = {
         "last_run": now.strftime("%Y-%m-%dT%H:%M:%S"),
