@@ -8,6 +8,7 @@ on:
     paths:
       - manual_receipts.json
       - auto_invoice_status.json
+      - dashboard-web/public/data.json
   workflow_dispatch:
 
 permissions:
