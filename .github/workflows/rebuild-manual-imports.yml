@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - main
     paths:
       - manual_receipts.json
       - auto_invoice_status.json
@@ -18,7 +17,7 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 concurrency:
-  group: rebuild-manual-imports-${{ github.ref }}
+  group: rebuild-manual-imports
   cancel-in-progress: true
 
 jobs:
