@@ -48,3 +48,35 @@ jobs:
 
       - name: Run Gmail scanner
         run: python auto_invoice.py
+
+      # Pull the commits that auto_invoice.py pushed (status + data.json),
+      # then rebuild the static dashboard HTML so GitHub Pages always shows
+      # the real last-scan timestamp — not a stale build from days ago.
+      - name: Pull scanner commits
+        run: git pull --rebase origin master
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: dashboard-web/package-lock.json
+
+      - name: Install dashboard dependencies
+        working-directory: dashboard-web
+        run: npm ci
+
+      - name: Rebuild dashboard HTML
+        working-directory: dashboard-web
+        run: npm run build
+
+      - name: Commit and push rebuilt dashboard
+        run: |
+          git add AI_Tools_Expenses_2025_2026.xlsx docs
+          if git diff --cached --quiet; then
+            echo "Dashboard HTML already up to date."
+            exit 0
+          fi
+          git commit -m "Auto: rebuild dashboard after Gmail scan"
+          git push origin HEAD:master
+          git push origin HEAD:main
