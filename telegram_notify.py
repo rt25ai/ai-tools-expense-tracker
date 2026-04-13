@@ -8,11 +8,9 @@ import requests
 
 log = logging.getLogger(__name__)
 
-BOT_TOKEN = os.environ.get(
-    "TELEGRAM_BOT_TOKEN", "8556418662:AAFKeMVDBoOA2EGSd-wWGci4Vzi1R_MF8Z8"
-)
-CHAT_ID = "7008452440"
-TELEGRAM_API = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
+CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
+TELEGRAM_API = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage" if BOT_TOKEN else None
 
 
 def _format_amount(entry: dict) -> str:
@@ -63,6 +61,10 @@ def notify_new_charge(entry: dict, source: str = "auto") -> bool:
         f"\n"
         f"{footer}"
     )
+
+    if not BOT_TOKEN or not CHAT_ID or not TELEGRAM_API:
+        log.warning("Telegram notification skipped: TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID env var not set.")
+        return False
 
     try:
         resp = requests.post(

@@ -1,5 +1,8 @@
 .playwright-mcp/
 *.json
+.env
+.env.local
+.env.*.local
 !docs/data.json
 !docs/manifest.json
 !manual_receipts.json

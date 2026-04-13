@@ -47,6 +47,9 @@ jobs:
         run: pip install google-auth google-auth-oauthlib google-api-python-client pdfplumber requests openpyxl
 
       - name: Run Gmail scanner
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python auto_invoice.py
 
       # Pull the commits that auto_invoice.py pushed (status + data.json),
