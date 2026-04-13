@@ -527,8 +527,13 @@ def rebuild_and_push(new_txns):
 
 def push_status_only():
     """Commit and push the status file even when no new invoices were found."""
+    # Rebuild docs/data.json so the dashboard always reflects the latest scan
+    # timestamp — without this, GitHub Actions pushes (which use GITHUB_TOKEN)
+    # never trigger rebuild-manual-imports.yml and the dashboard stays stale.
+    rebuild_excel()
     git("add", "auto_invoice_status.json")
     git("add", "processed_messages.json")
+    git("add", "docs/data.json")
     r = subprocess.run(
         ["git", "diff", "--cached", "--quiet"],
         cwd=str(BASE_DIR), capture_output=True
