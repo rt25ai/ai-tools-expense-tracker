@@ -519,7 +519,8 @@ def rebuild_and_push(new_txns):
     summary = ", ".join(f"{t['tool']} {t['date']}" for t in new_txns)
     git("add", "build_report.py", "AI_Tools_Expenses_2025_2026.xlsx")
     git("add", "invoices/")
-    git("add", "docs/data.json")   # ← update live dashboard
+    git("add", "docs/data.json")
+    git("add", "dashboard-web/public/data.json")
     git("add", "auto_invoice_status.json")
     git("add", "processed_messages.json")
     git("commit", "-m", f"Auto: add invoices – {summary}\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>")
@@ -537,6 +538,8 @@ def push_status_only():
     git("add", "auto_invoice_status.json")
     git("add", "processed_messages.json")
     git("add", "docs/data.json")
+    git("add", "dashboard-web/public/data.json")
+    git("add", "AI_Tools_Expenses_2025_2026.xlsx")
     r = subprocess.run(
         ["git", "diff", "--cached", "--quiet"],
         cwd=str(BASE_DIR), capture_output=True
