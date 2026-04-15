@@ -57,6 +57,10 @@ export function SettingsPageClient({ initialSettings }: { initialSettings: Setti
         finance: {
           ...initialSettings.finance,
           ...parsed.finance,
+          // Always use live values from data.json — never persist rate data in localStorage
+          usdRate: initialSettings.finance.usdRate,
+          exchangeRateUpdatedAt: initialSettings.finance.exchangeRateUpdatedAt,
+          exchangeRateSource: initialSettings.finance.exchangeRateSource,
           monthlyBudget: sanitizeMonthlyBudget(
             parsed.finance?.monthlyBudget,
             initialSettings.finance.monthlyBudget,
