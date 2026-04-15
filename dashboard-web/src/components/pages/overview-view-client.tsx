@@ -125,12 +125,14 @@ export function OverviewViewClient({ model }: { model: DashboardModel }) {
           <div className="mt-8 rounded-[24px] border border-cyan-400/15 bg-cyan-400/7 p-4">
             <p className="text-sm font-medium text-cyan-100">עדכון שער</p>
             <p className="mt-2 text-sm leading-6 text-cyan-50/80">
-              שער הדולר נמשך אוטומטית ממקור רשמי. עודכן לאחרונה:
-              {" "}
-              {model.raw.exchange_rate_updated_at ? formatDateTimeLabel(model.raw.exchange_rate_updated_at) : "לא התקבל זמן עדכון"}
-              .
+              נמשך ע"י המערכת:{" "}
+              {model.raw.exchange_rate_fetched_at ? formatDateTimeLabel(model.raw.exchange_rate_fetched_at) : "לא ידוע"}
             </p>
-            <p className="mt-2 text-sm leading-6 text-zinc-400">{model.raw.exchange_rate_source ?? "Bank of Israel Public API"}</p>
+            <p className="mt-1 text-sm leading-6 text-zinc-400">
+              פורסם ע"י בנק ישראל:{" "}
+              {model.raw.exchange_rate_updated_at ? formatDateTimeLabel(model.raw.exchange_rate_updated_at) : "לא התקבל"}
+            </p>
+            <p className="mt-1 text-sm leading-6 text-zinc-500">{model.raw.exchange_rate_source ?? "Bank of Israel Public API"}</p>
             <Badge variant="outline" className="mt-3 border-cyan-400/15 bg-cyan-400/8 text-cyan-200">
               {formatExchangeRate(model.raw.usd_rate)}
             </Badge>

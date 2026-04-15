@@ -1150,7 +1150,9 @@ def generate_dashboard_json():
         by_tool[transaction["tool"]] = round(by_tool[transaction["tool"]] + transaction["amount_usd"], 6)
         by_tool_ils[transaction["tool"]] = round(by_tool_ils[transaction["tool"]] + transaction["amount_ils"], 2)
 
+    import datetime as _dt
     usd_rate, last_update, source = get_current_usd_to_ils_rate()
+    rate_fetched_at = _dt.datetime.now(_dt.timezone.utc).isoformat()
     grand_usd = round(sum(transaction["amount_usd"] for transaction in dashboard_transactions), 2)
     grand_ils = round(sum(transaction["amount_ils"] for transaction in dashboard_transactions), 2)
     cur_month  = today.strftime("%Y-%m")
@@ -1169,6 +1171,7 @@ def generate_dashboard_json():
     data = {
         "generated":              today.isoformat(),
         "usd_rate":               usd_rate,
+        "exchange_rate_fetched_at": rate_fetched_at,
         "exchange_rate_updated_at": last_update,
         "exchange_rate_source":   source,
         "grand_total":            grand_usd,

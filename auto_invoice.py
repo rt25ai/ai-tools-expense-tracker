@@ -626,6 +626,12 @@ def main():
     log.info("auto_invoice scan started")
     INVOICES_DIR.mkdir(exist_ok=True)
 
+    # Pre-fetch exchange rate eagerly so conversions use today's rate from the start
+    _rate, _boi_date, _src = fetch_usd_to_ils_rate()
+    global _EXCHANGE_RATE_CACHE
+    _EXCHANGE_RATE_CACHE = _rate
+    log.info(f"Exchange rate: 1 USD = {_rate} ILS  (BOI published: {_boi_date})")
+
     # Sync with remote before scanning to avoid conflicts when both local and CI run
     commit_before_pull = get_current_commit()
     git("pull", "--rebase", "origin", "master")
