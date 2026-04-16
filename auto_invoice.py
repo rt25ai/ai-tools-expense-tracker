@@ -398,6 +398,15 @@ def process_message(service, msg_id):
             description = "ChatGPT Plus"
         elif tool == "Meta (Ads)":
             description = "Facebook Ads"
+        elif tool == "Anthropic":
+            # Anthropic emails cover two products. Distinguish by keywords in
+            # the subject/body so manual entries don't have to be cleaned up.
+            subject = headers.get("subject", "").lower()
+            text = f"{subject}\n{body}".lower()
+            if any(k in text for k in ("credit purchase", "api credit", "credits added", "prepay")):
+                description = "Credit purchase"
+            else:
+                description = "Claude Pro"
         else:
             description = tool
 

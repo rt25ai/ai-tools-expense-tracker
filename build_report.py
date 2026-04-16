@@ -172,12 +172,10 @@ MANUAL_TRANSACTIONS = [
     ("2026-03-19", "Eleven Labs",   "Creator (first month 50% off)",         34.22, "ILS"),  # $11.00 @ 3.1112
     ("2026-03-25", "Lovable",       "Lite plan",                             15.62, "ILS"),  # $5.00 @ 3.1249
     ("2026-04-01", "Meta (Ads)",    "Facebook Ads",                         166.33, "ILS"),  # actual credit card charge
-    ("2026-04-01", "Anthropic",     "Claude Pro",                            62.87, "ILS"),  # $20.00 @ 3.1433
-    ("2026-04-01", "Anthropic",     "Credit purchase",                       15.72, "ILS"),  # $5.00 @ 3.1433
     ("2026-04-01", "Google Workspace", "Business Plus – Mar 2026 (₪75.90)", 75.90, "ILS"),  # billed in ILS
     ("2026-04-03", "Meta (Ads)",    "Facebook Ads",                           7.05, "ILS"),  # $2.25 @ 3.1329
     ("2026-04-05", "IONOS",         "Instant Domain",                        62.83, "ILS"),  # $20.00 @ 3.1414
-    ("2026-04-15", "Anthropic", "Anthropic", 20.00),
+    ("2026-04-15", "Anthropic",     "Claude Pro",                            20.00),  # auto-scanned USD
 ]
 
 TRACKING_START = datetime.date(2025, 7, 1)
