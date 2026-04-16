@@ -177,6 +177,7 @@ MANUAL_TRANSACTIONS = [
     ("2026-04-01", "Google Workspace", "Business Plus – Mar 2026 (₪75.90)", 75.90, "ILS"),  # billed in ILS
     ("2026-04-03", "Meta (Ads)",    "Facebook Ads",                           7.05, "ILS"),  # $2.25 @ 3.1329
     ("2026-04-05", "IONOS",         "Instant Domain",                        62.83, "ILS"),  # $20.00 @ 3.1414
+    ("2026-04-15", "Anthropic", "Anthropic", 20.00),
 ]
 
 TRACKING_START = datetime.date(2025, 7, 1)
