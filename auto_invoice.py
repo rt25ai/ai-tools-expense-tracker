@@ -687,6 +687,15 @@ def main():
 
     save_processed_state(processed_ids, processed_invoice_keys)
 
+    # Write status BEFORE committing so the new timestamp is included in the
+    # commit that rebuild_and_push / push_status_only pushes. Otherwise the
+    # status file is left as an unstaged change after the push, which breaks
+    # the workflow's subsequent 'git pull --rebase origin master' step with
+    # "cannot pull with rebase: You have unstaged changes."
+    # Bonus: build_report.py embeds this file in docs/data.json, so writing
+    # it first also makes the dashboard reflect the current scan's timestamp.
+    write_status(new_txns)
+
     if new_txns:
         log.info(f"Added {len(new_txns)} new transactions → rebuilding")
         rebuild_and_push(new_txns)
@@ -703,10 +712,6 @@ def main():
             print("[OK]  אין חשבוניות חדשות")
         except UnicodeEncodeError:
             pass
-
-    write_status(new_txns)
-
-    if not new_txns:
         push_status_only()
     log.info("Done")
 
