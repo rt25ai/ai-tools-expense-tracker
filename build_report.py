@@ -178,6 +178,7 @@ MANUAL_TRANSACTIONS = [
     ("2026-04-03", "Meta (Ads)",    "Facebook Ads",                           7.05, "ILS"),  # $2.25 @ 3.1329
     ("2026-04-05", "IONOS",         "Instant Domain",                        62.83, "ILS"),  # $20.00 @ 3.1414
     ("2026-04-15", "Anthropic", "Anthropic", 20.00),
+    ("2026-04-16", "Anthropic", "Anthropic", 10.00),
 ]
 
 TRACKING_START = datetime.date(2025, 7, 1)
