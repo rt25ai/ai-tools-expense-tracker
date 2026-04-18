@@ -278,6 +278,32 @@ def fetch_capcut_amount(body_text):
     return None
 
 
+ANTHROPIC_LINE_RE = re.compile(
+    r"Receipt\s+#\d+-\d+-\d+\s+(?P<desc>.+?)\s+Qty\s+\d+\s+\$[\d,]+\.?\d*",
+    re.DOTALL,
+)
+# Leading date range like "Apr 15–May 15, 2026 " or "Apr 15-May 15, 2026 "
+ANTHROPIC_DATE_PREFIX_RE = re.compile(
+    r"^[A-Z][a-z]{2}\s+\d{1,2}\s*[–\-]\s*[A-Z][a-z]{2}\s+\d{1,2},?\s*\d{4}\s+"
+)
+
+
+def extract_anthropic_description(body):
+    """Extract the human-readable line item description from an Anthropic receipt.
+
+    Emails render one line per purchase, e.g.
+        "Receipt #2498-1925-5096 Apr 15–May 15, 2026 Claude Pro Qty 1 $20.00"
+        "Receipt #2740-3238-5421 Prepaid extra usage, Individual plan Qty 1 $5.00"
+    We return "Claude Pro" / "Prepaid extra usage, Individual plan".
+    """
+    m = ANTHROPIC_LINE_RE.search(body)
+    if not m:
+        return None
+    desc = re.sub(r"\s+", " ", m.group("desc")).strip()
+    desc = ANTHROPIC_DATE_PREFIX_RE.sub("", desc)
+    return desc or None
+
+
 def find_meta_paid_amount(text):
     """Extract the final paid amount from a PayPal Meta receipt."""
     for pat in [
@@ -293,6 +319,24 @@ def find_meta_paid_amount(text):
 
 # ── Message processing ────────────────────────────────────────────────────────
 
+FORWARDED_SENDER_RE = re.compile(
+    r"(?:^|\n)\s*(?:From:|מאת:|Von:|De:)\s*(?P<line>.+?)(?:\n|$)",
+    re.IGNORECASE,
+)
+
+
+def extract_forwarded_sender(body):
+    """Return the lowercased original sender line from a forwarded email body, or ''.
+
+    Handles Gmail-style "---------- Forwarded message ---------" blocks with
+    either English ("From:") or Hebrew ("מאת:") labels.
+    """
+    if "forwarded message" not in body.lower() and "הודעה שהועברה" not in body:
+        return ""
+    m = FORWARDED_SENDER_RE.search(body)
+    return (m.group("line").strip().lower() if m else "")
+
+
 def identify_tool(headers, payload):
     body = get_body_text(payload)
 
@@ -304,6 +348,14 @@ def identify_tool(headers, payload):
     for pattern, tool, currency, source in TOOL_RULES:
         if pattern in sender:
             return tool, currency, source
+
+    # Fallback: forwarded messages wrap the original sender inside the body.
+    fwd_sender = extract_forwarded_sender(body)
+    if fwd_sender:
+        for pattern, tool, currency, source in TOOL_RULES:
+            if pattern in fwd_sender:
+                log.info(f"  Matched forwarded sender: {fwd_sender!r} -> {tool}")
+                return tool, currency, source
     return None, None, None
 
 
@@ -398,6 +450,8 @@ def process_message(service, msg_id):
             description = "ChatGPT Plus"
         elif tool == "Meta (Ads)":
             description = "Facebook Ads"
+        elif tool == "Anthropic":
+            description = extract_anthropic_description(body) or tool
         else:
             description = tool
 

@@ -1,14 +1,14 @@
 {
   "generated": "2026-04-18",
   "usd_rate": 2.996,
-  "exchange_rate_fetched_at": "2026-04-18T04:59:51.230095+00:00",
+  "exchange_rate_fetched_at": "2026-04-18T20:06:37.985727+00:00",
   "exchange_rate_updated_at": "2026-04-17T09:20:05.8972622Z",
   "exchange_rate_source": "Bank of Israel Public API",
-  "grand_total": 2133.14,
-  "grand_total_ils": 6441.69,
+  "grand_total": 2150.71,
+  "grand_total_ils": 6494.34,
   "current_month": "2026-04",
-  "current_month_total": 215.06,
-  "current_month_total_ils": 646.89,
+  "current_month_total": 215.98,
+  "current_month_total_ils": 649.64,
   "scanner_status": {
     "last_run": "2026-04-18T04:59:49",
     "next_run": "2026-04-19T05:00:00",
@@ -19,9 +19,19 @@
   },
   "transactions": [
     {
+      "date": "2026-04-18",
+      "tool": "CapCut",
+      "description": "Pro – Apr 2026 (₪49.90)",
+      "currency": "ILS",
+      "original_amount": 49.9,
+      "amount_usd": 16.655541,
+      "amount_ils": 49.9,
+      "entry_source": null
+    },
+    {
       "date": "2026-04-16",
       "tool": "Anthropic",
-      "description": "Anthropic",
+      "description": "Prepaid extra usage, Individual plan",
       "currency": "USD",
       "original_amount": 10.0,
       "amount_usd": 10.0,
@@ -41,7 +51,7 @@
     {
       "date": "2026-04-15",
       "tool": "Anthropic",
-      "description": "Anthropic",
+      "description": "Claude Pro",
       "currency": "USD",
       "original_amount": 20.0,
       "amount_usd": 20.0,
@@ -91,21 +101,11 @@
     {
       "date": "2026-04-01",
       "tool": "Anthropic",
-      "description": "Claude Pro",
+      "description": "Prepaid extra usage, Individual plan",
       "currency": "ILS",
-      "original_amount": 62.87,
-      "amount_usd": 20.984646,
-      "amount_ils": 62.87,
-      "entry_source": null
-    },
-    {
-      "date": "2026-04-01",
-      "tool": "Anthropic",
-      "description": "Credit purchase",
-      "currency": "ILS",
-      "original_amount": 15.72,
-      "amount_usd": 5.246996,
-      "amount_ils": 15.72,
+      "original_amount": 31.44,
+      "amount_usd": 10.493992,
+      "amount_ils": 31.44,
       "entry_source": null
     },
     {
@@ -176,6 +176,16 @@
       "original_amount": 34.22,
       "amount_usd": 11.421896,
       "amount_ils": 34.22,
+      "entry_source": null
+    },
+    {
+      "date": "2026-03-18",
+      "tool": "CapCut",
+      "description": "Pro – Mar 2026 (₪49.90)",
+      "currency": "ILS",
+      "original_amount": 49.9,
+      "amount_usd": 16.655541,
+      "amount_ils": 49.9,
       "entry_source": null
     },
     {
@@ -978,8 +988,8 @@
     "2025-12": 183.56,
     "2026-01": 421.61,
     "2026-02": 335.46,
-    "2026-03": 294.81,
-    "2026-04": 215.06
+    "2026-03": 311.47,
+    "2026-04": 215.98
   },
   "monthly_ils": {
     "2025-07": 872.92,
@@ -990,18 +1000,18 @@
     "2025-12": 554.28,
     "2026-01": 1266.04,
     "2026-02": 1006.9,
-    "2026-03": 889.76,
-    "2026-04": 646.89
+    "2026-03": 939.66,
+    "2026-04": 649.64
   },
   "by_tool": {
     "Meta (Ads)": 508.89,
-    "Anthropic": 224.48,
     "Google Workspace": 209.01,
+    "Anthropic": 208.74,
     "Ideogram AI": 207.59,
     "OpenAI": 200.0,
     "Genspark": 191.11,
     "Lovable": 140.25,
-    "CapCut": 66.62,
+    "CapCut": 99.93,
     "Runway ML": 60.93,
     "Eleven Labs": 49.09,
     "Dzine": 47.0,
@@ -1018,13 +1028,13 @@
   },
   "by_tool_ils": {
     "Meta (Ads)": 1524.64,
-    "Anthropic": 672.53,
     "OpenAI": 643.89,
     "Google Workspace": 626.19,
+    "Anthropic": 625.38,
     "Ideogram AI": 621.94,
     "Genspark": 572.57,
     "Lovable": 420.18,
-    "CapCut": 199.6,
+    "CapCut": 299.4,
     "Runway ML": 182.56,
     "Eleven Labs": 147.06,
     "Dzine": 146.92,
