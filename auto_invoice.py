@@ -442,7 +442,11 @@ def process_message(service, msg_id):
     if currency == "ILS":
         original_amount = round(amount_raw, 2)
         amount_usd = round(amount_raw / get_exchange_rate(), 6)
-        description = f"{tool} (₪{amount_raw})"
+        if tool == "CapCut":
+            month_name = date.strftime("%b")
+            description = f"Pro – {month_name} {date.year} (₪{original_amount:.2f})"
+        else:
+            description = f"{tool} (₪{original_amount:.2f})"
     else:
         original_amount = round(amount_raw, 2)
         amount_usd  = amount_raw
