@@ -472,15 +472,41 @@ def process_message(service, msg_id):
 # ── build_report.py insertion ─────────────────────────────────────────────────
 
 def already_imported(txn):
-    """True if the exact transaction line already exists in MANUAL_TRANSACTIONS."""
+    """True if a matching transaction already exists.
+
+    Matches by (date, tool, amount, currency) regardless of description — this
+    catches forwarded-email re-scans where the same charge appears with a
+    different description (e.g. generic "CapCut (₪49.9)" vs manual
+    "Pro – Apr 2026"). Checks both MANUAL_TRANSACTIONS and manual_receipts.json.
+    """
     code = REPORT_PY.read_text(encoding="utf-8")
+
     if txn["currency"] == "ILS":
-        exact = (f'("{txn["date"]}", "{txn["tool"]}", '
-                 f'"{txn["description"]}", {txn["original_amount"]:.2f}, "ILS")')
+        amt_tail = rf'{txn["original_amount"]:.2f}\s*,\s*"ILS"'
     else:
-        exact = (f'("{txn["date"]}", "{txn["tool"]}", '
-                 f'"{txn["description"]}", {txn["amount_usd"]:.2f})')
-    return exact in code
+        amt_tail = rf'{txn["amount_usd"]:.2f}'
+
+    pattern = re.compile(
+        r'\(\s*"' + re.escape(txn["date"]) + r'"\s*,\s*"'
+        + re.escape(txn["tool"]) + r'"\s*,\s*"[^"]*"\s*,\s*'
+        + amt_tail + r'\s*\)'
+    )
+    if pattern.search(code):
+        return True
+
+    try:
+        from manual_receipts_store import load_manual_receipts
+    except Exception:
+        return False
+
+    target_amount = round(float(txn["original_amount"]), 2)
+    for entry in load_manual_receipts():
+        if (entry.get("date") == txn["date"]
+                and entry.get("tool") == txn["tool"]
+                and entry.get("currency") == txn["currency"]
+                and round(float(entry.get("original_amount", 0)), 2) == target_amount):
+            return True
+    return False
 
 
 def insert_transaction(txn):
@@ -722,7 +748,8 @@ def main():
 
         invoice_key = txn.get("invoice_key")
         if invoice_key in processed_invoice_keys or already_imported(txn):
-            log.info(f"  Already exists: {txn['tool']} {txn['date']}")
+            amt = txn["original_amount"] if txn["currency"] == "ILS" else txn["amount_usd"]
+            log.info(f"  Already exists: {txn['tool']} {txn['date']} ({amt} {txn['currency']}) — skipping duplicate")
             processed_ids.add(mid)
             if invoice_key:
                 processed_invoice_keys.add(invoice_key)

@@ -10,7 +10,7 @@ from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.chart import BarChart, Reference
 from openpyxl.worksheet.hyperlink import Hyperlink
-import datetime, os, re
+import datetime, os, re, sys
 from pathlib import Path
 from exchange_rate import fetch_usd_to_ils_rate
 from manual_receipts_store import load_manual_receipts, receipt_identity, to_transaction_tuple
@@ -381,8 +381,45 @@ def combine_transactions():
     return sorted(deduped_manual, key=lambda item: (item[0], item[1], item[2]))
 
 
+def find_duplicate_warnings(transactions):
+    """Flag same-day same-tool same-amount entries that slipped past dedup.
+
+    Different descriptions are intentionally ignored here: a legit charge
+    never bills the same amount to the same tool twice on the same day, so
+    any such pair is almost certainly a double-log from different sources
+    (e.g. a forwarded-email auto-import re-adding a manually logged charge).
+    """
+    from collections import defaultdict
+    groups = defaultdict(list)
+    for txn in transactions:
+        date, tool, desc, amount = txn[0], txn[1], txn[2], txn[3]
+        currency = txn[4] if len(txn) > 4 and txn[4] in ("ILS", "USD") else "USD"
+        key = (date, tool, round(float(amount), 2), currency)
+        groups[key].append(desc)
+    warnings = []
+    for (date, tool, amount, currency), descs in groups.items():
+        if len(descs) > 1:
+            warnings.append({
+                "date": date,
+                "tool": tool,
+                "amount": amount,
+                "currency": currency,
+                "descriptions": descs,
+            })
+    return warnings
+
+
 MONTHS = build_months()
 TRANSACTIONS = combine_transactions()
+DUPLICATE_WARNINGS = find_duplicate_warnings(TRANSACTIONS)
+if DUPLICATE_WARNINGS:
+    print("\n" + "!" * 72, file=sys.stderr)
+    print("WARNING: possible duplicate charges detected", file=sys.stderr)
+    for w in DUPLICATE_WARNINGS:
+        print(f"  {w['date']}  {w['tool']}  {w['amount']} {w['currency']}  "
+              f"→ {len(w['descriptions'])} entries: {w['descriptions']}",
+              file=sys.stderr)
+    print("!" * 72 + "\n", file=sys.stderr)
 TRANSACTION_RECORDS = [normalize_transaction(txn) for txn in TRANSACTIONS]
 ALL_TOOLS = sorted({transaction["tool"] for transaction in TRANSACTION_RECORDS})
 REPORT_RANGE_HE = f"{MONTHS[0][1]} – {MONTHS[-1][1]}"
@@ -1183,6 +1220,7 @@ def generate_dashboard_json():
         "current_month_total":    cur_usd,
         "current_month_total_ils": cur_ils,
         "scanner_status":         scanner_status,
+        "duplicate_warnings":     DUPLICATE_WARNINGS,
         "transactions": sorted(txns, key=lambda x: x["date"], reverse=True),
         "monthly": dict(sorted((key, round(value, 2)) for key, value in monthly.items())),
         "monthly_ils": dict(sorted(monthly_ils.items())),
