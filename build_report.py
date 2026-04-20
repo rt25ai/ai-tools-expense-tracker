@@ -180,6 +180,7 @@ MANUAL_TRANSACTIONS = [
     ("2026-04-15", "Anthropic",     "Claude Pro",                            20.00),         # subscription
     ("2026-04-16", "Anthropic",     "Prepaid extra usage, Individual plan",  10.00),         # credit top-up
     ("2026-04-18", "CapCut",        "Pro – Apr 2026 (₪49.90)",               49.90, "ILS"),  # 2nd account user4127233390216 (fwd)
+    ("2026-04-19", "Anthropic", "Prepaid extra usage, Individual plan", 5.00),
 ]
 
 TRACKING_START = datetime.date(2025, 7, 1)
