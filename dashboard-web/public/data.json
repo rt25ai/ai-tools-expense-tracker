@@ -1,16 +1,16 @@
 {
   "generated": "2026-04-21",
   "usd_rate": 2.983,
-  "exchange_rate_fetched_at": "2026-04-21T16:12:10.514971+00:00",
+  "exchange_rate_fetched_at": "2026-04-21T16:17:11.270530+00:00",
   "exchange_rate_updated_at": "2026-04-21T10:30:09.6799413Z",
   "exchange_rate_source": "Bank of Israel Public API",
-  "grand_total": 2317.06,
-  "grand_total_ils": 6965.55,
+  "grand_total": 2337.06,
+  "grand_total_ils": 7025.21,
   "current_month": "2026-04",
-  "current_month_total": 374.81,
-  "current_month_total_ils": 1120.85,
+  "current_month_total": 394.81,
+  "current_month_total_ils": 1180.51,
   "scanner_status": {
-    "last_run": "2026-04-21T19:12:09",
+    "last_run": "2026-04-21T19:17:09",
     "next_run": "2026-04-22T08:00:00",
     "result": "ok",
     "new_count": 0,
@@ -127,6 +127,16 @@
       "amount_usd": 10.0,
       "amount_ils": 29.83,
       "entry_source": null
+    },
+    {
+      "date": "2026-04-16",
+      "tool": "OpenAI",
+      "description": "ChatGPT Plus",
+      "currency": "USD",
+      "original_amount": 20.0,
+      "amount_usd": 20.0,
+      "amount_ils": 59.66,
+      "entry_source": "auto"
     },
     {
       "date": "2026-04-15",
@@ -1069,7 +1079,7 @@
     "2026-01": 423.36,
     "2026-02": 336.84,
     "2026-03": 312.61,
-    "2026-04": 374.81
+    "2026-04": 394.81
   },
   "monthly_ils": {
     "2025-07": 872.92,
@@ -1081,12 +1091,12 @@
     "2026-01": 1266.04,
     "2026-02": 1006.9,
     "2026-03": 939.66,
-    "2026-04": 1120.85
+    "2026-04": 1180.51
   },
   "by_tool": {
     "Meta (Ads)": 511.11,
     "Anthropic": 281.5,
-    "OpenAI": 261.2,
+    "OpenAI": 281.2,
     "Google Workspace": 209.92,
     "Ideogram AI": 208.49,
     "Genspark": 191.94,
@@ -1109,8 +1119,8 @@
   },
   "by_tool_ils": {
     "Meta (Ads)": 1524.64,
+    "OpenAI": 885.85,
     "Anthropic": 839.71,
-    "OpenAI": 826.19,
     "Google Workspace": 626.19,
     "Ideogram AI": 621.94,
     "Genspark": 572.57,
