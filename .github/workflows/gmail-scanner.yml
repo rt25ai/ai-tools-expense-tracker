@@ -52,9 +52,14 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python auto_invoice.py
 
+      - name: Clean up credential files
+        run: rm -f gmail_credentials.json gmail_token.json
+
       # Pull the commits that auto_invoice.py pushed (status + data.json),
       # then rebuild the static dashboard HTML so GitHub Pages always shows
       # the real last-scan timestamp — not a stale build from days ago.
+      # --autostash: auto_invoice.py may leave auto_invoice.log or a refreshed
+      # gmail_token.json in the workspace; without this flag rebase would abort.
       - name: Pull scanner commits
         run: git pull --rebase --autostash origin master
 

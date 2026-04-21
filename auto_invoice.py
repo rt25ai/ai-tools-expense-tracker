@@ -692,7 +692,7 @@ def main():
 
     # Sync with remote before scanning to avoid conflicts when both local and CI run
     commit_before_pull = get_current_commit()
-    git("pull", "--rebase", "origin", "master")
+    git("pull", "--rebase", "--autostash", "origin", "master")
     commit_after_pull = get_current_commit()
 
     if commit_before_pull != commit_after_pull:
