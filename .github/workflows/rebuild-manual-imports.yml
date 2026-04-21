@@ -66,9 +66,29 @@ jobs:
             exit 0
           fi
           git commit -m "Rebuild dashboard and Excel from manual imports"
-          git push origin HEAD:${GITHUB_REF_NAME}
+
+          # Retry with pull --rebase to handle concurrent pushes from
+          # auto_invoice.py / gmail-scanner.yml / local pushes.
+          push_with_retry() {
+            local target_ref="$1"
+            local attempts=0
+            local max_attempts=5
+            while [ $attempts -lt $max_attempts ]; do
+              if git push origin HEAD:"$target_ref"; then
+                return 0
+              fi
+              attempts=$((attempts + 1))
+              echo "Push to $target_ref failed (attempt $attempts/$max_attempts), pulling and retrying..."
+              git fetch origin "$target_ref"
+              git pull --rebase --autostash origin "$target_ref" || git rebase --abort || true
+            done
+            echo "Failed to push to $target_ref after $max_attempts attempts"
+            return 1
+          }
+
+          push_with_retry "${GITHUB_REF_NAME}"
           if [ "${GITHUB_REF_NAME}" = "master" ]; then
-            git push origin HEAD:main
+            push_with_retry "main"
           elif [ "${GITHUB_REF_NAME}" = "main" ]; then
-            git push origin HEAD:master
+            push_with_retry "master"
           fi
