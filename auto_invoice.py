@@ -75,6 +75,8 @@ TOOL_RULES = [
     ("receipts@openai.com",          "OpenAI",           "USD", "body"),
     ("noreply@tm.openai.com",        "OpenAI",           "USD", "body"),
     ("openai",                       "OpenAI",           "USD", "body"),
+    ("invoice+statements@supabase.com", "Supabase",      "USD", "body"),
+    ("billing@supabase.com",         "Supabase",         "USD", "body"),
 ]
 
 # ── Gmail helpers ─────────────────────────────────────────────────────────────

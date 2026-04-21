@@ -65,6 +65,14 @@
     "expected_amount": 5,
     "billing_currency": "USD"
   },
+  "Supabase": {
+    "subscription": true,
+    "billing_status": "active",
+    "billing_day": 21,
+    "expected_amount": 25,
+    "billing_currency": "USD",
+    "start_month": "2026-04"
+  },
   "Runway ML": {
     "subscription": false,
     "billing_status": "one-time"
