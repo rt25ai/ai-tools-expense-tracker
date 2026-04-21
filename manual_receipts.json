@@ -56,20 +56,6 @@
     "entry_source": "manual"
   },
   {
-    "id": "manual-2026-04-18-openai-8655e92ec7",
-    "date": "2026-04-18",
-    "tool": "OpenAI",
-    "description": "1 $100.00 $100.00 Unused time on ChatGPT Plus Subscription after 18 Apr 2026",
-    "currency": "USD",
-    "original_amount": 81.23,
-    "attachment_path": null,
-    "attachment_name": null,
-    "entry_mode": "pdf-upload",
-    "notes": null,
-    "created_at": "2026-04-21T11:28:20",
-    "entry_source": "manual"
-  },
-  {
     "id": "manual-2026-04-18-openai-6f6e6672ab",
     "date": "2026-04-18",
     "tool": "OpenAI",
