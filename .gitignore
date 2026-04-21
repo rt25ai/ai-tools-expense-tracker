@@ -1,5 +1,7 @@
 .playwright-mcp/
 *.json
+gmail_credentials.json
+gmail_token.json
 .env
 .env.local
 .env.*.local
