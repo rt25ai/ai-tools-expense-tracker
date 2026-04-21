@@ -56,7 +56,7 @@ jobs:
       # then rebuild the static dashboard HTML so GitHub Pages always shows
       # the real last-scan timestamp — not a stale build from days ago.
       - name: Pull scanner commits
-        run: git pull --rebase origin master
+        run: git pull --rebase --autostash origin master
 
       - name: Setup Node
         uses: actions/setup-node@v4
