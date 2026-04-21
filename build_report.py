@@ -184,6 +184,10 @@ MANUAL_TRANSACTIONS = [
     ("2026-04-20", "Anthropic", "Auto recharge extra usage, Individual plan", 15.14),
     ("2026-04-20", "Anthropic", "Prepaid extra usage, Individual plan", 10.00),
     ("2026-04-21", "Anthropic", "Auto recharge extra usage, Individual plan", 10.15),
+    ("2026-04-21", "Supabase", "Supabase", 25.00),
+    ("2026-04-21", "Anthropic", "Auto recharge extra usage, Individual plan", 10.02),
+    ("2026-04-21", "Anthropic", "Auto recharge extra usage, Individual plan", 10.50),
+    ("2026-04-21", "Anthropic", "Auto recharge extra usage, Individual plan", 11.17),
 ]
 
 TRACKING_START = datetime.date(2025, 7, 1)
