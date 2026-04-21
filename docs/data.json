@@ -1,14 +1,14 @@
 {
   "generated": "2026-04-21",
   "usd_rate": 2.983,
-  "exchange_rate_fetched_at": "2026-04-21T11:28:55.975851+00:00",
+  "exchange_rate_fetched_at": "2026-04-21T11:30:06.178164+00:00",
   "exchange_rate_updated_at": "2026-04-21T10:30:09.6799413Z",
   "exchange_rate_source": "Bank of Israel Public API",
-  "grand_total": 2260.4,
-  "grand_total_ils": 6742.78,
+  "grand_total": 2341.6,
+  "grand_total_ils": 6985,
   "current_month": "2026-04",
-  "current_month_total": 318.15,
-  "current_month_total_ils": 949.03,
+  "current_month_total": 399.35,
+  "current_month_total_ils": 1191.25,
   "scanner_status": {
     "last_run": "2026-04-21T05:26:17",
     "next_run": "2026-04-22T05:00:00",
@@ -76,6 +76,16 @@
       "original_amount": 81.23,
       "amount_usd": 81.23,
       "amount_ils": 242.31,
+      "entry_source": "manual"
+    },
+    {
+      "date": "2026-04-18",
+      "tool": "OpenAI",
+      "description": "ChatGPT Pro Subscription",
+      "currency": "USD",
+      "original_amount": 81.2,
+      "amount_usd": 81.2,
+      "amount_ils": 242.22,
       "entry_source": "manual"
     },
     {
@@ -1029,10 +1039,10 @@
     "2026-01": 423.36,
     "2026-02": 336.84,
     "2026-03": 312.61,
-    "2026-04": 318.15
+    "2026-04": 399.35
   },
   "monthly_ils": {
-    "2026-04": 949.03,
+    "2026-04": 1191.25,
     "2026-03": 932.53,
     "2026-02": 1004.79,
     "2026-01": 1262.89,
@@ -1045,7 +1055,7 @@
   },
   "by_tool": {
     "Meta (Ads)": 511.11,
-    "OpenAI": 261.23,
+    "OpenAI": 342.43,
     "Anthropic": 249.81,
     "Google Workspace": 209.92,
     "Ideogram AI": 208.49,
@@ -1068,7 +1078,7 @@
   },
   "by_tool_ils": {
     "Meta (Ads)": 1524.64,
-    "OpenAI": 779.25,
+    "OpenAI": 1021.47,
     "Anthropic": 745.18,
     "Google Workspace": 626.19,
     "Ideogram AI": 621.94,
