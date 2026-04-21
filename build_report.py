@@ -378,11 +378,11 @@ def combine_transactions():
         deduped_manual.append(txn)
 
     recurring = build_recurring_transactions(MONTHS)
-    manual_month_tool = {(txn[0][:7], txn[1]) for txn in deduped_manual}
+    manual_month_tool_desc = {(txn[0][:7], txn[1], txn[2]) for txn in deduped_manual}
 
     for txn in recurring:
         month_key = txn[0][:7]
-        if (month_key, txn[1]) in manual_month_tool:
+        if (month_key, txn[1], txn[2]) in manual_month_tool_desc:
             continue
         deduped_manual.append(txn)
 
