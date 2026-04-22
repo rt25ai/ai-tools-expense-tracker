@@ -1,17 +1,17 @@
 {
   "generated": "2026-04-22",
-  "built_at": "2026-04-22T15:32:17.463962+00:00",
+  "built_at": "2026-04-22T15:38:22.305803+00:00",
   "usd_rate": 2.983,
-  "exchange_rate_fetched_at": "2026-04-22T15:32:17.463962+00:00",
+  "exchange_rate_fetched_at": "2026-04-22T15:38:22.305803+00:00",
   "exchange_rate_updated_at": "2026-04-21T10:30:09.6799413Z",
   "exchange_rate_source": "Bank of Israel Public API",
-  "grand_total": 2352.63,
-  "grand_total_ils": 7071.66,
+  "grand_total": 2363.37,
+  "grand_total_ils": 7103.7,
   "current_month": "2026-04",
-  "current_month_total": 410.38,
-  "current_month_total_ils": 1226.96,
+  "current_month_total": 421.12,
+  "current_month_total_ils": 1259.0,
   "scanner_status": {
-    "last_run": "2026-04-22T18:32:08",
+    "last_run": "2026-04-22T18:38:19",
     "next_run": "2026-04-23T08:00:00",
     "result": "ok",
     "new_count": 0,
@@ -27,6 +27,16 @@
       "original_amount": 15.57,
       "amount_usd": 15.57,
       "amount_ils": 46.45,
+      "entry_source": null
+    },
+    {
+      "date": "2026-04-22",
+      "tool": "Anthropic",
+      "description": "Auto recharge extra usage, Individual plan",
+      "currency": "USD",
+      "original_amount": 10.74,
+      "amount_usd": 10.74,
+      "amount_ils": 32.04,
       "entry_source": null
     },
     {
@@ -1090,7 +1100,7 @@
     "2026-01": 423.36,
     "2026-02": 336.84,
     "2026-03": 312.61,
-    "2026-04": 410.38
+    "2026-04": 421.12
   },
   "monthly_ils": {
     "2025-07": 872.92,
@@ -1102,11 +1112,11 @@
     "2026-01": 1266.04,
     "2026-02": 1006.9,
     "2026-03": 939.66,
-    "2026-04": 1226.96
+    "2026-04": 1259.0
   },
   "by_tool": {
     "Meta (Ads)": 511.11,
-    "Anthropic": 297.07,
+    "Anthropic": 307.81,
     "OpenAI": 281.2,
     "Google Workspace": 209.92,
     "Ideogram AI": 208.49,
@@ -1130,7 +1140,7 @@
   },
   "by_tool_ils": {
     "Meta (Ads)": 1524.64,
-    "Anthropic": 886.16,
+    "Anthropic": 918.2,
     "OpenAI": 885.85,
     "Google Workspace": 626.19,
     "Ideogram AI": 621.94,
