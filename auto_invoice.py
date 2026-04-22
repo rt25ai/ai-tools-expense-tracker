@@ -13,6 +13,10 @@ After that: fully silent, runs as scheduled task.
 import os, io, json, re, base64, subprocess, datetime, logging, time, sys
 from pathlib import Path
 
+# Prevent subprocess.run from briefly flashing a CMD window on Windows when
+# the parent is pythonw.exe (Task Scheduler). Ignored on non-Windows.
+NO_WINDOW_FLAGS = 0x08000000 if os.name == "nt" else 0
+
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -554,7 +558,8 @@ def write_status(new_txns, error=None):
 
 def git(*args):
     r = subprocess.run(["git", *args], cwd=str(BASE_DIR),
-                       capture_output=True, text=True)
+                       capture_output=True, text=True,
+                       creationflags=NO_WINDOW_FLAGS)
     if r.returncode != 0:
         log.warning(f"git {' '.join(args)} failed (rc={r.returncode}): {r.stderr.strip()}")
 
@@ -563,8 +568,9 @@ def rebuild_excel():
     """Rebuild the Excel file from build_report.py. Returns True on success."""
     log.info("Rebuilding Excel...")
     r = subprocess.run(
-        ["python", str(REPORT_PY)],
-        cwd=str(BASE_DIR), capture_output=True, text=True
+        [sys.executable, str(REPORT_PY)],
+        cwd=str(BASE_DIR), capture_output=True, text=True,
+        creationflags=NO_WINDOW_FLAGS,
     )
     if r.returncode != 0:
         log.error(f"Build failed:\n{r.stderr}")
@@ -602,7 +608,8 @@ def push_status_only():
     git("add", "AI_Tools_Expenses_2025_2026.xlsx")
     r = subprocess.run(
         ["git", "diff", "--cached", "--quiet"],
-        cwd=str(BASE_DIR), capture_output=True
+        cwd=str(BASE_DIR), capture_output=True,
+        creationflags=NO_WINDOW_FLAGS,
     )
     if r.returncode != 0:  # something staged → commit
         git("commit", "-m", "Auto: Gmail scan – no new invoices\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>")
@@ -615,7 +622,8 @@ def push_status_only():
 
 def get_current_commit():
     r = subprocess.run(["git", "rev-parse", "HEAD"],
-                       cwd=str(BASE_DIR), capture_output=True, text=True)
+                       cwd=str(BASE_DIR), capture_output=True, text=True,
+                       creationflags=NO_WINDOW_FLAGS)
     return r.stdout.strip()
 
 
@@ -648,7 +656,8 @@ def sync_ci_changes():
     """
     r = subprocess.run(
         ["git", "log", "--oneline", "--author=github-actions", "ORIG_HEAD..HEAD", "--", "build_report.py"],
-        cwd=str(BASE_DIR), capture_output=True, text=True
+        cwd=str(BASE_DIR), capture_output=True, text=True,
+        creationflags=NO_WINDOW_FLAGS,
     )
     ci_commits = [l.strip() for l in r.stdout.splitlines() if l.strip()]
     if not ci_commits:
@@ -659,7 +668,8 @@ def sync_ci_changes():
     # Get the diff to find what transactions were added
     diff_r = subprocess.run(
         ["git", "diff", "ORIG_HEAD", "HEAD", "--", "build_report.py"],
-        cwd=str(BASE_DIR), capture_output=True, text=True
+        cwd=str(BASE_DIR), capture_output=True, text=True,
+        creationflags=NO_WINDOW_FLAGS,
     )
     ci_txns = parse_ci_transactions_from_diff(diff_r.stdout)
 
