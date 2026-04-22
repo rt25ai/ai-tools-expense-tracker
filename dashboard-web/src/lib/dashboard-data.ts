@@ -22,6 +22,7 @@ type RawTransaction = {
 
 type RawDashboardData = {
   generated: string;
+  built_at?: string;
   usd_rate: number;
   exchange_rate_fetched_at?: string;
   exchange_rate_updated_at?: string;

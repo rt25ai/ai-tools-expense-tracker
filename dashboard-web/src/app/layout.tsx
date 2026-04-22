@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Heebo } from "next/font/google";
 import { AppShell } from "@/components/app-shell";
+import { LiveRefresh } from "@/components/live-refresh";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { getDashboardModel } from "@/lib/dashboard-data";
 import { withBasePath } from "@/lib/site";
 import "./globals.css";
 
@@ -29,6 +31,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { raw } = getDashboardModel();
+
   return (
     <html
       lang="he"
@@ -39,6 +43,7 @@ export default function RootLayout({
         <TooltipProvider>
           <AppShell>{children}</AppShell>
         </TooltipProvider>
+        <LiveRefresh initialBuiltAt={raw.built_at ?? raw.generated} />
       </body>
     </html>
   );

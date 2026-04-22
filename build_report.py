@@ -188,6 +188,7 @@ MANUAL_TRANSACTIONS = [
     ("2026-04-21", "Anthropic", "Auto recharge extra usage, Individual plan", 10.02),
     ("2026-04-21", "Anthropic", "Auto recharge extra usage, Individual plan", 10.50),
     ("2026-04-21", "Anthropic", "Auto recharge extra usage, Individual plan", 11.17),
+    ("2026-04-22", "Anthropic", "Auto recharge extra usage, Individual plan", 15.57),
 ]
 
 TRACKING_START = datetime.date(2025, 7, 1)
@@ -1181,6 +1182,7 @@ def generate_dashboard_json():
 
     data = {
         "generated":              today.isoformat(),
+        "built_at":               rate_fetched_at,
         "usd_rate":               usd_rate,
         "exchange_rate_fetched_at": rate_fetched_at,
         "exchange_rate_updated_at": last_update,
