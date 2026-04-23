@@ -1,17 +1,17 @@
 {
   "generated": "2026-04-23",
-  "built_at": "2026-04-23T20:12:47.008698+00:00",
+  "built_at": "2026-04-23T20:17:08.185227+00:00",
   "usd_rate": 3.005,
-  "exchange_rate_fetched_at": "2026-04-23T20:12:47.008698+00:00",
+  "exchange_rate_fetched_at": "2026-04-23T20:17:08.185227+00:00",
   "exchange_rate_updated_at": "2026-04-23T12:22:02.7757483Z",
   "exchange_rate_source": "Bank of Israel Public API",
   "grand_total": 2359.75,
-  "grand_total_ils": 7091.06,
+  "grand_total_ils": 7139.81,
   "current_month": "2026-04",
   "current_month_total": 430.19,
-  "current_month_total_ils": 1292.72,
+  "current_month_total_ils": 1295.11,
   "scanner_status": {
-    "last_run": "2026-04-23T23:12:06",
+    "last_run": "2026-04-23T23:17:07",
     "next_run": "2026-04-24T08:00:00",
     "result": "ok",
     "new_count": 0,
@@ -94,9 +94,9 @@
       "tool": "Supabase",
       "description": "Supabase",
       "currency": "USD",
-      "original_amount": 25,
-      "amount_usd": 25,
-      "amount_ils": 75.13,
+      "original_amount": 25.0,
+      "amount_usd": 25.0,
+      "amount_ils": 75.12,
       "entry_source": null
     },
     {
@@ -114,8 +114,8 @@
       "tool": "Anthropic",
       "description": "Prepaid extra usage, Individual plan",
       "currency": "USD",
-      "original_amount": 10,
-      "amount_usd": 10,
+      "original_amount": 10.0,
+      "amount_usd": 10.0,
       "amount_ils": 30.05,
       "entry_source": null
     },
@@ -124,8 +124,8 @@
       "tool": "Anthropic",
       "description": "Prepaid extra usage, Individual plan",
       "currency": "USD",
-      "original_amount": 5,
-      "amount_usd": 5,
+      "original_amount": 5.0,
+      "amount_usd": 5.0,
       "amount_ils": 15.02,
       "entry_source": null
     },
@@ -154,8 +154,8 @@
       "tool": "Anthropic",
       "description": "Prepaid extra usage, Individual plan",
       "currency": "USD",
-      "original_amount": 10,
-      "amount_usd": 10,
+      "original_amount": 10.0,
+      "amount_usd": 10.0,
       "amount_ils": 30.05,
       "entry_source": null
     },
@@ -164,8 +164,8 @@
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
       "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
+      "original_amount": 20.0,
+      "amount_usd": 20.0,
       "amount_ils": 60.1,
       "entry_source": "auto"
     },
@@ -174,8 +174,8 @@
       "tool": "Anthropic",
       "description": "Claude Pro",
       "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
+      "original_amount": 20.0,
+      "amount_usd": 20.0,
       "amount_ils": 60.1,
       "entry_source": null
     },
@@ -214,9 +214,9 @@
       "tool": "Dzine",
       "description": "Video Top-Up",
       "currency": "USD",
-      "original_amount": 18,
-      "amount_usd": 18,
-      "amount_ils": 54.09,
+      "original_amount": 18.0,
+      "amount_usd": 18.0,
+      "amount_ils": 56.49,
       "entry_source": "manual"
     },
     {
@@ -254,9 +254,9 @@
       "tool": "Dzine",
       "description": "Video Top-Up",
       "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 60.1,
+      "original_amount": 20.0,
+      "amount_usd": 20.0,
+      "amount_ils": 62.37,
       "entry_source": "manual"
     },
     {
@@ -274,9 +274,9 @@
       "tool": "Dzine",
       "description": "Video Top-Up",
       "currency": "USD",
-      "original_amount": 9,
-      "amount_usd": 9,
-      "amount_ils": 27.04,
+      "original_amount": 9.0,
+      "amount_usd": 9.0,
+      "amount_ils": 28.06,
       "entry_source": "manual"
     },
     {
@@ -314,9 +314,9 @@
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
       "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 60.1,
+      "original_amount": 20.0,
+      "amount_usd": 20.0,
+      "amount_ils": 62.87,
       "entry_source": "auto"
     },
     {
@@ -474,9 +474,9 @@
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
       "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 60.1,
+      "original_amount": 20.0,
+      "amount_usd": 20.0,
+      "amount_ils": 61.77,
       "entry_source": "auto"
     },
     {
@@ -564,9 +564,9 @@
       "tool": "Meta (Ads)",
       "description": "Facebook Ads",
       "currency": "ILS",
-      "original_amount": 134,
+      "original_amount": 134.0,
       "amount_usd": 44.592346,
-      "amount_ils": 134,
+      "amount_ils": 134.0,
       "entry_source": null
     },
     {
@@ -594,9 +594,9 @@
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
       "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 60.1,
+      "original_amount": 20.0,
+      "amount_usd": 20.0,
+      "amount_ils": 62.81,
       "entry_source": "auto"
     },
     {
@@ -704,9 +704,9 @@
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
       "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 60.1,
+      "original_amount": 20.0,
+      "amount_usd": 20.0,
+      "amount_ils": 64.26,
       "entry_source": "auto"
     },
     {
@@ -774,9 +774,9 @@
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
       "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 60.1,
+      "original_amount": 20.0,
+      "amount_usd": 20.0,
+      "amount_ils": 64.68,
       "entry_source": "auto"
     },
     {
@@ -844,9 +844,9 @@
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
       "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 60.1,
+      "original_amount": 20.0,
+      "amount_usd": 20.0,
+      "amount_ils": 65.72,
       "entry_source": "auto"
     },
     {
@@ -884,9 +884,9 @@
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
       "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 60.1,
+      "original_amount": 20.0,
+      "amount_usd": 20.0,
+      "amount_ils": 67.01,
       "entry_source": "auto"
     },
     {
@@ -944,9 +944,9 @@
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
       "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 60.1,
+      "original_amount": 20.0,
+      "amount_usd": 20.0,
+      "amount_ils": 67.54,
       "entry_source": "auto"
     },
     {
@@ -1054,9 +1054,9 @@
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
       "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 60.1,
+      "original_amount": 20.0,
+      "amount_usd": 20.0,
+      "amount_ils": 67.31,
       "entry_source": "auto"
     },
     {
@@ -1113,16 +1113,16 @@
     "2026-04": 430.19
   },
   "monthly_ils": {
-    "2026-04": 1292.72,
-    "2026-03": 933.6,
-    "2026-02": 1005.23,
-    "2026-01": 1263.33,
-    "2025-12": 550.12,
-    "2025-11": 299.54,
-    "2025-10": 199.1,
-    "2025-09": 245.15,
-    "2025-08": 436.56,
-    "2025-07": 865.71
+    "2025-07": 872.92,
+    "2025-08": 444.0,
+    "2025-09": 252.06,
+    "2025-10": 204.72,
+    "2025-11": 304.12,
+    "2025-12": 554.28,
+    "2026-01": 1266.04,
+    "2026-02": 1006.9,
+    "2026-03": 939.66,
+    "2026-04": 1295.11
   },
   "by_tool": {
     "Meta (Ads)": 507.37,
@@ -1135,12 +1135,12 @@
     "CapCut": 99.63,
     "Runway ML": 60.75,
     "Eleven Labs": 48.94,
-    "Dzine": 47,
+    "Dzine": 47.0,
     "Make": 35.54,
     "Manychat": 32.13,
     "Timeless": 29.98,
     "Recraft": 27.75,
-    "Supabase": 25,
+    "Supabase": 25.0,
     "Manus AI": 21.71,
     "IONOS": 20.91,
     "Higgsfield": 20.82,
@@ -1151,7 +1151,7 @@
   "by_tool_ils": {
     "Meta (Ads)": 1524.64,
     "Anthropic": 951.54,
-    "OpenAI": 845.01,
+    "OpenAI": 888.08,
     "Google Workspace": 626.19,
     "Ideogram AI": 621.94,
     "Genspark": 572.57,
@@ -1159,12 +1159,12 @@
     "CapCut": 299.4,
     "Runway ML": 182.56,
     "Eleven Labs": 147.06,
-    "Dzine": 141.23,
+    "Dzine": 146.92,
     "Make": 106.81,
     "Manychat": 96.56,
     "Timeless": 90.1,
     "Recraft": 83.38,
-    "Supabase": 75.13,
+    "Supabase": 75.12,
     "Manus AI": 65.24,
     "IONOS": 62.83,
     "Higgsfield": 62.56,
