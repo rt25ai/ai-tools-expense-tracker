@@ -1,15 +1,15 @@
 {
   "generated": "2026-04-23",
-  "built_at": "2026-04-23T18:42:34.218405+00:00",
+  "built_at": "2026-04-23T18:47:09.450647+00:00",
   "usd_rate": 3.005,
-  "exchange_rate_fetched_at": "2026-04-23T18:42:34.218405+00:00",
+  "exchange_rate_fetched_at": "2026-04-23T18:47:09.450647+00:00",
   "exchange_rate_updated_at": "2026-04-23T12:22:02.7757483Z",
   "exchange_rate_source": "Bank of Israel Public API",
-  "grand_total": 2349.59,
-  "grand_total_ils": 7109.28,
+  "grand_total": 2359.75,
+  "grand_total_ils": 7139.81,
   "current_month": "2026-04",
-  "current_month_total": 420.03,
-  "current_month_total_ils": 1264.58,
+  "current_month_total": 430.19,
+  "current_month_total_ils": 1295.11,
   "scanner_status": {
     "last_run": "2026-04-23T21:42:28",
     "next_run": "2026-04-24T08:00:00",
@@ -19,6 +19,16 @@
     "error": null
   },
   "transactions": [
+    {
+      "date": "2026-04-23",
+      "tool": "Anthropic",
+      "description": "Auto recharge extra usage, Individual plan",
+      "currency": "USD",
+      "original_amount": 10.16,
+      "amount_usd": 10.16,
+      "amount_ils": 30.53,
+      "entry_source": null
+    },
     {
       "date": "2026-04-22",
       "tool": "Anthropic",
@@ -1100,7 +1110,7 @@
     "2026-01": 420.41,
     "2026-02": 334.52,
     "2026-03": 310.68,
-    "2026-04": 420.03
+    "2026-04": 430.19
   },
   "monthly_ils": {
     "2025-07": 872.92,
@@ -1112,11 +1122,11 @@
     "2026-01": 1266.04,
     "2026-02": 1006.9,
     "2026-03": 939.66,
-    "2026-04": 1264.58
+    "2026-04": 1295.11
   },
   "by_tool": {
     "Meta (Ads)": 507.37,
-    "Anthropic": 306.49,
+    "Anthropic": 316.65,
     "OpenAI": 281.2,
     "Google Workspace": 208.38,
     "Ideogram AI": 206.97,
@@ -1140,7 +1150,7 @@
   },
   "by_tool_ils": {
     "Meta (Ads)": 1524.64,
-    "Anthropic": 921.01,
+    "Anthropic": 951.54,
     "OpenAI": 888.08,
     "Google Workspace": 626.19,
     "Ideogram AI": 621.94,
