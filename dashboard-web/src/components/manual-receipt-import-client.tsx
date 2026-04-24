@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Eye, EyeOff, FileUp, Key, LoaderCircle, PencilLine, PlugZap, RefreshCw, ShieldCheck, Trash2, Upload, X } from "lucide-react";
+import { FileUp, Key, LoaderCircle, PencilLine, PlugZap, RefreshCw, ShieldCheck, Trash2, Upload, X } from "lucide-react";
 import { formatDateLabel } from "@/lib/formatters";
 import { parseManualReceiptPdf, type ManualReceiptParseResult } from "@/lib/manual-receipt-parser";
 import type { ManualReceiptRecord } from "@/lib/manual-receipts";
@@ -139,7 +139,6 @@ export function ManualReceiptImportClient({ knownVendors, initialReceipts }: { k
   const [githubToken, setGithubToken] = useState<string | null>(null);
   const [tokenInput, setTokenInput] = useState("");
   const [showTokenInput, setShowTokenInput] = useState(false);
-  const [showTokenValue, setShowTokenValue] = useState(false);
   const [activeTab, setActiveTab] = useState<"manual" | "pdf">("manual");
   const [form, setForm] = useState<ReceiptFormState>(initialFormState);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -243,7 +242,6 @@ export function ManualReceiptImportClient({ knownVendors, initialReceipts }: { k
     setGithubToken(token);
     setTokenInput("");
     setShowTokenInput(false);
-    setShowTokenValue(false);
     void checkGithubDirect(runtimeConfig, token);
   }
 
@@ -252,7 +250,6 @@ export function ManualReceiptImportClient({ knownVendors, initialReceipts }: { k
     setGithubToken(null);
     setTokenInput("");
     setShowTokenInput(false);
-    setShowTokenValue(false);
     setGithubDirectStatus("not-configured");
     setGithubDirectMessage("לא הוגדר GitHub Token. הוסף Personal Access Token כדי לשמור ישירות ב-GitHub.");
   }
@@ -472,19 +469,18 @@ export function ManualReceiptImportClient({ knownVendors, initialReceipts }: { k
                 <div className="flex gap-2">
                   <div className="relative flex-1">
                     <Input
-                      type={showTokenValue ? "text" : "password"}
+                      type="password"
                       value={tokenInput}
                       onChange={(event) => setTokenInput(event.target.value)}
                       placeholder="github_pat_..."
-                      className="h-9 border-white/10 bg-black/20 pr-10 font-mono text-sm text-zinc-100"
+                      autoComplete="off"
+                      autoCorrect="off"
+                      autoCapitalize="off"
+                      spellCheck={false}
+                      data-1p-ignore
+                      data-lpignore="true"
+                      className="h-9 border-white/10 bg-black/20 font-mono text-sm text-zinc-100"
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowTokenValue((prev) => !prev)}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
-                    >
-                      {showTokenValue ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                    </button>
                   </div>
                   <Button size="sm" disabled={!tokenInput.trim()} className="bg-cyan-400 text-black hover:bg-cyan-300" onClick={() => saveTokenAndRefresh(tokenInput.trim())}>
                     שמור

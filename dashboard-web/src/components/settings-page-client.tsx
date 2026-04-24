@@ -1,7 +1,7 @@
 "use client";
 
 import { startTransition, useCallback, useEffect, useState } from "react";
-import { CheckCircle2, Eye, EyeOff, RefreshCw, X } from "lucide-react";
+import { CheckCircle2, RefreshCw, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -87,7 +87,6 @@ export function SettingsPageClient({ initialSettings }: { initialSettings: Setti
   const [savedSection, setSavedSection] = useState<SectionKey | null>(null);
   const [githubToken, setGithubToken] = useState<string | null>(null);
   const [tokenInput, setTokenInput] = useState("");
-  const [showTokenValue, setShowTokenValue] = useState(false);
   const [githubStatus, setGithubStatus] = useState<"idle" | "checking" | "online" | "offline" | "not-configured">("idle");
   const [githubMessage, setGithubMessage] = useState<string | null>(null);
 
@@ -123,7 +122,6 @@ export function SettingsPageClient({ initialSettings }: { initialSettings: Setti
     setStoredToken(trimmed);
     setGithubToken(trimmed);
     setTokenInput("");
-    setShowTokenValue(false);
     void checkGithubConnection(trimmed);
   }
 
@@ -131,7 +129,6 @@ export function SettingsPageClient({ initialSettings }: { initialSettings: Setti
     clearStoredToken();
     setGithubToken(null);
     setTokenInput("");
-    setShowTokenValue(false);
     setGithubStatus("idle");
     setGithubMessage(null);
   }
@@ -197,19 +194,18 @@ export function SettingsPageClient({ initialSettings }: { initialSettings: Setti
               <div className="flex gap-2">
                 <div className="relative flex-1">
                   <Input
-                    type={showTokenValue ? "text" : "password"}
+                    type="password"
                     value={tokenInput}
                     onChange={(event) => setTokenInput(event.target.value)}
                     placeholder={githubToken ? "הזן Token חדש כדי להחליף..." : "github_pat_..."}
-                    className="h-11 border-white/10 bg-black/20 pr-10 font-mono text-sm text-zinc-100"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="off"
+                    spellCheck={false}
+                    data-1p-ignore
+                    data-lpignore="true"
+                    className="h-11 border-white/10 bg-black/20 font-mono text-sm text-zinc-100"
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowTokenValue((prev) => !prev)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
-                  >
-                    {showTokenValue ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                  </button>
                 </div>
               </div>
             </div>
