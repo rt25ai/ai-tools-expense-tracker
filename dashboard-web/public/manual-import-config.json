@@ -1,6 +1,6 @@
 {
-  "mode": "github-direct",
-  "gatewayUrl": null,
+  "mode": "gateway",
+  "gatewayUrl": "https://ai-tools-expense-gateway.vercel.app",
   "githubOwner": "rt25ai",
   "githubRepo": "ai-tools-expense-tracker",
   "githubBranch": "master"
