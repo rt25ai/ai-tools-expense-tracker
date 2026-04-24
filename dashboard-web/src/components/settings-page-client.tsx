@@ -1,7 +1,7 @@
 "use client";
 
-import { startTransition, useCallback, useEffect, useState } from "react";
-import { CheckCircle2, RefreshCw, X } from "lucide-react";
+import { startTransition, useEffect, useState } from "react";
+import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -10,17 +10,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import type { SettingsModel } from "@/lib/dashboard-data";
 import {
-  checkGithubDirectAccess,
-  clearStoredToken,
-  getStoredToken,
-  setStoredToken,
-} from "@/lib/github-direct-client";
-import {
   DASHBOARD_SETTINGS_STORAGE_KEY,
   DEFAULT_MONTHLY_BUDGET,
   sanitizeMonthlyBudget,
 } from "@/lib/monthly-budget";
 import { dispatchSettingsUpdated } from "@/lib/use-monthly-budget";
+
+const LEGACY_TOKEN_KEY = "manual_import_github_token";
 
 type SectionKey = keyof SettingsModel;
 
@@ -85,53 +81,10 @@ export function SettingsPageClient({ initialSettings }: { initialSettings: Setti
     }
   });
   const [savedSection, setSavedSection] = useState<SectionKey | null>(null);
-  const [githubToken, setGithubToken] = useState<string | null>(null);
-  const [tokenInput, setTokenInput] = useState("");
-  const [githubStatus, setGithubStatus] = useState<"idle" | "checking" | "online" | "offline" | "not-configured">("idle");
-  const [githubMessage, setGithubMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    const token = getStoredToken();
-    setGithubToken(token);
+    window.localStorage.removeItem(LEGACY_TOKEN_KEY);
   }, []);
-
-  const checkGithubConnection = useCallback(async (token: string) => {
-    setGithubStatus("checking");
-    setGithubMessage(null);
-    try {
-      const res = await fetch("manual-import-config.json", { cache: "no-store" });
-      if (!res.ok) throw new Error();
-      const cfg = (await res.json()) as { mode?: string; githubOwner?: string; githubRepo?: string; githubBranch?: string };
-      if (cfg.mode !== "github-direct" || !cfg.githubOwner || !cfg.githubRepo || !cfg.githubBranch) {
-        setGithubStatus("not-configured");
-        setGithubMessage("מצב GitHub Direct לא מוגדר. בדוק את קובץ ההגדרות.");
-        return;
-      }
-      const result = await checkGithubDirectAccess({ owner: cfg.githubOwner, repo: cfg.githubRepo, branch: cfg.githubBranch }, token);
-      setGithubStatus(result.ok ? "online" : "offline");
-      setGithubMessage(result.message);
-    } catch {
-      setGithubStatus("offline");
-      setGithubMessage("שגיאה בבדיקת חיבור GitHub.");
-    }
-  }, []);
-
-  function handleSaveToken() {
-    const trimmed = tokenInput.trim();
-    if (!trimmed) return;
-    setStoredToken(trimmed);
-    setGithubToken(trimmed);
-    setTokenInput("");
-    void checkGithubConnection(trimmed);
-  }
-
-  function handleClearToken() {
-    clearStoredToken();
-    setGithubToken(null);
-    setTokenInput("");
-    setGithubStatus("idle");
-    setGithubMessage(null);
-  }
 
   function normalizeSettingsForStorage(nextSettings: SettingsModel) {
     return {
@@ -164,72 +117,6 @@ export function SettingsPageClient({ initialSettings }: { initialSettings: Setti
 
   return (
     <div className="space-y-6">
-      <Card className="overflow-hidden border-white/8 bg-white/[0.03] shadow-none">
-        <div className="border-b border-white/6 px-6 py-5">
-          <h2 className="text-2xl font-semibold text-white">חיבור GitHub</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">
-            Personal Access Token לשמירת קבלות ישירות ב-GitHub מכל מכשיר, ללא תלות בגשר מקומי.
-          </p>
-        </div>
-        <div className="px-6 py-5 space-y-5">
-          <SettingsRow
-            label="GitHub Token"
-            help="Fine-grained PAT עם הרשאת Contents: Read and Write על הריפו. נשמר רק בדפדפן שלך (localStorage)."
-          >
-            <div className="space-y-3">
-              {githubToken ? (
-                <div className="rounded-2xl border border-cyan-400/20 bg-cyan-400/10 px-4 py-3 text-sm text-cyan-100">
-                  Token שמור. הוא מוסתר ולא מוצג שוב.
-                </div>
-              ) : (
-                <div className="rounded-2xl border border-zinc-700/40 bg-black/20 px-4 py-3 text-sm text-zinc-400">
-                  לא הוגדר Token. הוסף אחד כדי לאפשר שמירת קבלות מכל מכשיר.
-                </div>
-              )}
-              {githubMessage ? (
-                <div className={`rounded-2xl border px-4 py-3 text-sm ${githubStatus === "online" ? "border-cyan-400/20 bg-cyan-400/10 text-cyan-100" : "border-rose-400/20 bg-rose-400/10 text-rose-200"}`}>
-                  {githubMessage}
-                </div>
-              ) : null}
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <Input
-                    type="password"
-                    value={tokenInput}
-                    onChange={(event) => setTokenInput(event.target.value)}
-                    placeholder={githubToken ? "הזן Token חדש כדי להחליף..." : "github_pat_..."}
-                    autoComplete="off"
-                    autoCorrect="off"
-                    autoCapitalize="off"
-                    spellCheck={false}
-                    data-1p-ignore
-                    data-lpignore="true"
-                    className="h-11 border-white/10 bg-black/20 font-mono text-sm text-zinc-100"
-                  />
-                </div>
-              </div>
-            </div>
-          </SettingsRow>
-        </div>
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/6 px-6 py-4">
-          <div className="flex flex-wrap gap-2">
-            {githubToken ? (
-              <Button variant="outline" size="sm" className="border-white/10 bg-black/20 text-zinc-100 hover:bg-white/[0.08]" onClick={() => void checkGithubConnection(githubToken)} disabled={githubStatus === "checking"}>
-                <RefreshCw className={`size-4 ${githubStatus === "checking" ? "animate-spin" : ""}`} />בדוק חיבור
-              </Button>
-            ) : null}
-            {githubToken ? (
-              <Button variant="destructive" size="sm" onClick={handleClearToken}>
-                <X className="size-4" />הסר Token
-              </Button>
-            ) : null}
-          </div>
-          <Button onClick={handleSaveToken} disabled={!tokenInput.trim()} className="bg-cyan-400 text-black hover:bg-cyan-300">
-            {githubToken ? "החלף Token" : "שמור Token"}
-          </Button>
-        </div>
-      </Card>
-
       <Card className="overflow-hidden border-white/8 bg-white/[0.03] shadow-none">
         <div className="border-b border-white/6 px-6 py-5">
           <h2 className="text-2xl font-semibold text-white">הגדרות כלליות</h2>
