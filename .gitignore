@@ -17,3 +17,4 @@ __pycache__/
 ~$*.xlsx
 tmp/
 graphify-out/
+.vercel

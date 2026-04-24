@@ -15,6 +15,7 @@ async function removeTxtFiles(directory) {
     const fullPath = path.join(directory, entry.name);
 
     if (entry.isDirectory()) {
+      if (entry.name === ".well-known") continue;
       await removeTxtFiles(fullPath);
       continue;
     }
