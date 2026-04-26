@@ -83,6 +83,23 @@ TOOL_RULES = [
     ("billing@supabase.com",         "Supabase",         "USD", "body"),
 ]
 
+# Content-based fallback for messages forwarded via Apps Script (which strips
+# the original "From:" header). Each rule: (subject_or_body_keyword, tool, currency, source).
+# Keywords must be specific enough to avoid false positives.
+CONTENT_RULES = [
+    ("lovable labs incorporated", "Lovable",   "USD", "body"),
+    ("lovable.dev",               "Lovable",   "USD", "body"),
+    ("cursor.sh",                 "Cursor",    "USD", "body"),
+    ("cursor.com/billing",        "Cursor",    "USD", "body"),
+    ("windsurf",                  "Windsurf",  "USD", "body"),
+    ("freepik",                   "Freepik",   "USD", "body"),
+    ("seedance",                  "Seedance",  "USD", "body"),
+    ("perplexity.ai",             "Perplexity", "USD", "body"),
+    ("notion.so/billing",         "Notion",    "USD", "body"),
+    ("figma.com",                 "Figma",     "USD", "body"),
+    ("vercel.com",                "Vercel",    "USD", "body"),
+]
+
 # ── Gmail helpers ─────────────────────────────────────────────────────────────
 
 def get_service():
@@ -362,6 +379,17 @@ def identify_tool(headers, payload):
             if pattern in fwd_sender:
                 log.info(f"  Matched forwarded sender: {fwd_sender!r} -> {tool}")
                 return tool, currency, source
+
+    # Content fallback: Apps Script forward() strips the original "From:" header
+    # and does not add a "---------- Forwarded message ---------" block, so detect
+    # by tool-specific keywords in subject/body.
+    subject = headers.get("subject", "").lower()
+    haystack = subject + "\n" + body.lower()
+    for pattern, tool, currency, source in CONTENT_RULES:
+        if pattern in haystack:
+            log.info(f"  Matched content keyword {pattern!r} -> {tool}")
+            return tool, currency, source
+
     return None, None, None
 
 
