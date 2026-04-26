@@ -192,6 +192,7 @@ MANUAL_TRANSACTIONS = [
     ("2026-04-22", "Anthropic", "Auto recharge extra usage, Individual plan", 10.74),
     ("2026-04-23", "Anthropic", "Auto recharge extra usage, Individual plan", 10.16),
     ("2026-04-26", "Meta (Ads)", "Facebook Ads", 51.00),
+    ("2026-04-26", "Lovable", "Lovable", 5.00),
 ]
 
 TRACKING_START = datetime.date(2025, 7, 1)

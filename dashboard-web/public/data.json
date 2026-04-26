@@ -1,15 +1,15 @@
 {
   "generated": "2026-04-26",
-  "built_at": "2026-04-26T18:42:09.349275+00:00",
+  "built_at": "2026-04-26T18:44:20.416339+00:00",
   "usd_rate": 3.003,
-  "exchange_rate_fetched_at": "2026-04-26T18:42:09.349275+00:00",
+  "exchange_rate_fetched_at": "2026-04-26T18:44:20.416339+00:00",
   "exchange_rate_updated_at": "2026-04-24T09:22:04.0471461Z",
   "exchange_rate_source": "Bank of Israel Public API",
-  "grand_total": 2412.0,
-  "grand_total_ils": 7292.44,
+  "grand_total": 2417.0,
+  "grand_total_ils": 7307.46,
   "current_month": "2026-04",
-  "current_month_total": 481.29,
-  "current_month_total_ils": 1447.74,
+  "current_month_total": 486.29,
+  "current_month_total_ils": 1462.76,
   "scanner_status": {
     "last_run": "2026-04-26T21:42:07",
     "next_run": "2026-04-27T08:00:00",
@@ -19,6 +19,16 @@
     "error": null
   },
   "transactions": [
+    {
+      "date": "2026-04-26",
+      "tool": "Lovable",
+      "description": "Lovable",
+      "currency": "USD",
+      "original_amount": 5.0,
+      "amount_usd": 5.0,
+      "amount_ils": 15.02,
+      "entry_source": null
+    },
     {
       "date": "2026-04-26",
       "tool": "Meta (Ads)",
@@ -1120,7 +1130,7 @@
     "2026-01": 420.68,
     "2026-02": 334.73,
     "2026-03": 310.86,
-    "2026-04": 481.29
+    "2026-04": 486.29
   },
   "monthly_ils": {
     "2025-07": 872.92,
@@ -1132,7 +1142,7 @@
     "2026-01": 1266.04,
     "2026-02": 1006.9,
     "2026-03": 939.66,
-    "2026-04": 1447.74
+    "2026-04": 1462.76
   },
   "by_tool": {
     "Meta (Ads)": 558.71,
@@ -1141,7 +1151,7 @@
     "Google Workspace": 208.52,
     "Ideogram AI": 207.11,
     "Genspark": 190.67,
-    "Lovable": 139.92,
+    "Lovable": 144.92,
     "CapCut": 99.7,
     "Runway ML": 60.79,
     "Eleven Labs": 48.97,
@@ -1165,7 +1175,7 @@
     "Google Workspace": 626.19,
     "Ideogram AI": 621.94,
     "Genspark": 572.57,
-    "Lovable": 420.18,
+    "Lovable": 435.2,
     "CapCut": 299.4,
     "Runway ML": 182.56,
     "Eleven Labs": 147.06,
