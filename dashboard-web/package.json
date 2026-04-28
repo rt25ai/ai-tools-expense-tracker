@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node scripts/sync-data.mjs",
+    "predev": "node scripts/copy-pdf-worker.mjs",
+    "prebuild": "node scripts/copy-pdf-worker.mjs && node scripts/sync-data.mjs",
     "build": "next build",
     "postbuild": "node scripts/export-to-docs.mjs",
     "start": "next start",

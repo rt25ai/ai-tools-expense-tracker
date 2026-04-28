@@ -11,6 +11,9 @@ const nextConfig: NextConfig = {
   },
   basePath: isProduction ? repoBasePath : "",
   assetPrefix: isProduction ? repoBasePath : "",
+  env: {
+    NEXT_PUBLIC_BASE_PATH: isProduction ? repoBasePath : "",
+  },
 };
 
 export default nextConfig;

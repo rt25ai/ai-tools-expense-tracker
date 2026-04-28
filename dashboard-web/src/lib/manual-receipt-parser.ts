@@ -454,7 +454,8 @@ export async function extractPdfText(file: File) {
   const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
   const arrayBuffer = await file.arrayBuffer();
   if (!pdfjs.GlobalWorkerOptions.workerSrc) {
-    pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+    pdfjs.GlobalWorkerOptions.workerSrc = `${basePath}/pdfjs/pdf.worker.min.mjs`;
   }
 
   const loadingTask = pdfjs.getDocument({

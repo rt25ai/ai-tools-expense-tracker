@@ -32,13 +32,13 @@ const CSP = [
   "form-action 'self'",
   "frame-ancestors 'none'",
   "object-src 'none'",
-  "script-src 'self' 'unsafe-inline'",
+  "script-src 'self' 'unsafe-inline' blob:",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self' data:",
-  "connect-src 'self' https://api.github.com https://*.vercel.app http://127.0.0.1:8765 http://localhost:8765",
+  "connect-src 'self' blob: https://api.github.com https://*.vercel.app http://127.0.0.1:8765 http://localhost:8765",
   "manifest-src 'self'",
-  "worker-src 'self'",
+  "worker-src 'self' blob:",
 ].join("; ");
 
 export default function RootLayout({
