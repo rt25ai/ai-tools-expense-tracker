@@ -68,5 +68,19 @@
     "notes": null,
     "created_at": "2026-04-21T11:29:29",
     "entry_source": "manual"
+  },
+  {
+    "id": "manual-2026-04-27-higgsfield-4ecc70bf6a",
+    "date": "2026-04-27",
+    "tool": "Higgsfield",
+    "description": "Credit Package",
+    "currency": "USD",
+    "original_amount": 40.5,
+    "attachment_path": "manual_invoices/2026-04-27-higgsfield-manual-2026-04-27-higgsfield-4ecc70bf6a.pdf",
+    "attachment_name": "Invoice-NDGQ3XGX-0014.pdf",
+    "entry_mode": "pdf-upload",
+    "notes": null,
+    "created_at": "2026-04-28T12:25:26",
+    "entry_source": "manual"
   }
 ]
