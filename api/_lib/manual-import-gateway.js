@@ -1,10 +1,17 @@
 const crypto = require("node:crypto");
 
-const DEFAULT_BRANCH = process.env.MANUAL_IMPORT_GITHUB_BRANCH || "master";
-const OWNER = process.env.MANUAL_IMPORT_GITHUB_OWNER;
-const REPO = process.env.MANUAL_IMPORT_GITHUB_REPO;
-const TOKEN = process.env.MANUAL_IMPORT_GITHUB_TOKEN;
-const ALLOWED_ORIGINS = (process.env.MANUAL_IMPORT_ALLOWED_ORIGINS || "")
+function sanitizeEnv(value) {
+  // Strip BOM (U+FEFF), zero-width spaces, CR/LF, and surrounding whitespace.
+  // Vercel env vars sometimes carry a UTF-8 BOM from copy-paste, which breaks
+  // fetch() Headers (ByteString conversion error at "Bearer <BOM>...").
+  return String(value || "").replace(/^[﻿​\s]+|[﻿​\s]+$/g, "");
+}
+
+const DEFAULT_BRANCH = sanitizeEnv(process.env.MANUAL_IMPORT_GITHUB_BRANCH) || "master";
+const OWNER = sanitizeEnv(process.env.MANUAL_IMPORT_GITHUB_OWNER);
+const REPO = sanitizeEnv(process.env.MANUAL_IMPORT_GITHUB_REPO);
+const TOKEN = sanitizeEnv(process.env.MANUAL_IMPORT_GITHUB_TOKEN);
+const ALLOWED_ORIGINS = sanitizeEnv(process.env.MANUAL_IMPORT_ALLOWED_ORIGINS)
   .split(",")
   .map((value) => value.trim())
   .filter(Boolean);
