@@ -1,8 +1,8 @@
 {
   "generated": "2026-04-29",
-  "built_at": "2026-04-29T06:17:08.173821+00:00",
+  "built_at": "2026-04-29T06:22:08.139584+00:00",
   "usd_rate": 2.991,
-  "exchange_rate_fetched_at": "2026-04-29T06:17:08.173821+00:00",
+  "exchange_rate_fetched_at": "2026-04-29T06:22:08.139584+00:00",
   "exchange_rate_updated_at": "2026-04-28T12:21:03.1563264Z",
   "exchange_rate_source": "Bank of Israel Public API",
   "grand_total": 2475.56,
@@ -11,7 +11,7 @@
   "current_month_total": 537.94,
   "current_month_total_ils": 1611.64,
   "scanner_status": {
-    "last_run": "2026-04-29T09:17:07",
+    "last_run": "2026-04-29T09:22:07",
     "next_run": "2026-04-30T08:00:00",
     "result": "ok",
     "new_count": 0,
