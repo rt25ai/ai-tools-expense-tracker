@@ -61,6 +61,8 @@ def get_exchange_rate():
 # Each rule: sender pattern → (tool_name, currency, source)
 # source: 'pdf' | 'body' | 'web'
 TOOL_RULES = [
+    # payments-noreply@google.com handles multiple Google services; the actual
+    # tool/source is decided in identify_tool() based on body content.
     ("payments-noreply@google.com",  "Google Workspace", "ILS", "pdf"),
     ("noreply@email.capcut.com",     "CapCut",           "ILS", "web"),
     ("billing@anthropic.com",        "Anthropic",        "USD", "body"),
@@ -368,6 +370,15 @@ def identify_tool(headers, payload):
         return "Meta (Ads)", "USD", "body"
 
     sender = headers.get("from", "").lower()
+
+    # Google Payments sends notifications for several services. Google Workspace
+    # invoices arrive with a PDF; Google Cloud "payment received" confirmations
+    # have no PDF and the amount lives in the body.
+    if "payments-noreply@google.com" in sender:
+        if "google cloud" in body.lower():
+            return "Google Cloud", "ILS", "body"
+        return "Google Workspace", "ILS", "pdf"
+
     for pattern, tool, currency, source in TOOL_RULES:
         if pattern in sender:
             return tool, currency, source
@@ -479,6 +490,8 @@ def process_message(service, msg_id):
         if tool == "CapCut":
             month_name = date.strftime("%b")
             description = f"Pro – {month_name} {date.year} (₪{original_amount:.2f})"
+        elif tool == "Google Cloud":
+            description = f"Google Cloud Platform & APIs (₪{original_amount:.2f})"
         else:
             description = f"{tool} (₪{original_amount:.2f})"
     else:

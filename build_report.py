@@ -193,6 +193,7 @@ MANUAL_TRANSACTIONS = [
     ("2026-04-23", "Anthropic", "Auto recharge extra usage, Individual plan", 10.16),
     ("2026-04-26", "Meta (Ads)", "Facebook Ads", 51.00),
     ("2026-04-26", "Lovable", "Lovable", 5.00),
+    ("2026-05-01", "Google Cloud", "Google Cloud Platform & APIs (₪8.23)", 8.23, "ILS"),  # missed by Gmail scanner (no PDF)
 ]
 
 TRACKING_START = datetime.date(2025, 7, 1)
