@@ -195,6 +195,7 @@ MANUAL_TRANSACTIONS = [
     ("2026-04-26", "Lovable", "Lovable", 5.00),
     ("2026-04-28", "Anthropic", "Auto recharge extra usage, Individual plan", 10.56),
     ("2026-05-01", "Anthropic", "Auto recharge extra usage, Individual plan", 10.40),
+    ("2026-05-01", "Google Workspace", "Google Workspace (₪75.90)", 75.90, "ILS"),
 ]
 
 TRACKING_START = datetime.date(2025, 7, 1)

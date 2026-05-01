@@ -1,15 +1,15 @@
 {
   "generated": "2026-05-01",
-  "built_at": "2026-05-01T13:34:12.358611+00:00",
+  "built_at": "2026-05-01T13:37:15.932192+00:00",
   "usd_rate": 2.948,
-  "exchange_rate_fetched_at": "2026-05-01T13:34:12.358611+00:00",
+  "exchange_rate_fetched_at": "2026-05-01T13:37:15.932192+00:00",
   "exchange_rate_updated_at": "2026-05-01T09:22:03.0208169Z",
   "exchange_rate_source": "Bank of Israel Public API",
-  "grand_total": 2513.33,
-  "grand_total_ils": 7470.99,
+  "grand_total": 2539.08,
+  "grand_total_ils": 7546.89,
   "current_month": "2026-05",
-  "current_month_total": 10.4,
-  "current_month_total_ils": 30.66,
+  "current_month_total": 36.15,
+  "current_month_total_ils": 106.56,
   "scanner_status": {
     "last_run": "2026-05-01T16:32:38",
     "next_run": "2026-05-02T08:00:00",
@@ -27,6 +27,16 @@
       "original_amount": 10.4,
       "amount_usd": 10.4,
       "amount_ils": 30.66,
+      "entry_source": null
+    },
+    {
+      "date": "2026-05-01",
+      "tool": "Google Workspace",
+      "description": "Google Workspace (₪75.90)",
+      "currency": "ILS",
+      "original_amount": 75.9,
+      "amount_usd": 25.746269,
+      "amount_ils": 75.9,
       "entry_source": null
     },
     {
@@ -1161,7 +1171,7 @@
     "2026-02": 340.6,
     "2026-03": 315.74,
     "2026-04": 540.1,
-    "2026-05": 10.4
+    "2026-05": 36.15
   },
   "monthly_ils": {
     "2025-07": 872.92,
@@ -1174,13 +1184,13 @@
     "2026-02": 1006.9,
     "2026-03": 939.66,
     "2026-04": 1595.63,
-    "2026-05": 30.66
+    "2026-05": 106.56
   },
   "by_tool": {
     "Meta (Ads)": 568.18,
     "Anthropic": 341.06,
     "OpenAI": 281.2,
-    "Google Workspace": 212.41,
+    "Google Workspace": 238.16,
     "Ideogram AI": 210.97,
     "Genspark": 194.22,
     "Lovable": 147.53,
@@ -1204,7 +1214,7 @@
     "Meta (Ads)": 1674.99,
     "Anthropic": 1005.43,
     "OpenAI": 882.31,
-    "Google Workspace": 626.19,
+    "Google Workspace": 702.09,
     "Ideogram AI": 621.94,
     "Genspark": 572.57,
     "Lovable": 434.92,
