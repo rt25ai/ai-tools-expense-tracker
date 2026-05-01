@@ -1,15 +1,15 @@
 {
   "generated": "2026-05-01",
-  "built_at": "2026-05-01T19:02:08.338353+00:00",
+  "built_at": "2026-05-01T19:03:03.234858+00:00",
   "usd_rate": 2.948,
-  "exchange_rate_fetched_at": "2026-05-01T19:02:08.338353+00:00",
+  "exchange_rate_fetched_at": "2026-05-01T19:03:03.234858+00:00",
   "exchange_rate_updated_at": "2026-05-01T09:22:03.0208169Z",
   "exchange_rate_source": "Bank of Israel Public API",
-  "grand_total": 2539.08,
-  "grand_total_ils": 7546.89,
+  "grand_total": 2541.87,
+  "grand_total_ils": 7555.12,
   "current_month": "2026-05",
-  "current_month_total": 36.15,
-  "current_month_total_ils": 106.56,
+  "current_month_total": 38.94,
+  "current_month_total_ils": 114.79,
   "scanner_status": {
     "last_run": "2026-05-01T22:02:07",
     "next_run": "2026-05-02T08:00:00",
@@ -27,6 +27,16 @@
       "original_amount": 10.4,
       "amount_usd": 10.4,
       "amount_ils": 30.66,
+      "entry_source": null
+    },
+    {
+      "date": "2026-05-01",
+      "tool": "Google Cloud",
+      "description": "Google Cloud Platform & APIs (₪8.23)",
+      "currency": "ILS",
+      "original_amount": 8.23,
+      "amount_usd": 2.791723,
+      "amount_ils": 8.23,
       "entry_source": null
     },
     {
@@ -1171,7 +1181,7 @@
     "2026-02": 340.6,
     "2026-03": 315.74,
     "2026-04": 540.1,
-    "2026-05": 36.15
+    "2026-05": 38.94
   },
   "monthly_ils": {
     "2025-07": 872.92,
@@ -1184,7 +1194,7 @@
     "2026-02": 1006.9,
     "2026-03": 939.66,
     "2026-04": 1595.63,
-    "2026-05": 106.56
+    "2026-05": 114.79
   },
   "by_tool": {
     "Meta (Ads)": 568.18,
@@ -1208,7 +1218,8 @@
     "IONOS": 21.31,
     "Replicate": 15.63,
     "Astria": 12.92,
-    "Hedra": 10.84
+    "Hedra": 10.84,
+    "Google Cloud": 2.79
   },
   "by_tool_ils": {
     "Meta (Ads)": 1674.99,
@@ -1232,6 +1243,7 @@
     "IONOS": 62.83,
     "Replicate": 46.08,
     "Astria": 38.1,
-    "Hedra": 31.95
+    "Hedra": 31.95,
+    "Google Cloud": 8.23
   }
 }
