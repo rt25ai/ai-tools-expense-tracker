@@ -523,15 +523,11 @@ def process_message(service, msg_id):
 # ── build_report.py insertion ─────────────────────────────────────────────────
 
 def already_imported(txn):
-    """True if the exact transaction line already exists in MANUAL_TRANSACTIONS."""
+    """True if the transaction already exists in MANUAL_TRANSACTIONS."""
     code = REPORT_PY.read_text(encoding="utf-8")
-    if txn["currency"] == "ILS":
-        exact = (f'("{txn["date"]}", "{txn["tool"]}", '
-                 f'"{txn["description"]}", {txn["original_amount"]:.2f}, "ILS")')
-    else:
-        exact = (f'("{txn["date"]}", "{txn["tool"]}", '
-                 f'"{txn["description"]}", {txn["amount_usd"]:.2f})')
-    return exact in code
+    # Match on date+tool+description; works for both old USD 4-tuple and new ILS 5-tuple.
+    key = f'("{txn["date"]}", "{txn["tool"]}", "{txn["description"]}"'
+    return key in code
 
 
 def insert_transaction(txn):
@@ -542,8 +538,12 @@ def insert_transaction(txn):
         new_ln = (f'    ("{txn["date"]}", "{txn["tool"]}", '
                   f'"{txn["description"]}", {txn["original_amount"]:.2f}, "ILS"),\n')
     else:
+        # Lock ILS at today's rate; never re-compute from future live rates.
+        rate = get_exchange_rate()
+        amount_ils = round(txn["amount_usd"] * rate, 2)
         new_ln = (f'    ("{txn["date"]}", "{txn["tool"]}", '
-                  f'"{txn["description"]}", {txn["amount_usd"]:.2f}),\n')
+                  f'"{txn["description"]}", {amount_ils:.2f}, "ILS"),  '
+                  f'# ${txn["amount_usd"]:.2f} @ {rate:.4f}\n')
 
     in_tx     = False
     insert_at = None

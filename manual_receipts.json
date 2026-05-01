@@ -11,7 +11,8 @@
     "entry_mode": "pdf-upload",
     "notes": null,
     "created_at": "2026-04-09T21:47:26",
-    "entry_source": "manual"
+    "entry_source": "manual",
+    "amount_ils": 28.06
   },
   {
     "id": "manual-2026-03-26-dzine-3f13684e0c",
@@ -25,7 +26,8 @@
     "entry_mode": "pdf-upload",
     "notes": null,
     "created_at": "2026-04-09T21:46:41",
-    "entry_source": "manual"
+    "entry_source": "manual",
+    "amount_ils": 62.37
   },
   {
     "id": "manual-2026-04-02-dzine-5dc2b07ce6",
@@ -39,7 +41,8 @@
     "entry_mode": "pdf-upload",
     "notes": "Imported after fixing Windows bridge command resolution.",
     "created_at": "2026-04-09T21:42:30",
-    "entry_source": "manual"
+    "entry_source": "manual",
+    "amount_ils": 56.49
   },
   {
     "id": "manual-2026-04-10-capcut-6412bc537d",
@@ -53,7 +56,8 @@
     "entry_mode": "pdf-upload",
     "notes": null,
     "created_at": "2026-04-11T10:35:18",
-    "entry_source": "manual"
+    "entry_source": "manual",
+    "amount_ils": 49.9
   },
   {
     "id": "manual-2026-04-18-openai-6f6e6672ab",
@@ -67,7 +71,8 @@
     "entry_mode": "pdf-upload",
     "notes": null,
     "created_at": "2026-04-21T11:29:29",
-    "entry_source": "manual"
+    "entry_source": "manual",
+    "amount_ils": 240.34
   },
   {
     "id": "manual-2026-04-27-higgsfield-4ecc70bf6a",
@@ -81,6 +86,7 @@
     "entry_mode": "pdf-upload",
     "notes": null,
     "created_at": "2026-04-28T12:25:26",
-    "entry_source": "manual"
+    "entry_source": "manual",
+    "amount_ils": 120.94
   }
 ]

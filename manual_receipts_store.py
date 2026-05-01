@@ -18,6 +18,11 @@ try:
 except ImportError:  # pragma: no cover - optional dependency in some local Python environments
     pdfplumber = None
 
+try:
+    from exchange_rate import fetch_historical_rate as _fetch_hist_rate
+except ImportError:
+    _fetch_hist_rate = None
+
 BASE_DIR = Path(__file__).resolve().parent
 MANUAL_RECEIPTS_PATH = BASE_DIR / "manual_receipts.json"
 MANUAL_INVOICES_DIR = BASE_DIR / "manual_invoices"
@@ -194,6 +199,11 @@ def load_existing_transaction_keys():
 
 
 def to_transaction_tuple(entry: dict):
+    amount_ils = entry.get("amount_ils")
+    if amount_ils is not None:
+        # Pre-locked ILS — use directly so build_report never touches live rates.
+        return (entry["date"], entry["tool"], entry["description"],
+                round(float(amount_ils), 2), "ILS", "manual")
     return (
         entry["date"],
         entry["tool"],
@@ -523,6 +533,16 @@ def normalize_manual_receipt(entry: dict):
         f"{date}|{tool}|{description}|{currency}|{original_amount:.2f}".encode("utf-8")
     ).hexdigest()[:10]
 
+    # Lock ILS at charge-date rate on first import; never re-computed from future live rates.
+    if currency == "ILS":
+        amount_ils = original_amount
+    elif entry.get("amount_ils") is not None:
+        amount_ils = round(float(entry["amount_ils"]), 2)
+    elif _fetch_hist_rate is not None:
+        amount_ils = round(original_amount * _fetch_hist_rate(date), 2)
+    else:
+        amount_ils = None
+
     return {
         "id": entry.get("id") or f"manual-{date}-{slugify(tool)}-{fingerprint}",
         "date": date,
@@ -530,6 +550,7 @@ def normalize_manual_receipt(entry: dict):
         "description": description,
         "currency": currency,
         "original_amount": original_amount,
+        "amount_ils": amount_ils,
         "attachment_path": attachment_path,
         "attachment_name": attachment_name,
         "entry_mode": entry_mode,

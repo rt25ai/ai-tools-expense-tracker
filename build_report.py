@@ -12,7 +12,7 @@ from openpyxl.chart import BarChart, Reference
 from openpyxl.worksheet.hyperlink import Hyperlink
 import datetime, os, re
 from pathlib import Path
-from exchange_rate import fetch_usd_to_ils_rate
+from exchange_rate import fetch_usd_to_ils_rate, fetch_historical_rate
 from manual_receipts_store import load_manual_receipts, receipt_identity, to_transaction_tuple
 
 OUTPUT_PATH = (
@@ -61,6 +61,11 @@ HISTORICAL_RATES = {
     "2026-03-16": 3.1433, "2026-03-19": 3.1112, "2026-03-24": 3.1177,
     "2026-03-25": 3.1249, "2026-03-26": 3.1184,
     "2026-04-01": 3.1433, "2026-04-02": 3.1385, "2026-04-03": 3.1329, "2026-04-05": 3.1414,
+    "2026-04-06": 3.1421, "2026-04-07": 3.1506, "2026-04-08": 3.1069, "2026-04-09": 3.0884,
+    "2026-04-10": 3.0674, "2026-04-13": 3.0342, "2026-04-14": 3.0454, "2026-04-15": 3.0095,
+    "2026-04-16": 2.9979, "2026-04-17": 2.9971, "2026-04-18": 2.9598, "2026-04-20": 2.9598,
+    "2026-04-21": 2.989,  "2026-04-22": 3.0049, "2026-04-23": 2.9995, "2026-04-24": 2.9864,
+    "2026-04-27": 2.9861, "2026-04-28": 2.9755, "2026-04-29": 2.956,  "2026-04-30": 2.9724,
 }
 
 
@@ -296,10 +301,9 @@ def normalize_transaction(txn):
         amount_usd = float(txn[3]) if len(txn) == 4 else round(original_amount / usd_rate, 6)
     else:
         amount_usd = float(original_amount)
-        # Use the locked historical rate for past charges; fall back to today's rate.
-        hist_rate = HISTORICAL_RATES.get(date)
-        effective_rate = hist_rate if hist_rate else usd_rate
-        amount_ils = round(amount_usd * effective_rate, 2)
+        # Use locked historical rate; fetch+cache from API on first miss so ILS never drifts.
+        hist_rate = HISTORICAL_RATES.get(date) or fetch_historical_rate(date)
+        amount_ils = round(amount_usd * hist_rate, 2)
 
     return {
         "date": date,
