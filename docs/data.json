@@ -1,17 +1,17 @@
 {
   "generated": "2026-05-01",
-  "built_at": "2026-05-01T18:52:50.403123+00:00",
-  "usd_rate": 2.948,
-  "exchange_rate_fetched_at": "2026-05-01T18:52:50.403123+00:00",
-  "exchange_rate_updated_at": "2026-05-01T09:22:03.0208169Z",
-  "exchange_rate_source": "Bank of Israel Public API",
-  "grand_total": 2539.08,
-  "grand_total_ils": 7485.19,
+  "built_at": "2026-05-01T18:57:29.122503+00:00",
+  "usd_rate": 3.65,
+  "exchange_rate_fetched_at": "2026-05-01T18:57:29.122503+00:00",
+  "exchange_rate_updated_at": null,
+  "exchange_rate_source": "Bank of Israel Public API (fallback)",
+  "grand_total": 2167.89,
+  "grand_total_ils": 7815.12,
   "current_month": "2026-05",
-  "current_month_total": 36.15,
-  "current_month_total_ils": 106.56,
+  "current_month_total": 31.19,
+  "current_month_total_ils": 113.86,
   "scanner_status": {
-    "last_run": "2026-05-01T21:52:08",
+    "last_run": "2026-05-01T21:57:17",
     "next_run": "2026-05-02T08:00:00",
     "result": "ok",
     "new_count": 0,
@@ -26,7 +26,7 @@
       "currency": "USD",
       "original_amount": 10.4,
       "amount_usd": 10.4,
-      "amount_ils": 30.66,
+      "amount_ils": 37.96,
       "entry_source": null
     },
     {
@@ -35,7 +35,7 @@
       "description": "Google Workspace (₪75.90)",
       "currency": "ILS",
       "original_amount": 75.9,
-      "amount_usd": 25.746269,
+      "amount_usd": 20.794521,
       "amount_ils": 75.9,
       "entry_source": null
     },
@@ -46,7 +46,7 @@
       "currency": "USD",
       "original_amount": 10.56,
       "amount_usd": 10.56,
-      "amount_ils": 31.13,
+      "amount_ils": 38.54,
       "entry_source": null
     },
     {
@@ -56,7 +56,7 @@
       "currency": "USD",
       "original_amount": 40.5,
       "amount_usd": 40.5,
-      "amount_ils": 119.39,
+      "amount_ils": 147.82,
       "entry_source": "manual"
     },
     {
@@ -64,9 +64,9 @@
       "tool": "Lovable",
       "description": "Lovable",
       "currency": "USD",
-      "original_amount": 5,
-      "amount_usd": 5,
-      "amount_ils": 14.74,
+      "original_amount": 5.0,
+      "amount_usd": 5.0,
+      "amount_ils": 18.25,
       "entry_source": null
     },
     {
@@ -74,9 +74,9 @@
       "tool": "Meta (Ads)",
       "description": "Facebook Ads",
       "currency": "USD",
-      "original_amount": 51,
-      "amount_usd": 51,
-      "amount_ils": 150.35,
+      "original_amount": 51.0,
+      "amount_usd": 51.0,
+      "amount_ils": 186.15,
       "entry_source": null
     },
     {
@@ -86,7 +86,7 @@
       "currency": "USD",
       "original_amount": 10.16,
       "amount_usd": 10.16,
-      "amount_ils": 29.95,
+      "amount_ils": 37.08,
       "entry_source": null
     },
     {
@@ -96,7 +96,7 @@
       "currency": "USD",
       "original_amount": 15.57,
       "amount_usd": 15.57,
-      "amount_ils": 45.9,
+      "amount_ils": 56.83,
       "entry_source": null
     },
     {
@@ -106,7 +106,7 @@
       "currency": "USD",
       "original_amount": 10.74,
       "amount_usd": 10.74,
-      "amount_ils": 31.66,
+      "amount_ils": 39.2,
       "entry_source": null
     },
     {
@@ -116,7 +116,7 @@
       "currency": "USD",
       "original_amount": 10.15,
       "amount_usd": 10.15,
-      "amount_ils": 29.92,
+      "amount_ils": 37.05,
       "entry_source": null
     },
     {
@@ -126,7 +126,7 @@
       "currency": "USD",
       "original_amount": 10.02,
       "amount_usd": 10.02,
-      "amount_ils": 29.54,
+      "amount_ils": 36.57,
       "entry_source": null
     },
     {
@@ -136,7 +136,7 @@
       "currency": "USD",
       "original_amount": 10.5,
       "amount_usd": 10.5,
-      "amount_ils": 30.95,
+      "amount_ils": 38.32,
       "entry_source": null
     },
     {
@@ -146,7 +146,7 @@
       "currency": "USD",
       "original_amount": 11.17,
       "amount_usd": 11.17,
-      "amount_ils": 32.93,
+      "amount_ils": 40.77,
       "entry_source": null
     },
     {
@@ -154,9 +154,9 @@
       "tool": "Supabase",
       "description": "Supabase",
       "currency": "USD",
-      "original_amount": 25,
-      "amount_usd": 25,
-      "amount_ils": 73.7,
+      "original_amount": 25.0,
+      "amount_usd": 25.0,
+      "amount_ils": 91.25,
       "entry_source": null
     },
     {
@@ -166,7 +166,7 @@
       "currency": "USD",
       "original_amount": 15.14,
       "amount_usd": 15.14,
-      "amount_ils": 44.63,
+      "amount_ils": 55.26,
       "entry_source": null
     },
     {
@@ -174,9 +174,9 @@
       "tool": "Anthropic",
       "description": "Prepaid extra usage, Individual plan",
       "currency": "USD",
-      "original_amount": 10,
-      "amount_usd": 10,
-      "amount_ils": 29.48,
+      "original_amount": 10.0,
+      "amount_usd": 10.0,
+      "amount_ils": 36.5,
       "entry_source": null
     },
     {
@@ -184,9 +184,9 @@
       "tool": "Anthropic",
       "description": "Prepaid extra usage, Individual plan",
       "currency": "USD",
-      "original_amount": 5,
-      "amount_usd": 5,
-      "amount_ils": 14.74,
+      "original_amount": 5.0,
+      "amount_usd": 5.0,
+      "amount_ils": 18.25,
       "entry_source": null
     },
     {
@@ -195,7 +195,7 @@
       "description": "Pro – Apr 2026 (₪49.90)",
       "currency": "ILS",
       "original_amount": 49.9,
-      "amount_usd": 16.92673,
+      "amount_usd": 13.671233,
       "amount_ils": 49.9,
       "entry_source": null
     },
@@ -206,7 +206,7 @@
       "currency": "USD",
       "original_amount": 81.2,
       "amount_usd": 81.2,
-      "amount_ils": 239.38,
+      "amount_ils": 296.38,
       "entry_source": "manual"
     },
     {
@@ -214,9 +214,9 @@
       "tool": "Anthropic",
       "description": "Prepaid extra usage, Individual plan",
       "currency": "USD",
-      "original_amount": 10,
-      "amount_usd": 10,
-      "amount_ils": 29.48,
+      "original_amount": 10.0,
+      "amount_usd": 10.0,
+      "amount_ils": 36.5,
       "entry_source": null
     },
     {
@@ -224,9 +224,9 @@
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
       "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 58.96,
+      "original_amount": 20.0,
+      "amount_usd": 20.0,
+      "amount_ils": 73.0,
       "entry_source": "auto"
     },
     {
@@ -234,9 +234,9 @@
       "tool": "Anthropic",
       "description": "Claude Pro",
       "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 58.96,
+      "original_amount": 20.0,
+      "amount_usd": 20.0,
+      "amount_ils": 73.0,
       "entry_source": null
     },
     {
@@ -245,7 +245,7 @@
       "description": "capcut_pro_discount1",
       "currency": "ILS",
       "original_amount": 49.9,
-      "amount_usd": 16.92673,
+      "amount_usd": 13.671233,
       "amount_ils": 49.9,
       "entry_source": "manual"
     },
@@ -255,7 +255,7 @@
       "description": "Instant Domain",
       "currency": "ILS",
       "original_amount": 62.83,
-      "amount_usd": 21.312754,
+      "amount_usd": 17.213699,
       "amount_ils": 62.83,
       "entry_source": null
     },
@@ -265,7 +265,7 @@
       "description": "Facebook Ads",
       "currency": "ILS",
       "original_amount": 7.05,
-      "amount_usd": 2.391452,
+      "amount_usd": 1.931507,
       "amount_ils": 7.05,
       "entry_source": null
     },
@@ -274,9 +274,9 @@
       "tool": "Dzine",
       "description": "Video Top-Up",
       "currency": "USD",
-      "original_amount": 18,
-      "amount_usd": 18,
-      "amount_ils": 53.06,
+      "original_amount": 18.0,
+      "amount_usd": 18.0,
+      "amount_ils": 56.49,
       "entry_source": "manual"
     },
     {
@@ -285,7 +285,7 @@
       "description": "Prepaid extra usage, Individual plan",
       "currency": "ILS",
       "original_amount": 31.44,
-      "amount_usd": 10.664858,
+      "amount_usd": 8.613699,
       "amount_ils": 31.44,
       "entry_source": null
     },
@@ -295,7 +295,7 @@
       "description": "Business Plus – Mar 2026 (₪75.90)",
       "currency": "ILS",
       "original_amount": 75.9,
-      "amount_usd": 25.746269,
+      "amount_usd": 20.794521,
       "amount_ils": 75.9,
       "entry_source": null
     },
@@ -305,7 +305,7 @@
       "description": "Facebook Ads",
       "currency": "ILS",
       "original_amount": 166.33,
-      "amount_usd": 56.421303,
+      "amount_usd": 45.569863,
       "amount_ils": 166.33,
       "entry_source": null
     },
@@ -314,9 +314,9 @@
       "tool": "Dzine",
       "description": "Video Top-Up",
       "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 58.96,
+      "original_amount": 20.0,
+      "amount_usd": 20.0,
+      "amount_ils": 62.37,
       "entry_source": "manual"
     },
     {
@@ -325,7 +325,7 @@
       "description": "Lite plan",
       "currency": "ILS",
       "original_amount": 15.62,
-      "amount_usd": 5.298507,
+      "amount_usd": 4.279452,
       "amount_ils": 15.62,
       "entry_source": null
     },
@@ -334,9 +334,9 @@
       "tool": "Dzine",
       "description": "Video Top-Up",
       "currency": "USD",
-      "original_amount": 9,
-      "amount_usd": 9,
-      "amount_ils": 26.53,
+      "original_amount": 9.0,
+      "amount_usd": 9.0,
+      "amount_ils": 28.06,
       "entry_source": "manual"
     },
     {
@@ -345,7 +345,7 @@
       "description": "Credit purchase",
       "currency": "ILS",
       "original_amount": 31.11,
-      "amount_usd": 10.552917,
+      "amount_usd": 8.523288,
       "amount_ils": 31.11,
       "entry_source": null
     },
@@ -355,7 +355,7 @@
       "description": "Creator (first month 50% off)",
       "currency": "ILS",
       "original_amount": 34.22,
-      "amount_usd": 11.60787,
+      "amount_usd": 9.375342,
       "amount_ils": 34.22,
       "entry_source": null
     },
@@ -365,7 +365,7 @@
       "description": "Pro – Mar 2026 (₪49.90)",
       "currency": "ILS",
       "original_amount": 49.9,
-      "amount_usd": 16.92673,
+      "amount_usd": 13.671233,
       "amount_ils": 49.9,
       "entry_source": null
     },
@@ -374,9 +374,9 @@
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
       "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 58.96,
+      "original_amount": 20.0,
+      "amount_usd": 20.0,
+      "amount_ils": 62.87,
       "entry_source": "auto"
     },
     {
@@ -385,7 +385,7 @@
       "description": "Claude Pro",
       "currency": "ILS",
       "original_amount": 62.87,
-      "amount_usd": 21.326323,
+      "amount_usd": 17.224658,
       "amount_ils": 62.87,
       "entry_source": null
     },
@@ -395,7 +395,7 @@
       "description": "Facebook Ads",
       "currency": "ILS",
       "original_amount": 159.67,
-      "amount_usd": 54.162144,
+      "amount_usd": 43.745205,
       "amount_ils": 159.67,
       "entry_source": null
     },
@@ -405,7 +405,7 @@
       "description": "Pro – Mar 2026 (₪49.90)",
       "currency": "ILS",
       "original_amount": 49.9,
-      "amount_usd": 16.92673,
+      "amount_usd": 13.671233,
       "amount_ils": 49.9,
       "entry_source": null
     },
@@ -415,7 +415,7 @@
       "description": "Facebook Ads",
       "currency": "ILS",
       "original_amount": 123.43,
-      "amount_usd": 41.869064,
+      "amount_usd": 33.816438,
       "amount_ils": 123.43,
       "entry_source": null
     },
@@ -425,7 +425,7 @@
       "description": "Business Plus – Feb 2026 (₪75.90)",
       "currency": "ILS",
       "original_amount": 75.9,
-      "amount_usd": 25.746269,
+      "amount_usd": 20.794521,
       "amount_ils": 75.9,
       "entry_source": null
     },
@@ -435,7 +435,7 @@
       "description": "Cloud & AI Balance Top-up",
       "currency": "ILS",
       "original_amount": 31.2,
-      "amount_usd": 10.583446,
+      "amount_usd": 8.547945,
       "amount_ils": 31.2,
       "entry_source": null
     },
@@ -445,7 +445,7 @@
       "description": "Google Workspace (₪75.9)",
       "currency": "ILS",
       "original_amount": 75.9,
-      "amount_usd": 25.746269,
+      "amount_usd": 20.794521,
       "amount_ils": 75.9,
       "entry_source": null
     },
@@ -455,7 +455,7 @@
       "description": "Cloud & AI Balance Top-up",
       "currency": "ILS",
       "original_amount": 31.28,
-      "amount_usd": 10.610583,
+      "amount_usd": 8.569863,
       "amount_ils": 31.28,
       "entry_source": null
     },
@@ -465,7 +465,7 @@
       "description": "Pro monthly (50% off)",
       "currency": "ILS",
       "original_amount": 45.36,
-      "amount_usd": 15.386703,
+      "amount_usd": 12.427397,
       "amount_ils": 45.36,
       "entry_source": null
     },
@@ -475,7 +475,7 @@
       "description": "Starter monthly",
       "currency": "ILS",
       "original_amount": 15.68,
-      "amount_usd": 5.31886,
+      "amount_usd": 4.29589,
       "amount_ils": 15.68,
       "entry_source": null
     },
@@ -485,7 +485,7 @@
       "description": "Cloud & AI Balance Top-up",
       "currency": "ILS",
       "original_amount": 31.35,
-      "amount_usd": 10.634328,
+      "amount_usd": 8.589041,
       "amount_ils": 31.35,
       "entry_source": null
     },
@@ -495,7 +495,7 @@
       "description": "Pro2 monthly",
       "currency": "ILS",
       "original_amount": 154.96,
-      "amount_usd": 52.56445,
+      "amount_usd": 42.454795,
       "amount_ils": 154.96,
       "entry_source": null
     },
@@ -505,7 +505,7 @@
       "description": "Facebook Ads",
       "currency": "ILS",
       "original_amount": 158.06,
-      "amount_usd": 53.616011,
+      "amount_usd": 43.30411,
       "amount_ils": 158.06,
       "entry_source": null
     },
@@ -515,7 +515,7 @@
       "description": "On-Demand credits 500",
       "currency": "ILS",
       "original_amount": 62.56,
-      "amount_usd": 21.221167,
+      "amount_usd": 17.139726,
       "amount_ils": 62.56,
       "entry_source": null
     },
@@ -525,7 +525,7 @@
       "description": "Credit purchase",
       "currency": "ILS",
       "original_amount": 15.44,
-      "amount_usd": 5.237449,
+      "amount_usd": 4.230137,
       "amount_ils": 15.44,
       "entry_source": null
     },
@@ -534,9 +534,9 @@
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
       "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 58.96,
+      "original_amount": 20.0,
+      "amount_usd": 20.0,
+      "amount_ils": 61.77,
       "entry_source": "auto"
     },
     {
@@ -545,7 +545,7 @@
       "description": "Claude Pro",
       "currency": "ILS",
       "original_amount": 61.73,
-      "amount_usd": 20.93962,
+      "amount_usd": 16.912329,
       "amount_ils": 61.73,
       "entry_source": null
     },
@@ -555,7 +555,7 @@
       "description": "Facebook Ads",
       "currency": "ILS",
       "original_amount": 144.62,
-      "amount_usd": 49.056988,
+      "amount_usd": 39.621918,
       "amount_ils": 144.62,
       "entry_source": null
     },
@@ -565,7 +565,7 @@
       "description": "Pro – Feb 2026 (₪49.90)",
       "currency": "ILS",
       "original_amount": 49.9,
-      "amount_usd": 16.92673,
+      "amount_usd": 13.671233,
       "amount_ils": 49.9,
       "entry_source": null
     },
@@ -575,7 +575,7 @@
       "description": "Facebook Ads",
       "currency": "ILS",
       "original_amount": 97.37,
-      "amount_usd": 33.029172,
+      "amount_usd": 26.676712,
       "amount_ils": 97.37,
       "entry_source": null
     },
@@ -585,7 +585,7 @@
       "description": "Business Plus – Jan 2026 (₪75.90)",
       "currency": "ILS",
       "original_amount": 75.9,
-      "amount_usd": 25.746269,
+      "amount_usd": 20.794521,
       "amount_ils": 75.9,
       "entry_source": null
     },
@@ -595,7 +595,7 @@
       "description": "Upgrade Pro1 -> Pro2 (prorated)",
       "currency": "ILS",
       "original_amount": 77.56,
-      "amount_usd": 26.309362,
+      "amount_usd": 21.249315,
       "amount_ils": 77.56,
       "entry_source": null
     },
@@ -605,7 +605,7 @@
       "description": "Starter monthly",
       "currency": "ILS",
       "original_amount": 15.43,
-      "amount_usd": 5.234057,
+      "amount_usd": 4.227397,
       "amount_ils": 15.43,
       "entry_source": null
     },
@@ -615,7 +615,7 @@
       "description": "Pro monthly (50% off)",
       "currency": "ILS",
       "original_amount": 44.74,
-      "amount_usd": 15.176391,
+      "amount_usd": 12.257534,
       "amount_ils": 44.74,
       "entry_source": null
     },
@@ -624,9 +624,9 @@
       "tool": "Meta (Ads)",
       "description": "Facebook Ads",
       "currency": "ILS",
-      "original_amount": 134,
-      "amount_usd": 45.454545,
-      "amount_ils": 134,
+      "original_amount": 134.0,
+      "amount_usd": 36.712329,
+      "amount_ils": 134.0,
       "entry_source": null
     },
     {
@@ -635,7 +635,7 @@
       "description": "Pro 1 monthly",
       "currency": "ILS",
       "original_amount": 78.21,
-      "amount_usd": 26.529851,
+      "amount_usd": 21.427397,
       "amount_ils": 78.21,
       "entry_source": null
     },
@@ -645,7 +645,7 @@
       "description": "Facebook Ads",
       "currency": "ILS",
       "original_amount": 122.8,
-      "amount_usd": 41.65536,
+      "amount_usd": 33.643836,
       "amount_ils": 122.8,
       "entry_source": null
     },
@@ -654,9 +654,9 @@
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
       "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 58.96,
+      "original_amount": 20.0,
+      "amount_usd": 20.0,
+      "amount_ils": 62.81,
       "entry_source": "auto"
     },
     {
@@ -665,7 +665,7 @@
       "description": "Pro – Jan 2026 (₪49.90)",
       "currency": "ILS",
       "original_amount": 49.9,
-      "amount_usd": 16.92673,
+      "amount_usd": 13.671233,
       "amount_ils": 49.9,
       "entry_source": null
     },
@@ -675,7 +675,7 @@
       "description": "Credits Pack",
       "currency": "ILS",
       "original_amount": 63.33,
-      "amount_usd": 21.482361,
+      "amount_usd": 17.350685,
       "amount_ils": 63.33,
       "entry_source": null
     },
@@ -685,7 +685,7 @@
       "description": "Credits Pack",
       "currency": "ILS",
       "original_amount": 63.51,
-      "amount_usd": 21.543419,
+      "amount_usd": 17.4,
       "amount_ils": 63.51,
       "entry_source": null
     },
@@ -695,7 +695,7 @@
       "description": "Plus Annual (happynewyear26 promo)",
       "currency": "ILS",
       "original_amount": 445.73,
-      "amount_usd": 151.197422,
+      "amount_usd": 122.117808,
       "amount_ils": 445.73,
       "entry_source": null
     },
@@ -705,7 +705,7 @@
       "description": "Pro monthly",
       "currency": "ILS",
       "original_amount": 47.78,
-      "amount_usd": 16.207598,
+      "amount_usd": 13.090411,
       "amount_ils": 47.78,
       "entry_source": null
     },
@@ -715,7 +715,7 @@
       "description": "Facebook Ads",
       "currency": "ILS",
       "original_amount": 61.9,
-      "amount_usd": 20.997286,
+      "amount_usd": 16.958904,
       "amount_ils": 61.9,
       "entry_source": null
     },
@@ -725,7 +725,7 @@
       "description": "Business Plus – Dec 2025 (₪75.90)",
       "currency": "ILS",
       "original_amount": 75.9,
-      "amount_usd": 25.746269,
+      "amount_usd": 20.794521,
       "amount_ils": 75.9,
       "entry_source": null
     },
@@ -735,7 +735,7 @@
       "description": "Starter monthly",
       "currency": "ILS",
       "original_amount": 15.93,
-      "amount_usd": 5.403664,
+      "amount_usd": 4.364384,
       "amount_ils": 15.93,
       "entry_source": null
     },
@@ -745,7 +745,7 @@
       "description": "Facebook Ads",
       "currency": "ILS",
       "original_amount": 114.81,
-      "amount_usd": 38.945047,
+      "amount_usd": 31.454795,
       "amount_ils": 114.81,
       "entry_source": null
     },
@@ -755,7 +755,7 @@
       "description": "Facebook Ads",
       "currency": "ILS",
       "original_amount": 106.03,
-      "amount_usd": 35.966757,
+      "amount_usd": 29.049315,
       "amount_ils": 106.03,
       "entry_source": null
     },
@@ -764,9 +764,9 @@
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
       "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 58.96,
+      "original_amount": 20.0,
+      "amount_usd": 20.0,
+      "amount_ils": 64.26,
       "entry_source": "auto"
     },
     {
@@ -775,7 +775,7 @@
       "description": "Facebook Ads",
       "currency": "ILS",
       "original_amount": 96.96,
-      "amount_usd": 32.890095,
+      "amount_usd": 26.564384,
       "amount_ils": 96.96,
       "entry_source": null
     },
@@ -785,7 +785,7 @@
       "description": "Pro monthly",
       "currency": "ILS",
       "original_amount": 48.78,
-      "amount_usd": 16.546811,
+      "amount_usd": 13.364384,
       "amount_ils": 48.78,
       "entry_source": null
     },
@@ -795,7 +795,7 @@
       "description": "Facebook Ads",
       "currency": "ILS",
       "original_amount": 31.61,
-      "amount_usd": 10.722524,
+      "amount_usd": 8.660274,
       "amount_ils": 31.61,
       "entry_source": null
     },
@@ -805,7 +805,7 @@
       "description": "Business Plus – Nov 2025 (₪75.90)",
       "currency": "ILS",
       "original_amount": 75.9,
-      "amount_usd": 25.746269,
+      "amount_usd": 20.794521,
       "amount_ils": 75.9,
       "entry_source": null
     },
@@ -815,7 +815,7 @@
       "description": "Starter monthly",
       "currency": "ILS",
       "original_amount": 16.31,
-      "amount_usd": 5.532564,
+      "amount_usd": 4.468493,
       "amount_ils": 16.31,
       "entry_source": null
     },
@@ -825,7 +825,7 @@
       "description": "Claude Pro",
       "currency": "ILS",
       "original_amount": 65.52,
-      "amount_usd": 22.225237,
+      "amount_usd": 17.950685,
       "amount_ils": 65.52,
       "entry_source": null
     },
@@ -834,9 +834,9 @@
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
       "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 58.96,
+      "original_amount": 20.0,
+      "amount_usd": 20.0,
+      "amount_ils": 64.68,
       "entry_source": "auto"
     },
     {
@@ -845,7 +845,7 @@
       "description": "Extra Small Credit Pack",
       "currency": "ILS",
       "original_amount": 31.95,
-      "amount_usd": 10.837856,
+      "amount_usd": 8.753425,
       "amount_ils": 31.95,
       "entry_source": null
     },
@@ -855,7 +855,7 @@
       "description": "Credits x10 + 18% VAT",
       "currency": "ILS",
       "original_amount": 38.1,
-      "amount_usd": 12.924016,
+      "amount_usd": 10.438356,
       "amount_ils": 38.1,
       "entry_source": null
     },
@@ -865,7 +865,7 @@
       "description": "Standard monthly",
       "currency": "ILS",
       "original_amount": 48.44,
-      "amount_usd": 16.431479,
+      "amount_usd": 13.271233,
       "amount_ils": 48.44,
       "entry_source": null
     },
@@ -875,7 +875,7 @@
       "description": "Pro 1k credits",
       "currency": "ILS",
       "original_amount": 39.12,
-      "amount_usd": 13.270014,
+      "amount_usd": 10.717808,
       "amount_ils": 39.12,
       "entry_source": null
     },
@@ -885,7 +885,7 @@
       "description": "Starter monthly",
       "currency": "ILS",
       "original_amount": 16.27,
-      "amount_usd": 5.518996,
+      "amount_usd": 4.457534,
       "amount_ils": 16.27,
       "entry_source": null
     },
@@ -895,7 +895,7 @@
       "description": "Claude Pro",
       "currency": "ILS",
       "original_amount": 65.8,
-      "amount_usd": 22.320217,
+      "amount_usd": 18.027397,
       "amount_ils": 65.8,
       "entry_source": null
     },
@@ -904,9 +904,9 @@
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
       "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 58.96,
+      "original_amount": 20.0,
+      "amount_usd": 20.0,
+      "amount_ils": 65.72,
       "entry_source": "auto"
     },
     {
@@ -915,7 +915,7 @@
       "description": "Business Plus – Sep 2025 (₪56.93)",
       "currency": "ILS",
       "original_amount": 56.93,
-      "amount_usd": 19.311398,
+      "amount_usd": 15.59726,
       "amount_ils": 56.93,
       "entry_source": null
     },
@@ -925,7 +925,7 @@
       "description": "Starter monthly",
       "currency": "ILS",
       "original_amount": 16.51,
-      "amount_usd": 5.600407,
+      "amount_usd": 4.523288,
       "amount_ils": 16.51,
       "entry_source": null
     },
@@ -935,7 +935,7 @@
       "description": "Claude Pro",
       "currency": "ILS",
       "original_amount": 66.86,
-      "amount_usd": 22.679783,
+      "amount_usd": 18.317808,
       "amount_ils": 66.86,
       "entry_source": null
     },
@@ -944,9 +944,9 @@
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
       "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 58.96,
+      "original_amount": 20.0,
+      "amount_usd": 20.0,
+      "amount_ils": 67.01,
       "entry_source": "auto"
     },
     {
@@ -955,7 +955,7 @@
       "description": "Core plan 10k ops/month",
       "currency": "ILS",
       "original_amount": 35.41,
-      "amount_usd": 12.011533,
+      "amount_usd": 9.70137,
       "amount_ils": 35.41,
       "entry_source": null
     },
@@ -965,7 +965,7 @@
       "description": "Usage - August",
       "currency": "ILS",
       "original_amount": 9.34,
-      "amount_usd": 3.16825,
+      "amount_usd": 2.558904,
       "amount_ils": 9.34,
       "entry_source": null
     },
@@ -975,7 +975,7 @@
       "description": "Business Plus – Aug 2025 (₪56.93)",
       "currency": "ILS",
       "original_amount": 56.93,
-      "amount_usd": 19.311398,
+      "amount_usd": 15.59726,
       "amount_ils": 56.93,
       "entry_source": null
     },
@@ -985,7 +985,7 @@
       "description": "Starter monthly",
       "currency": "ILS",
       "original_amount": 16.71,
-      "amount_usd": 5.66825,
+      "amount_usd": 4.578082,
       "amount_ils": 16.71,
       "entry_source": null
     },
@@ -995,7 +995,7 @@
       "description": "Standard (25% off)",
       "currency": "ILS",
       "original_amount": 37.6,
-      "amount_usd": 12.75441,
+      "amount_usd": 10.30137,
       "amount_ils": 37.6,
       "entry_source": null
     },
@@ -1004,9 +1004,9 @@
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
       "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 58.96,
+      "original_amount": 20.0,
+      "amount_usd": 20.0,
+      "amount_ils": 67.54,
       "entry_source": "auto"
     },
     {
@@ -1015,7 +1015,7 @@
       "description": "Claude Pro",
       "currency": "ILS",
       "original_amount": 68.43,
-      "amount_usd": 23.212347,
+      "amount_usd": 18.747945,
       "amount_ils": 68.43,
       "entry_source": null
     },
@@ -1025,7 +1025,7 @@
       "description": "Core plan 10k ops/month",
       "currency": "ILS",
       "original_amount": 36.36,
-      "amount_usd": 12.333786,
+      "amount_usd": 9.961644,
       "amount_ils": 36.36,
       "entry_source": null
     },
@@ -1035,7 +1035,7 @@
       "description": "Basic monthly",
       "currency": "ILS",
       "original_amount": 65.24,
-      "amount_usd": 22.130258,
+      "amount_usd": 17.873973,
       "amount_ils": 65.24,
       "entry_source": null
     },
@@ -1045,7 +1045,7 @@
       "description": "Usage - July",
       "currency": "ILS",
       "original_amount": 3.08,
-      "amount_usd": 1.044776,
+      "amount_usd": 0.843836,
       "amount_ils": 3.08,
       "entry_source": null
     },
@@ -1055,7 +1055,7 @@
       "description": "Basic monthly",
       "currency": "ILS",
       "original_amount": 40.92,
-      "amount_usd": 13.880597,
+      "amount_usd": 11.210959,
       "amount_ils": 40.92,
       "entry_source": null
     },
@@ -1065,7 +1065,7 @@
       "description": "Credits 1,500",
       "currency": "ILS",
       "original_amount": 51.19,
-      "amount_usd": 17.364315,
+      "amount_usd": 14.024658,
       "amount_ils": 51.19,
       "entry_source": null
     },
@@ -1075,7 +1075,7 @@
       "description": "Business Plus – Jul 2025 (₪56.93)",
       "currency": "ILS",
       "original_amount": 56.93,
-      "amount_usd": 19.311398,
+      "amount_usd": 15.59726,
       "amount_ils": 56.93,
       "entry_source": null
     },
@@ -1085,7 +1085,7 @@
       "description": "Upgrade -> Plus Annual",
       "currency": "ILS",
       "original_amount": 380.86,
-      "amount_usd": 129.192673,
+      "amount_usd": 104.345205,
       "amount_ils": 380.86,
       "entry_source": null
     },
@@ -1095,7 +1095,7 @@
       "description": "Early card charge",
       "currency": "ILS",
       "original_amount": 33.66,
-      "amount_usd": 11.41791,
+      "amount_usd": 9.221918,
       "amount_ils": 33.66,
       "entry_source": null
     },
@@ -1105,7 +1105,7 @@
       "description": "Standard (10% affiliate off)",
       "currency": "ILS",
       "original_amount": 45.33,
-      "amount_usd": 15.376526,
+      "amount_usd": 12.419178,
       "amount_ils": 45.33,
       "entry_source": null
     },
@@ -1114,9 +1114,9 @@
       "tool": "OpenAI",
       "description": "ChatGPT Plus",
       "currency": "USD",
-      "original_amount": 20,
-      "amount_usd": 20,
-      "amount_ils": 58.96,
+      "original_amount": 20.0,
+      "amount_usd": 20.0,
+      "amount_ils": 67.31,
       "entry_source": "auto"
     },
     {
@@ -1125,7 +1125,7 @@
       "description": "Claude Pro",
       "currency": "ILS",
       "original_amount": 66.3,
-      "amount_usd": 22.489824,
+      "amount_usd": 18.164384,
       "amount_ils": 66.3,
       "entry_source": null
     },
@@ -1135,7 +1135,7 @@
       "description": "Core plan 10k ops/month",
       "currency": "ILS",
       "original_amount": 35.04,
-      "amount_usd": 11.886024,
+      "amount_usd": 9.6,
       "amount_ils": 35.04,
       "entry_source": null
     },
@@ -1145,7 +1145,7 @@
       "description": "Ideogram Basic – annual",
       "currency": "ILS",
       "original_amount": 241.08,
-      "amount_usd": 81.777476,
+      "amount_usd": 66.049315,
       "amount_ils": 241.08,
       "entry_source": null
     },
@@ -1155,79 +1155,79 @@
       "description": "Basic – first month promo",
       "currency": "ILS",
       "original_amount": 3.34,
-      "amount_usd": 1.132972,
+      "amount_usd": 0.915068,
       "amount_ils": 3.34,
       "entry_source": null
     }
   ],
   "monthly": {
-    "2025-07": 293.27,
-    "2025-08": 147.7,
-    "2025-09": 82.77,
-    "2025-10": 67.15,
-    "2025-11": 101.22,
-    "2025-12": 186.22,
-    "2026-01": 428.15,
-    "2026-02": 340.6,
-    "2026-03": 315.74,
-    "2026-04": 540.1,
-    "2026-05": 36.15
+    "2025-07": 240.72,
+    "2025-08": 123.14,
+    "2025-09": 70.7,
+    "2025-10": 58.08,
+    "2025-11": 85.6,
+    "2025-12": 154.25,
+    "2026-01": 349.65,
+    "2026-02": 278.94,
+    "2026-03": 264.44,
+    "2026-04": 511.18,
+    "2026-05": 31.19
   },
   "monthly_ils": {
-    "2026-05": 106.56,
-    "2026-04": 1592.2,
-    "2026-03": 930.81,
-    "2026-02": 1004.09,
-    "2026-01": 1262.19,
-    "2025-12": 548.98,
-    "2025-11": 298.4,
-    "2025-10": 197.96,
-    "2025-09": 244.01,
-    "2025-08": 435.42,
-    "2025-07": 864.57
+    "2025-07": 872.92,
+    "2025-08": 444.0,
+    "2025-09": 252.06,
+    "2025-10": 204.72,
+    "2025-11": 304.12,
+    "2025-12": 554.28,
+    "2026-01": 1266.04,
+    "2026-02": 1006.9,
+    "2026-03": 939.66,
+    "2026-04": 1856.56,
+    "2026-05": 113.86
   },
   "by_tool": {
-    "Meta (Ads)": 568.18,
-    "Anthropic": 341.06,
+    "Meta (Ads)": 468.71,
+    "Anthropic": 306.12,
     "OpenAI": 281.2,
-    "Google Workspace": 238.16,
-    "Ideogram AI": 210.97,
-    "Genspark": 194.22,
-    "Lovable": 147.53,
-    "CapCut": 101.56,
-    "Runway ML": 61.93,
-    "Higgsfield": 61.72,
-    "Eleven Labs": 49.88,
-    "Dzine": 47,
-    "Make": 36.23,
-    "Manychat": 32.75,
-    "Timeless": 30.56,
-    "Recraft": 28.28,
-    "Supabase": 25,
-    "Manus AI": 22.13,
-    "IONOS": 21.31,
-    "Replicate": 15.63,
-    "Astria": 12.92,
-    "Hedra": 10.84
+    "Google Workspace": 192.35,
+    "Ideogram AI": 170.39,
+    "Genspark": 156.87,
+    "Lovable": 120.12,
+    "CapCut": 82.03,
+    "Higgsfield": 57.64,
+    "Runway ML": 50.02,
+    "Dzine": 47.0,
+    "Eleven Labs": 40.29,
+    "Make": 29.26,
+    "Manychat": 26.45,
+    "Supabase": 25.0,
+    "Timeless": 24.68,
+    "Recraft": 22.84,
+    "Manus AI": 17.87,
+    "IONOS": 17.21,
+    "Replicate": 12.62,
+    "Astria": 10.44,
+    "Hedra": 8.75
   },
   "by_tool_ils": {
-    "Meta (Ads)": 1674.99,
-    "Anthropic": 1005.43,
-    "OpenAI": 828.98,
+    "Meta (Ads)": 1710.79,
+    "Anthropic": 1117.33,
+    "OpenAI": 953.35,
     "Google Workspace": 702.09,
     "Ideogram AI": 621.94,
     "Genspark": 572.57,
-    "Lovable": 434.92,
+    "Lovable": 438.43,
     "CapCut": 299.4,
+    "Higgsfield": 210.38,
     "Runway ML": 182.56,
-    "Higgsfield": 181.95,
     "Eleven Labs": 147.06,
-    "Dzine": 138.55,
+    "Dzine": 146.92,
     "Make": 106.81,
     "Manychat": 96.56,
+    "Supabase": 91.25,
     "Timeless": 90.1,
     "Recraft": 83.38,
-    "Supabase": 73.7,
     "Manus AI": 65.24,
     "IONOS": 62.83,
     "Replicate": 46.08,
