@@ -1,15 +1,15 @@
 {
   "generated": "2026-05-02",
-  "built_at": "2026-05-02T14:27:10.771131+00:00",
+  "built_at": "2026-05-02T14:32:23.867829+00:00",
   "usd_rate": 2.948,
-  "exchange_rate_fetched_at": "2026-05-02T14:27:10.771131+00:00",
+  "exchange_rate_fetched_at": "2026-05-02T14:32:23.867829+00:00",
   "exchange_rate_updated_at": "2026-05-01T09:22:03.0208169Z",
   "exchange_rate_source": "Bank of Israel Public API",
-  "grand_total": 2545.56,
-  "grand_total_ils": 7567.95,
+  "grand_total": 2550.56,
+  "grand_total_ils": 7582.69,
   "current_month": "2026-05",
-  "current_month_total": 38.94,
-  "current_month_total_ils": 114.84,
+  "current_month_total": 43.94,
+  "current_month_total_ils": 129.58,
   "scanner_status": {
     "last_run": "2026-05-02T17:27:08",
     "next_run": "2026-05-03T08:00:00",
@@ -19,6 +19,16 @@
     "error": null
   },
   "transactions": [
+    {
+      "date": "2026-05-02",
+      "tool": "Anthropic",
+      "description": "Prepaid extra usage, Individual plan",
+      "currency": "ILS",
+      "original_amount": 14.74,
+      "amount_usd": 5.0,
+      "amount_ils": 14.74,
+      "entry_source": null
+    },
     {
       "date": "2026-05-01",
       "tool": "Anthropic",
@@ -1181,7 +1191,7 @@
     "2026-02": 340.6,
     "2026-03": 317.42,
     "2026-04": 542.11,
-    "2026-05": 38.94
+    "2026-05": 43.94
   },
   "monthly_ils": {
     "2025-07": 872.92,
@@ -1194,11 +1204,11 @@
     "2026-02": 1006.9,
     "2026-03": 939.66,
     "2026-04": 1608.41,
-    "2026-05": 114.84
+    "2026-05": 129.58
   },
   "by_tool": {
     "Meta (Ads)": 568.18,
-    "Anthropic": 341.06,
+    "Anthropic": 346.06,
     "OpenAI": 281.53,
     "Google Workspace": 238.16,
     "Ideogram AI": 210.97,
@@ -1223,7 +1233,7 @@
   },
   "by_tool_ils": {
     "Meta (Ads)": 1676.93,
-    "Anthropic": 1011.6,
+    "Anthropic": 1026.34,
     "OpenAI": 884.27,
     "Google Workspace": 702.09,
     "Ideogram AI": 621.94,
