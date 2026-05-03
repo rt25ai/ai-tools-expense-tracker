@@ -2,7 +2,11 @@ name: Gmail Invoice Scanner
 
 on:
   schedule:
-    - cron: '0 3 * * *'  # 03:00 UTC = 05:00 Israel (winter) / 06:00 (summer) — before local 08:00 run
+    # Every 30 minutes — keeps the dashboard fresh even when the local
+    # Windows Task Scheduler is offline (laptop sleeping, traveling, etc.).
+    # GitHub may delay scheduled runs under load, but 48 attempts/day
+    # gives a much better recovery window than the previous once-daily run.
+    - cron: '*/30 * * * *'
   workflow_dispatch:      # Allow manual trigger from GitHub UI
 
 permissions:
