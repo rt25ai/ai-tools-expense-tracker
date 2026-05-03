@@ -225,17 +225,17 @@ def get_pdf_parts(payload):
 
 
 def is_meta_final_receipt(headers, body_text):
-    """Identify only final Meta charges, not billing-threshold/intermediate notices."""
+    """Identify only final Meta charges, not billing-threshold/intermediate notices.
+
+    Requires the Meta identity to appear plus at least one strong "final receipt"
+    signal. The previous all()-of-five check was too strict — PayPal periodically
+    tweaks the wording (e.g. "you sent" vs "you successfully sent a payment") and
+    a single missing phrase silently dropped every Meta receipt.
+    """
     subject = headers.get("subject", "").lower()
     body    = body_text.lower()
+    haystack = subject + "\n" + body
 
-    final_markers = [
-        "receipt for your payment to meta platforms, inc.",
-        "you successfully sent a payment",
-        "you paid",
-        "transaction id",
-        "meta platforms, inc.",
-    ]
     blocked_markers = [
         "not a final bill",
         "this is not a final bill",
@@ -243,11 +243,24 @@ def is_meta_final_receipt(headers, body_text):
         "billing threshold",
         "amount due",
     ]
-
-    if any(marker in subject or marker in body for marker in blocked_markers):
+    if any(marker in haystack for marker in blocked_markers):
         return False
 
-    return all(marker in body or marker in subject for marker in final_markers)
+    # Mandatory: the receipt must reference Meta as the recipient.
+    meta_identity_markers = ["meta platforms, inc.", "meta platforms inc", "meta platforms"]
+    if not any(marker in haystack for marker in meta_identity_markers):
+        return False
+
+    # Required: at least one strong "this is a paid receipt" signal.
+    final_signals = [
+        "receipt for your payment",
+        "you paid",
+        "you sent a payment",
+        "you successfully sent a payment",
+        "payment sent",
+        "transaction id",
+    ]
+    return any(marker in haystack for marker in final_signals)
 
 
 # ── Amount extraction ─────────────────────────────────────────────────────────
