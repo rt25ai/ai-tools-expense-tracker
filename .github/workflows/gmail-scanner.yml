@@ -64,8 +64,25 @@ jobs:
       # the real last-scan timestamp — not a stale build from days ago.
       # --autostash: auto_invoice.py may leave auto_invoice.log or a refreshed
       # gmail_token.json in the workspace; without this flag rebase would abort.
+      # The cleanup loop recovers from any half-finished rebase/merge that the
+      # scanner's silent git wrapper may have left when it hit a conflict
+      # (e.g. concurrent push from the local Windows Task Scheduler).
       - name: Pull scanner commits
-        run: git pull --rebase --autostash origin master
+        run: |
+          git rebase --abort 2>/dev/null || true
+          git merge --abort 2>/dev/null || true
+          attempts=0
+          until git pull --rebase --autostash origin master; do
+            attempts=$((attempts + 1))
+            if [ "$attempts" -ge 3 ]; then
+              echo "Pull failed after $attempts attempts."
+              exit 1
+            fi
+            echo "Pull failed (attempt $attempts/3); resetting and retrying..."
+            git rebase --abort 2>/dev/null || true
+            git merge --abort 2>/dev/null || true
+            sleep 5
+          done
 
       - name: Setup Node
         uses: actions/setup-node@v4

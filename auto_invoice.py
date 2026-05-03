@@ -616,6 +616,54 @@ def git(*args):
                        creationflags=NO_WINDOW_FLAGS)
     if r.returncode != 0:
         log.warning(f"git {' '.join(args)} failed (rc={r.returncode}): {r.stderr.strip()}")
+    return r
+
+
+def git_abort_inflight():
+    """Abort any half-finished rebase or merge so the next git command starts clean.
+
+    Without this, a failed `git pull --rebase` leaves the working tree with
+    unmerged paths and every subsequent git command fails with
+    "Pulling is not possible because you have unmerged files."
+    """
+    for cmd in (["rebase", "--abort"], ["merge", "--abort"]):
+        subprocess.run(["git", *cmd], cwd=str(BASE_DIR),
+                       capture_output=True, text=True,
+                       creationflags=NO_WINDOW_FLAGS)
+
+
+def git_pull_rebase(remote, branch):
+    """Pull-with-rebase that always leaves the tree in a clean state."""
+    r = git("pull", "--rebase", "--autostash", remote, branch)
+    if r.returncode != 0:
+        log.warning(f"Pull failed; aborting any in-progress rebase to keep tree clean.")
+        git_abort_inflight()
+    return r.returncode == 0
+
+
+def git_push_with_retry(target_ref, max_attempts=4):
+    """Push HEAD to target_ref, rebasing on conflict instead of giving up silently.
+
+    The previous code logged a warning and moved on when the local Windows
+    Task Scheduler raced the cloud workflow, leaving the commit stranded
+    locally. Retrying with rebase keeps both sides in sync.
+    """
+    for attempt in range(1, max_attempts + 1):
+        r = subprocess.run(
+            ["git", "push", "origin", f"HEAD:{target_ref}"],
+            cwd=str(BASE_DIR), capture_output=True, text=True,
+            creationflags=NO_WINDOW_FLAGS,
+        )
+        if r.returncode == 0:
+            return True
+        log.warning(f"Push to {target_ref} failed (attempt {attempt}/{max_attempts}): "
+                    f"{r.stderr.strip()}")
+        if attempt == max_attempts:
+            break
+        if not git_pull_rebase("origin", target_ref):
+            git_abort_inflight()
+    log.error(f"Giving up on push to {target_ref} after {max_attempts} attempts.")
+    return False
 
 
 def rebuild_excel():
@@ -644,8 +692,8 @@ def rebuild_and_push(new_txns):
     git("add", "auto_invoice_status.json")
     git("add", "processed_messages.json")
     git("commit", "-m", f"Auto: add invoices – {summary}\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>")
-    git("push", "origin", "HEAD:master")  # ← GitHub Pages builds from master
-    git("push", "origin", "HEAD:main")    # ← keep main in sync
+    git_push_with_retry("master")  # ← GitHub Pages builds from master
+    git_push_with_retry("main")    # ← keep main in sync
     log.info(f"Pushed: {summary}")
 
 
@@ -667,8 +715,8 @@ def push_status_only():
     )
     if r.returncode != 0:  # something staged → commit
         git("commit", "-m", "Auto: Gmail scan – no new invoices\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>")
-        git("push", "origin", "HEAD:master")
-        git("push", "origin", "HEAD:main")
+        git_push_with_retry("master")
+        git_push_with_retry("main")
         log.info("Pushed status update (no new invoices)")
 
 
@@ -756,9 +804,11 @@ def main():
     _EXCHANGE_RATE_CACHE = _rate
     log.info(f"Exchange rate: 1 USD = {_rate} ILS  (BOI published: {_boi_date})")
 
-    # Sync with remote before scanning to avoid conflicts when both local and CI run
+    # Sync with remote before scanning to avoid conflicts when both local and CI run.
+    # git_pull_rebase aborts any half-finished rebase on failure so the rest of
+    # the script (and the calling workflow) doesn't trip over unmerged files.
     commit_before_pull = get_current_commit()
-    git("pull", "--rebase", "--autostash", "origin", "master")
+    git_pull_rebase("origin", "master")
     commit_after_pull = get_current_commit()
 
     if commit_before_pull != commit_after_pull:
