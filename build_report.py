@@ -203,6 +203,7 @@ MANUAL_TRANSACTIONS = [
     ("2026-05-01", "Google Cloud", "Google Cloud Platform & APIs (₪8.23)", 8.23, "ILS"),  # missed by Gmail scanner (no PDF)
     ("2026-05-01", "Google Workspace", "Google Workspace (₪75.90)", 75.90, "ILS"),
     ("2026-05-02", "Anthropic", "Prepaid extra usage, Individual plan", 14.74, "ILS"),  # $5.00 @ 2.9480
+    ("2026-05-03", "Meta (Ads)", "Facebook Ads", 80.42, "ILS"),  # $27.28 @ 2.9480
 ]
 
 TRACKING_START = datetime.date(2025, 7, 1)
