@@ -186,6 +186,7 @@ MANUAL_TRANSACTIONS = [
     ("2026-04-16", "Anthropic",     "Prepaid extra usage, Individual plan",  10.00),         # credit top-up
     ("2026-04-18", "CapCut",        "Pro – Apr 2026 (₪49.90)",               49.90, "ILS"),  # 2nd account user4127233390216 (fwd)
     ("2026-04-19", "Anthropic", "Prepaid extra usage, Individual plan", 5.00),
+    ("2026-04-19", "Eleven Labs", "Starter monthly", 14.80, "ILS"),  # $5.00 @ 2.9598 (#2724-7046-5861)
     ("2026-04-20", "Anthropic", "Auto recharge extra usage, Individual plan", 15.14),
     ("2026-04-20", "Anthropic", "Prepaid extra usage, Individual plan", 10.00),
     ("2026-04-21", "Anthropic", "Auto recharge extra usage, Individual plan", 10.15),
@@ -207,6 +208,8 @@ MANUAL_TRANSACTIONS = [
     ("2026-05-02", "Anthropic", "Prepaid extra usage, Individual plan", 14.74, "ILS"),  # $5.00 @ 2.9480
     ("2026-05-03", "Meta (Ads)", "Facebook Ads", 80.42, "ILS"),  # $27.28 @ 2.9480
     ("2026-05-03", "Anthropic", "Auto recharge extra usage, Individual plan", 45.19, "ILS"),  # $15.33 @ 2.9480
+    ("2026-05-04", "Eleven Labs", "Creator monthly", 64.76, "ILS"),  # $22.00 @ 2.9438 (#2956-7721-5632)
+    ("2026-05-04", "Anthropic", "Auto recharge extra usage, Individual plan", 45.29, "ILS"),  # $15.29 @ 2.9620
 ]
 
 TRACKING_START = datetime.date(2025, 7, 1)
