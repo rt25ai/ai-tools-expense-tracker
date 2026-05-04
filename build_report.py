@@ -199,7 +199,9 @@ MANUAL_TRANSACTIONS = [
     ("2026-04-26", "Meta (Ads)", "Facebook Ads", 51.00),
     ("2026-04-26", "Lovable", "Lovable", 5.00),
     ("2026-04-28", "Anthropic", "Auto recharge extra usage, Individual plan", 10.56),
-    ("2026-05-01", "Anthropic", "Auto recharge extra usage, Individual plan", 10.40),
+    ("2026-05-01", "Anthropic", "Auto recharge extra usage, Individual plan", 30.71, "ILS"),  # $10.40 @ 2.9525 (#2195-1799-5026 12:45 UTC)
+    ("2026-05-01", "Anthropic", "Auto recharge extra usage, Individual plan", 32.01, "ILS"),  # $10.84 @ 2.9525 (#2977-2432-1774 20:45 UTC)
+    ("2026-05-01", "Anthropic", "Auto recharge extra usage, Individual plan", 31.95, "ILS"),  # $10.82 @ 2.9525 (#2358-7000-1665 21:06 UTC)
     ("2026-05-01", "Google Cloud", "Google Cloud Platform & APIs (₪8.23)", 8.23, "ILS"),  # missed by Gmail scanner (no PDF)
     ("2026-05-01", "Google Workspace", "Google Workspace (₪75.90)", 75.90, "ILS"),
     ("2026-05-02", "Anthropic", "Prepaid extra usage, Individual plan", 14.74, "ILS"),  # $5.00 @ 2.9480

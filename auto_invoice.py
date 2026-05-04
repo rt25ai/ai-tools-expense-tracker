@@ -523,11 +523,30 @@ def process_message(service, msg_id):
 # ── build_report.py insertion ─────────────────────────────────────────────────
 
 def already_imported(txn):
-    """True if the transaction already exists in MANUAL_TRANSACTIONS."""
+    """True if the transaction already exists in MANUAL_TRANSACTIONS.
+
+    Dedup must include the amount: same vendor can issue multiple receipts on
+    the same day with identical description (e.g. Anthropic auto-recharges that
+    fire several times when usage spikes). Matching only on date+tool+desc made
+    the scanner drop later receipts as false-positive duplicates.
+    """
     code = REPORT_PY.read_text(encoding="utf-8")
-    # Match on date+tool+description; works for both old USD 4-tuple and new ILS 5-tuple.
-    key = f'("{txn["date"]}", "{txn["tool"]}", "{txn["description"]}"'
-    return key in code
+    prefix = f'("{txn["date"]}", "{txn["tool"]}", "{txn["description"]}"'
+    if txn["currency"] == "USD":
+        usd_marker = f'# ${txn["amount_usd"]:.2f} @ '
+        # Legacy 4-tuple USD format: ("date", "tool", "desc", USD_amount),
+        legacy = f'{prefix}, {txn["amount_usd"]:.2f}),'
+        if legacy in code:
+            return True
+        return any(
+            line.lstrip().startswith(prefix) and usd_marker in line
+            for line in code.splitlines()
+        )
+    ils_marker = f', {txn["original_amount"]:.2f}, "ILS"'
+    return any(
+        line.lstrip().startswith(prefix) and ils_marker in line
+        for line in code.splitlines()
+    )
 
 
 def insert_transaction(txn):
