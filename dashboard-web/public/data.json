@@ -1,17 +1,17 @@
 {
   "generated": "2026-05-04",
-  "built_at": "2026-05-04T16:52:11.432924+00:00",
+  "built_at": "2026-05-04T16:57:12.969546+00:00",
   "usd_rate": 2.962,
-  "exchange_rate_fetched_at": "2026-05-04T16:52:11.432924+00:00",
+  "exchange_rate_fetched_at": "2026-05-04T16:57:12.969546+00:00",
   "exchange_rate_updated_at": "2026-05-04T12:21:03.3708561Z",
   "exchange_rate_source": "Bank of Israel Public API",
-  "grand_total": 2582.99,
-  "grand_total_ils": 7708.3,
+  "grand_total": 2604.55,
+  "grand_total_ils": 7772.26,
   "current_month": "2026-05",
-  "current_month_total": 86.19,
-  "current_month_total_ils": 255.19,
+  "current_month_total": 107.75,
+  "current_month_total_ils": 319.15,
   "scanner_status": {
-    "last_run": "2026-05-04T19:52:08",
+    "last_run": "2026-05-04T19:57:07",
     "next_run": "2026-05-05T08:00:00",
     "result": "ok",
     "new_count": 0,
@@ -53,10 +53,30 @@
       "date": "2026-05-01",
       "tool": "Anthropic",
       "description": "Auto recharge extra usage, Individual plan",
-      "currency": "USD",
-      "original_amount": 10.4,
-      "amount_usd": 10.4,
+      "currency": "ILS",
+      "original_amount": 30.71,
+      "amount_usd": 10.367995,
       "amount_ils": 30.71,
+      "entry_source": null
+    },
+    {
+      "date": "2026-05-01",
+      "tool": "Anthropic",
+      "description": "Auto recharge extra usage, Individual plan",
+      "currency": "ILS",
+      "original_amount": 32.01,
+      "amount_usd": 10.806887,
+      "amount_ils": 32.01,
+      "entry_source": null
+    },
+    {
+      "date": "2026-05-01",
+      "tool": "Anthropic",
+      "description": "Auto recharge extra usage, Individual plan",
+      "currency": "ILS",
+      "original_amount": 31.95,
+      "amount_usd": 10.786631,
+      "amount_ils": 31.95,
       "entry_source": null
     },
     {
@@ -1211,7 +1231,7 @@
     "2026-02": 339.09,
     "2026-03": 316.01,
     "2026-04": 540.73,
-    "2026-05": 86.19
+    "2026-05": 107.75
   },
   "monthly_ils": {
     "2025-07": 872.92,
@@ -1224,11 +1244,11 @@
     "2026-02": 1006.9,
     "2026-03": 939.66,
     "2026-04": 1608.41,
-    "2026-05": 255.19
+    "2026-05": 319.15
   },
   "by_tool": {
     "Meta (Ads)": 592.88,
-    "Anthropic": 360.43,
+    "Anthropic": 381.99,
     "OpenAI": 281.14,
     "Google Workspace": 237.03,
     "Ideogram AI": 209.97,
@@ -1253,7 +1273,7 @@
   },
   "by_tool_ils": {
     "Meta (Ads)": 1757.35,
-    "Anthropic": 1071.53,
+    "Anthropic": 1135.49,
     "OpenAI": 884.27,
     "Google Workspace": 702.09,
     "Ideogram AI": 621.94,
