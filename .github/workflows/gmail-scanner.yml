@@ -56,13 +56,15 @@ jobs:
       - name: Clean up credential files
         run: rm -f gmail_credentials.json gmail_token.json
 
-      # Pull the commits that auto_invoice.py pushed (status + data.json),
-      # then rebuild the static dashboard HTML so GitHub Pages always shows
-      # the real last-scan timestamp — not a stale build from days ago.
-      # --autostash: auto_invoice.py may leave auto_invoice.log or a refreshed
-      # gmail_token.json in the workspace; without this flag rebase would abort.
-      - name: Pull scanner commits
-        run: git pull --rebase --autostash origin master
+      # Sync workspace to whatever is on origin/master AFTER the scanner ran.
+      # Plain rebase racing the local Task Scheduler push produces unresolvable
+      # binary conflicts (xlsx + JSON), so we discard the workspace and reset
+      # hard — anything we need is already pushed by auto_invoice.py, the rest
+      # is regeneratable in the next steps.
+      - name: Sync workspace to origin/master
+        run: |
+          git fetch origin master
+          git reset --hard origin/master
 
       - name: Setup Node
         uses: actions/setup-node@v4
