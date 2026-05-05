@@ -194,6 +194,14 @@ MANUAL_TRANSACTIONS = [
     ("2026-04-26", "Meta (Ads)", "Facebook Ads", 51.00),
     ("2026-04-26", "Lovable", "Lovable", 5.00),
     ("2026-04-28", "Anthropic", "Auto recharge extra usage, Individual plan", 10.56),
+    ("2026-05-01", "Anthropic", "Auto recharge extra usage, Individual plan", 10.82),
+    ("2026-05-01", "Anthropic", "Auto recharge extra usage, Individual plan", 10.84),
+    ("2026-05-01", "Google Workspace", "Google Workspace (₪75.90)", 75.90, "ILS"),
+    ("2026-05-01", "Anthropic", "Auto recharge extra usage, Individual plan", 10.40),
+    ("2026-05-02", "Anthropic", "Prepaid extra usage, Individual plan", 5.00),
+    ("2026-05-03", "Anthropic", "Auto recharge extra usage, Individual plan", 15.33),
+    ("2026-05-03", "Meta (Ads)", "Facebook Ads", 27.28),
+    ("2026-05-04", "Anthropic", "Auto recharge extra usage, Individual plan", 15.29),
 ]
 
 TRACKING_START = datetime.date(2025, 7, 1)
