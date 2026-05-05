@@ -1,0 +1,14 @@
+# Keep the graph focused on source and architecture, not generated output.
+docs/
+graphify-out/
+tmp/
+invoices/
+manual_invoices/
+
+# Large binary/data artifacts that add noise to codebase graphs.
+*.pdf
+*.xlsx
+*.log
+
+# Static assets that are not useful for architecture questions.
+dashboard-web/public/logo.png
