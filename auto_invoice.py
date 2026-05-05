@@ -313,6 +313,29 @@ ANTHROPIC_DATE_PREFIX_RE = re.compile(
 )
 
 
+ELEVENLABS_LINE_RE = re.compile(
+    r"(?P<plan>[A-Za-z][A-Za-z ]*?)\s*\(per subscription\)\s*Qty\s*\d+\s*\$(?P<amount>[\d,]+\.?\d*)"
+)
+
+
+def extract_elevenlabs_description(body):
+    """Extract paid plan name from an Eleven Labs Stripe receipt.
+
+    Receipt body lists "<Plan> (per subscription) Qty 1 $X.XX" lines, sometimes
+    preceded by $0.00 rollover/gift credit lines. Take the last non-zero line
+    and append "monthly" to match the existing entry convention.
+    """
+    last_paid = None
+    for m in ELEVENLABS_LINE_RE.finditer(body):
+        try:
+            amount = float(m.group("amount").replace(",", ""))
+        except ValueError:
+            continue
+        if amount > 0:
+            last_paid = m.group("plan").strip()
+    return f"{last_paid} monthly" if last_paid else None
+
+
 def extract_anthropic_description(body):
     """Extract the human-readable line item description from an Anthropic receipt.
 
@@ -379,15 +402,18 @@ def identify_tool(headers, payload):
             return "Google Cloud", "ILS", "body"
         return "Google Workspace", "ILS", "pdf"
 
+    # Pattern match is case-insensitive: senders like
+    # "invoice+statements+acct_1M07hSLmdOdiMXBs@stripe.com" carry uppercase
+    # letters in the Stripe acct id, but `sender` was lowercased above.
     for pattern, tool, currency, source in TOOL_RULES:
-        if pattern in sender:
+        if pattern.lower() in sender:
             return tool, currency, source
 
     # Fallback: forwarded messages wrap the original sender inside the body.
     fwd_sender = extract_forwarded_sender(body)
     if fwd_sender:
         for pattern, tool, currency, source in TOOL_RULES:
-            if pattern in fwd_sender:
+            if pattern.lower() in fwd_sender:
                 log.info(f"  Matched forwarded sender: {fwd_sender!r} -> {tool}")
                 return tool, currency, source
 
@@ -503,6 +529,8 @@ def process_message(service, msg_id):
             description = "Facebook Ads"
         elif tool == "Anthropic":
             description = extract_anthropic_description(body) or tool
+        elif tool == "Eleven Labs":
+            description = extract_elevenlabs_description(body) or tool
         else:
             description = tool
 
