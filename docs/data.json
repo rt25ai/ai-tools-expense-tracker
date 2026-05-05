@@ -1,15 +1,15 @@
 {
   "generated": "2026-05-05",
-  "built_at": "2026-05-05T10:42:55.561490+00:00",
+  "built_at": "2026-05-05T10:48:05.850433+00:00",
   "usd_rate": 2.962,
-  "exchange_rate_fetched_at": "2026-05-05T10:42:55.561490+00:00",
+  "exchange_rate_fetched_at": "2026-05-05T10:48:05.850433+00:00",
   "exchange_rate_updated_at": "2026-05-04T12:21:03.3708561Z",
   "exchange_rate_source": "Bank of Israel Public API",
-  "grand_total": 2646.7,
-  "grand_total_ils": 7839.53,
+  "grand_total": 2706.7,
+  "grand_total_ils": 8017.25,
   "current_month": "2026-05",
-  "current_month_total": 144.9,
-  "current_month_total_ils": 429.2,
+  "current_month_total": 204.9,
+  "current_month_total_ils": 606.92,
   "scanner_status": {
     "last_run": "2026-05-05T13:42:08",
     "next_run": "2026-05-06T08:00:00",
@@ -19,6 +19,16 @@
     "error": null
   },
   "transactions": [
+    {
+      "date": "2026-05-05",
+      "tool": "Dzine",
+      "description": "Video Top-Up",
+      "currency": "USD",
+      "original_amount": 30,
+      "amount_usd": 30,
+      "amount_ils": 88.86,
+      "entry_source": "manual"
+    },
     {
       "date": "2026-05-04",
       "tool": "Anthropic",
@@ -48,6 +58,16 @@
       "amount_usd": 15.256583,
       "amount_ils": 45.19,
       "entry_source": null
+    },
+    {
+      "date": "2026-05-03",
+      "tool": "Dzine",
+      "description": "Video Top-Up",
+      "currency": "USD",
+      "original_amount": 30,
+      "amount_usd": 30,
+      "amount_ils": 88.86,
+      "entry_source": "manual"
     },
     {
       "date": "2026-05-03",
@@ -1261,10 +1281,10 @@
     "2026-02": 339.09,
     "2026-03": 316.01,
     "2026-04": 545.73,
-    "2026-05": 144.9
+    "2026-05": 204.9
   },
   "monthly_ils": {
-    "2026-05": 429.2,
+    "2026-05": 606.92,
     "2026-04": 1616.44,
     "2026-03": 936.03,
     "2026-02": 1004.37,
@@ -1284,11 +1304,11 @@
     "Ideogram AI": 209.97,
     "Genspark": 193.31,
     "Lovable": 146.86,
+    "Dzine": 109.6,
     "CapCut": 101.08,
     "Eleven Labs": 76.51,
     "Higgsfield": 61.95,
     "Runway ML": 61.63,
-    "Dzine": 49.6,
     "Make": 36.06,
     "Manychat": 32.6,
     "Timeless": 30.42,
@@ -1309,11 +1329,11 @@
     "Ideogram AI": 621.94,
     "Genspark": 572.57,
     "Lovable": 434.99,
+    "Dzine": 324.64,
     "CapCut": 299.4,
     "Eleven Labs": 226.62,
     "Higgsfield": 183.5,
     "Runway ML": 182.56,
-    "Dzine": 146.92,
     "Make": 106.81,
     "Manychat": 96.56,
     "Timeless": 90.1,
