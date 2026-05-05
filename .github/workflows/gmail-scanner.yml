@@ -23,6 +23,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          ref: master
           fetch-depth: 0
 
       - name: Configure git
@@ -87,4 +88,6 @@ jobs:
           fi
           git commit -m "Auto: rebuild dashboard after Gmail scan"
           git push origin HEAD:master
-          git push origin HEAD:main
+          # Mirror to main is best-effort; main carries unrelated PR work that
+          # routinely diverges from master, so a failed push must not fail the job.
+          git push origin HEAD:main || echo "Mirror to main skipped (diverged from master)"

@@ -89,8 +89,10 @@ jobs:
           }
 
           push_with_retry "${GITHUB_REF_NAME}"
+          # Mirror across master↔main is best-effort. main carries unrelated PR
+          # commits and a failed mirror must not block the rebuild job.
           if [ "${GITHUB_REF_NAME}" = "master" ]; then
-            push_with_retry "main"
+            push_with_retry "main" || echo "Mirror to main skipped (diverged from master)"
           elif [ "${GITHUB_REF_NAME}" = "main" ]; then
-            push_with_retry "master"
+            push_with_retry "master" || echo "Mirror to master skipped (diverged from main)"
           fi
