@@ -677,6 +677,7 @@ def rebuild_and_push(new_txns):
     git("add", "dashboard-web/public/data.json")
     git("add", "auto_invoice_status.json")
     git("add", "processed_messages.json")
+    git("add", "historical_rates.json")
     git("commit", "-m", f"Auto: add invoices – {summary}\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>")
     git("push", "origin", "HEAD:master")  # ← GitHub Pages builds from master
     git("push", "origin", "HEAD:main")    # ← keep main in sync
@@ -694,6 +695,7 @@ def push_status_only():
     git("add", "docs/data.json")
     git("add", "dashboard-web/public/data.json")
     git("add", "AI_Tools_Expenses_2025_2026.xlsx")
+    git("add", "historical_rates.json")
     r = subprocess.run(
         ["git", "diff", "--cached", "--quiet"],
         cwd=str(BASE_DIR), capture_output=True,
