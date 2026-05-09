@@ -10,7 +10,7 @@ First run: opens browser for Gmail authorization (one-time).
 After that: fully silent, runs as scheduled task.
 """
 
-import os, io, json, re, base64, subprocess, datetime, logging, time, sys
+import os, io, csv, json, re, base64, subprocess, datetime, logging, time, sys
 from pathlib import Path
 
 # Prevent subprocess.run from briefly flashing a CMD window on Windows when
@@ -38,6 +38,7 @@ STATUS_JSON    = BASE_DIR / "auto_invoice_status.json"
 
 SCOPES        = ["https://www.googleapis.com/auth/gmail.readonly"]
 EXCHANGE_RATE = FALLBACK_USD_ILS_RATE
+TASK_NAME = "Gmail Invoice Scanner"
 SCAN_INTERVAL_MINUTES = 5
 
 # ── Logging ───────────────────────────────────────────────────────────────────
@@ -624,14 +625,9 @@ def insert_transaction(txn):
 
 
 def next_interval_run(now, interval_minutes=SCAN_INTERVAL_MINUTES):
-    """Return the next local Task Scheduler slot for the repeating scanner."""
-    minute_of_day = now.hour * 60 + now.minute
-    next_slot = ((minute_of_day // interval_minutes) + 1) * interval_minutes
-    next_date = now.date() + datetime.timedelta(days=next_slot // (24 * 60))
-    next_minute = next_slot % (24 * 60)
-    return datetime.datetime.combine(
-        next_date,
-        datetime.time(hour=next_minute // 60, minute=next_minute % 60),
+    """Fallback when Windows Task Scheduler cannot report the next run."""
+    return (now + datetime.timedelta(minutes=interval_minutes)).replace(
+        second=0, microsecond=0
     )
 
 
@@ -643,12 +639,53 @@ def next_daily_run(now, hour):
     return candidate
 
 
+def parse_schtasks_datetime(value, now):
+    """Parse localized schtasks date output and prefer the nearest future time."""
+    candidates = []
+    for fmt in (
+        "%d/%m/%Y %H:%M:%S",
+        "%m/%d/%Y %H:%M:%S",
+        "%d/%m/%Y %I:%M:%S %p",
+        "%m/%d/%Y %I:%M:%S %p",
+    ):
+        try:
+            candidates.append(datetime.datetime.strptime(value.strip(), fmt))
+        except ValueError:
+            pass
+    future = [candidate for candidate in candidates if candidate > now]
+    return min(future) if future else None
+
+
+def get_windows_task_next_run(now):
+    """Read the actual next run from Windows Task Scheduler when available."""
+    if os.name != "nt":
+        return None
+    result = subprocess.run(
+        ["schtasks", "/Query", "/TN", TASK_NAME, "/V", "/FO", "CSV"],
+        cwd=str(BASE_DIR),
+        capture_output=True,
+        text=True,
+        creationflags=NO_WINDOW_FLAGS,
+    )
+    if result.returncode != 0:
+        log.warning(f"Could not query Task Scheduler next run: {result.stderr.strip()}")
+        return None
+    rows = list(csv.DictReader(io.StringIO(result.stdout)))
+    if not rows:
+        return None
+    return parse_schtasks_datetime(rows[0].get("Next Run Time", ""), now)
+
+
 def write_status(new_txns, error=None):
     """Write run status to auto_invoice_status.json for the dashboard."""
     now = datetime.datetime.now()
     # GitHub Actions is a daily safety net. The local Windows Task Scheduler is
     # the live scanner and repeats every five minutes.
-    next_run = next_daily_run(now, 3) if os.environ.get("CI") else next_interval_run(now)
+    next_run = (
+        next_daily_run(now, 3)
+        if os.environ.get("CI")
+        else (get_windows_task_next_run(now) or next_interval_run(now))
+    )
     status = {
         "last_run": now.strftime("%Y-%m-%dT%H:%M:%S"),
         "next_run": next_run.strftime("%Y-%m-%dT%H:%M:%S"),

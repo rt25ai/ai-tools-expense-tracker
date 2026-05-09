@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "predev": "node scripts/copy-pdf-worker.mjs",
-    "prebuild": "node scripts/copy-pdf-worker.mjs && node scripts/sync-data.mjs",
-    "build": "next build",
+    "prebuild": "node scripts/clean-next-cache.mjs && node scripts/copy-pdf-worker.mjs && node scripts/sync-data.mjs",
+    "build": "next build --webpack",
     "postbuild": "node scripts/export-to-docs.mjs",
     "start": "next start",
     "lint": "eslint .",
