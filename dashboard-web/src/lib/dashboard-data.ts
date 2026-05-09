@@ -662,7 +662,7 @@ export const getDashboardModel = cache((): DashboardModel => {
     : "טרם רץ";
   const scannerNextRun = scannerStatus?.next_run
     ? scannerStatus.next_run.replace("T", " ")
-    : "מחר ב-08:00";
+    : "בעוד עד 5 דקות";
   const scannerStatusBadge: AutomationItem["status"] = scannerStatus?.result === "error"
     ? "watch"
     : "active";
@@ -672,12 +672,12 @@ export const getDashboardModel = cache((): DashboardModel => {
       : scannerStatus.new_count > 0
         ? `נמצאו ${scannerStatus.new_count} חשבוניות חדשות: ${scannerStatus.new_tools.join(", ")}`
         : "סריקה הושלמה — לא נמצאו חשבוניות חדשות"
-    : "בודק שולחים, קבצי PDF וגופי חשבוניות ב־HTML. רץ כל יום ב-08:00 (Windows Task Scheduler).";
+    : "בודק שולחים, קבצי PDF וגופי חשבוניות ב־HTML. רץ כל 5 דקות (Windows Task Scheduler).";
 
   const automations: AutomationItem[] = [
     {
       name: "סריקת חשבוניות ב־Gmail",
-      cadence: "סריקה יומית ב-08:00",
+      cadence: "סריקה כל 5 דקות",
       status: scannerStatusBadge,
       description: scannerDesc,
       lastRun: scannerLastRun,

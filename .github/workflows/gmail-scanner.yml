@@ -2,7 +2,7 @@ name: Gmail Invoice Scanner
 
 on:
   schedule:
-    - cron: '0 3 * * *'  # 03:00 UTC = 05:00 Israel (winter) / 06:00 (summer) — before local 08:00 run
+    - cron: '0 3 * * *'  # Daily GitHub safety net; local Windows scanner repeats every 5 minutes.
   workflow_dispatch:      # Allow manual trigger from GitHub UI
 
 permissions:

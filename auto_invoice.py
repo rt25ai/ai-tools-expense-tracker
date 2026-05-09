@@ -38,6 +38,7 @@ STATUS_JSON    = BASE_DIR / "auto_invoice_status.json"
 
 SCOPES        = ["https://www.googleapis.com/auth/gmail.readonly"]
 EXCHANGE_RATE = FALLBACK_USD_ILS_RATE
+SCAN_INTERVAL_MINUTES = 5
 
 # ── Logging ───────────────────────────────────────────────────────────────────
 logging.basicConfig(
@@ -622,15 +623,32 @@ def insert_transaction(txn):
     return True
 
 
+def next_interval_run(now, interval_minutes=SCAN_INTERVAL_MINUTES):
+    """Return the next local Task Scheduler slot for the repeating scanner."""
+    minute_of_day = now.hour * 60 + now.minute
+    next_slot = ((minute_of_day // interval_minutes) + 1) * interval_minutes
+    next_date = now.date() + datetime.timedelta(days=next_slot // (24 * 60))
+    next_minute = next_slot % (24 * 60)
+    return datetime.datetime.combine(
+        next_date,
+        datetime.time(hour=next_minute // 60, minute=next_minute % 60),
+    )
+
+
+def next_daily_run(now, hour):
+    """Return the next daily CI safety-net run at the requested hour."""
+    candidate = now.replace(hour=hour, minute=0, second=0, microsecond=0)
+    if candidate <= now:
+        candidate += datetime.timedelta(days=1)
+    return candidate
+
+
 def write_status(new_txns, error=None):
     """Write run status to auto_invoice_status.json for the dashboard."""
     now = datetime.datetime.now()
-    # GitHub Actions runs at 03:00 UTC = 05:00 Israel time.
-    # Local Windows Task Scheduler runs at 08:00.
-    next_hour = 5 if os.environ.get("CI") else 8
-    next_run = (now + datetime.timedelta(days=1)).replace(
-        hour=next_hour, minute=0, second=0, microsecond=0
-    )
+    # GitHub Actions is a daily safety net. The local Windows Task Scheduler is
+    # the live scanner and repeats every five minutes.
+    next_run = next_daily_run(now, 3) if os.environ.get("CI") else next_interval_run(now)
     status = {
         "last_run": now.strftime("%Y-%m-%dT%H:%M:%S"),
         "next_run": next_run.strftime("%Y-%m-%dT%H:%M:%S"),

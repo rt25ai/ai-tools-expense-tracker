@@ -1,8 +1,8 @@
 {
   "generated": "2026-05-09",
-  "built_at": "2026-05-09T20:28:05.988546+00:00",
+  "built_at": "2026-05-09T20:32:05.397036+00:00",
   "usd_rate": 2.907,
-  "exchange_rate_fetched_at": "2026-05-09T20:28:05.988546+00:00",
+  "exchange_rate_fetched_at": "2026-05-09T20:32:05.397036+00:00",
   "exchange_rate_updated_at": "2026-05-08T09:22:02.8257076Z",
   "exchange_rate_source": "Bank of Israel Public API",
   "grand_total": 2843.64,
