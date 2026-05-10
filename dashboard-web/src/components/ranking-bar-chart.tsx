@@ -1,18 +1,10 @@
-"use client";
-
-import { Bar, BarChart, Cell, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { formatCurrencyIls } from "@/lib/formatters";
-import { useHydrated } from "@/lib/use-hydrated";
 
 type RankingDatum = {
   label: string;
   value: number;
   color: string;
 };
-
-function numericValue(value: unknown) {
-  return typeof value === "number" ? value : Number(value ?? 0);
-}
 
 export function RankingBarChart({
   data,
@@ -21,58 +13,38 @@ export function RankingBarChart({
   data: RankingDatum[];
   valueLabel?: string;
 }) {
-  const hydrated = useHydrated();
-
   if (!data.length) {
     return (
-      <div className="flex h-[280px] items-center justify-center rounded-[24px] border border-dashed border-white/10 bg-black/20 text-sm text-zinc-500">
+      <div className="flex h-[260px] items-center justify-center rounded-[20px] border border-dashed border-white/10 bg-black/20 text-sm text-zinc-500">
         אין מספיק נתונים להצגת דירוג.
       </div>
     );
   }
 
-  const chartHeight = Math.max(280, data.length * 54);
-
-  if (!hydrated) {
-    return <div className="w-full animate-pulse rounded-[24px] bg-white/[0.03]" style={{ height: chartHeight }} />;
-  }
+  const maxValue = Math.max(...data.map((entry) => entry.value), 1);
 
   return (
-    <div style={{ height: chartHeight }}>
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} layout="vertical" margin={{ top: 8, right: 28, bottom: 8, left: 0 }}>
-          <XAxis hide type="number" />
-          <YAxis
-            axisLine={false}
-            dataKey="label"
-            tick={{ fill: "#d4d4d8", fontSize: 12 }}
-            tickFormatter={(value: string) => (value.length > 16 ? `${value.slice(0, 15)}…` : value)}
-            tickLine={false}
-            type="category"
-            width={110}
-          />
-          <Tooltip
-            contentStyle={{
-              borderColor: "rgba(255,255,255,0.08)",
-              borderRadius: "18px",
-              background: "rgba(9,12,16,0.92)",
-              color: "#f4f4f5",
-            }}
-            formatter={(value) => [formatCurrencyIls(numericValue(value)), valueLabel]}
-          />
-          <Bar barSize={26} dataKey="value" radius={[10, 10, 10, 10]}>
-            {data.map((entry) => (
-              <Cell key={entry.label} fill={entry.color} />
-            ))}
-            <LabelList
-              dataKey="value"
-              fill="#f4f4f5"
-              formatter={(value) => formatCurrencyIls(numericValue(value))}
-              position="right"
-            />
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+    <div aria-label={valueLabel} className="space-y-3" role="list">
+      {data.map((entry, index) => {
+        const width = `${Math.max((entry.value / maxValue) * 100, 4)}%`;
+
+        return (
+          <div
+            key={entry.label}
+            className="grid gap-3 rounded-[18px] border border-white/8 bg-black/20 p-4 sm:grid-cols-[minmax(0,9rem)_1fr_auto] sm:items-center"
+            role="listitem"
+          >
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium text-white">{entry.label}</p>
+              <p className="mt-1 text-xs text-zinc-500">#{index + 1}</p>
+            </div>
+            <div className="h-3 overflow-hidden rounded-full bg-white/[0.06]">
+              <div className="h-full rounded-full" style={{ width, backgroundColor: entry.color }} />
+            </div>
+            <p className="text-sm font-semibold text-cyan-200 sm:text-left">{formatCurrencyIls(entry.value)}</p>
+          </div>
+        );
+      })}
     </div>
   );
 }

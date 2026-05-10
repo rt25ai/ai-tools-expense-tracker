@@ -2,23 +2,53 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
-import { ArrowUpLeft, CheckCircle2, CircleAlert } from "lucide-react";
+import { ArrowUpLeft, CheckCircle2 } from "lucide-react";
 import { BudgetBars } from "@/components/budget-bars";
-import { ChartFrame } from "@/components/chart-frame";
 import { CompositionDonutChart } from "@/components/composition-donut-chart";
 import { OverviewKpiGrid } from "@/components/overview-kpi-grid";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import type { DashboardModel } from "@/lib/dashboard-data";
+import type { DashboardModel, EnrichedTransaction, ReviewItem, VendorSummary } from "@/lib/dashboard-data";
 import { getChartColor } from "@/lib/chart-palette";
 import { formatCurrencyIls, formatDateLabel, formatDateTimeLabel, formatExchangeRate } from "@/lib/formatters";
 import { applyMonthlyBudgetToMonths } from "@/lib/monthly-budget";
 import { monthReportHref, yearReportHref } from "@/lib/report-links";
 import { useMonthlyBudget } from "@/lib/use-monthly-budget";
 
-export function OverviewViewClient({ model }: { model: DashboardModel }) {
+export type OverviewPageModel = {
+  raw: Pick<
+    DashboardModel["raw"],
+    | "current_month"
+    | "generated"
+    | "exchange_rate_fetched_at"
+    | "exchange_rate_updated_at"
+    | "exchange_rate_source"
+    | "usd_rate"
+  >;
+  stats: DashboardModel["stats"];
+  settings: DashboardModel["settings"];
+  monthlySeries: DashboardModel["monthlySeries"];
+  recurringSeries: DashboardModel["recurringSeries"];
+  vendors: Pick<
+    VendorSummary,
+    | "name"
+    | "totalSpend"
+    | "lastChargeDate"
+    | "expectedAmount"
+    | "nextExpectedDate"
+    | "billingStatus"
+    | "source"
+    | "category"
+    | "chargeCount"
+  >[];
+  needsReview: ReviewItem[];
+  auditLog: DashboardModel["auditLog"];
+  currentMonthTransactions: Pick<EnrichedTransaction, "id" | "date" | "tool" | "amountIls" | "description">[];
+};
+
+export function OverviewViewClient({ model }: { model: OverviewPageModel }) {
   const currentYear = model.raw.current_month.slice(0, 4);
   const monthlyBudget = useMonthlyBudget(model.settings.finance.monthlyBudget);
   const budgetedMonthlySeries = useMemo(
@@ -125,11 +155,11 @@ export function OverviewViewClient({ model }: { model: DashboardModel }) {
           <div className="mt-8 rounded-[24px] border border-cyan-400/15 bg-cyan-400/7 p-4">
             <p className="text-sm font-medium text-cyan-100">עדכון שער</p>
             <p className="mt-2 text-sm leading-6 text-cyan-50/80">
-              נמשך ע"י המערכת:{" "}
+              {"נמשך ע\"י המערכת: "}
               {model.raw.exchange_rate_fetched_at ? formatDateTimeLabel(model.raw.exchange_rate_fetched_at) : "לא ידוע"}
             </p>
             <p className="mt-1 text-sm leading-6 text-zinc-400">
-              פורסם ע"י בנק ישראל:{" "}
+              {"פורסם ע\"י בנק ישראל: "}
               {model.raw.exchange_rate_updated_at ? formatDateTimeLabel(model.raw.exchange_rate_updated_at) : "לא התקבל"}
             </p>
             <p className="mt-1 text-sm leading-6 text-zinc-500">{model.raw.exchange_rate_source ?? "Bank of Israel Public API"}</p>

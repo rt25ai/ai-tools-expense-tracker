@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowUpLeft, CalendarClock, CircleAlert, RefreshCw } from "lucide-react";
 import { KpiCard } from "@/components/kpi-card";
@@ -9,13 +9,52 @@ import { VendorChargeBreakdown } from "@/components/vendor-charge-breakdown";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import type { DashboardModel } from "@/lib/dashboard-data";
 import { formatCurrencyIls, formatDateLabel, formatMonthLabel } from "@/lib/formatters";
 import { monthReportHref, yearReportHref } from "@/lib/report-links";
 
 type KpiKey = "totalYtd" | "currentMonth" | "recurringBaseline" | "needsReview";
 
-function groupTransactionsByVendor(transactions: DashboardModel["transactions"]) {
+type OverviewKpiTransaction = {
+  id: string;
+  date: string;
+  tool: string;
+  amountIls: number;
+  description: string;
+};
+
+type OverviewKpiGridModel = {
+  raw: {
+    current_month: string;
+  };
+  stats: {
+    totalYtd: number;
+    currentMonth: number;
+    recurringBaseline: number;
+    unexpectedCharges: number;
+  };
+  vendors: {
+    name: string;
+    totalSpend: number;
+    lastChargeDate: string | null;
+    expectedAmount: number | null;
+    nextExpectedDate: string | null;
+    billingStatus: "active" | "stopped" | "one-time";
+    source: "manual" | "auto" | "email-imported" | "ai-extracted";
+    category: string;
+    chargeCount: number;
+  }[];
+  needsReview: {
+    id: string;
+    vendor: string;
+    amount: number;
+    date: string;
+    reason: string;
+    severity: "high" | "medium" | "low";
+  }[];
+  currentMonthTransactions: OverviewKpiTransaction[];
+};
+
+function groupTransactionsByVendor(transactions: OverviewKpiTransaction[]) {
   const vendors = new Map<
     string,
     {
@@ -83,11 +122,16 @@ function DetailShell({
   );
 }
 
-export function OverviewKpiGrid({ model }: { model: DashboardModel }) {
+export function OverviewKpiGrid({ model }: { model: OverviewKpiGridModel }) {
   const [activeKpi, setActiveKpi] = useState<KpiKey>("currentMonth");
-  const currentMonthTransactions = model.transactions.filter((transaction) => transaction.monthKey === model.raw.current_month);
-  const currentMonthChargeBreakdown = groupTransactionsByVendor(currentMonthTransactions);
-  const recurringVendors = model.vendors.filter((vendor) => vendor.billingStatus === "active");
+  const currentMonthChargeBreakdown = useMemo(
+    () => groupTransactionsByVendor(model.currentMonthTransactions),
+    [model.currentMonthTransactions],
+  );
+  const recurringVendors = useMemo(
+    () => model.vendors.filter((vendor) => vendor.billingStatus === "active"),
+    [model.vendors],
+  );
   const currentYear = model.raw.current_month.slice(0, 4);
   const currentMonthLabel = formatMonthLabel(model.raw.current_month);
 

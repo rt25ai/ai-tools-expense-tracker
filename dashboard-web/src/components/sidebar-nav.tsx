@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -37,8 +36,9 @@ export function SidebarNav() {
   return (
     <aside className="sticky top-0 hidden h-screen w-[280px] shrink-0 border-l border-white/6 bg-[#090c10] px-6 py-7 lg:flex lg:flex-col">
       <div className="flex items-center gap-3">
-        <div className="rounded-2xl border border-cyan-400/15 bg-cyan-400/8 p-2 shadow-[0_0_30px_rgba(44,214,223,0.12)]">
-          <Image src={withBasePath("/logo.png")} alt="RT-AI" width={34} height={34} className="rounded-lg" unoptimized />
+        <div className="rounded-xl border border-cyan-400/15 bg-cyan-400/8 p-1.5">
+          {/* eslint-disable-next-line @next/next/no-img-element -- Static GitHub Pages logo; avoids loading next/image runtime for a 28px asset. */}
+          <img src={withBasePath("/logo.png")} alt="RT-AI" width={28} height={28} className="rounded-md" />
         </div>
         <div>
           <p className="text-sm font-semibold text-zinc-100">מעקב הוצאות AI וכלים עסקיים</p>

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist_Mono, Heebo } from "next/font/google";
 import { AppShell } from "@/components/app-shell";
 import { LiveRefresh } from "@/components/live-refresh";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { getDashboardModel } from "@/lib/dashboard-data";
 import { withBasePath } from "@/lib/site";
 import "./globals.css";
@@ -59,9 +58,7 @@ export default function RootLayout({
         <meta name="referrer" content="strict-origin-when-cross-origin" />
       </head>
       <body className="min-h-full bg-background text-foreground text-right">
-        <TooltipProvider>
-          <AppShell>{children}</AppShell>
-        </TooltipProvider>
+        <AppShell>{children}</AppShell>
         <LiveRefresh initialBuiltAt={raw.built_at ?? raw.generated} />
       </body>
     </html>
