@@ -1,34 +1,24 @@
 {
-  "generated": "2026-05-11",
-  "built_at": "2026-05-11T17:42:12.674674+00:00",
+  "generated": "2026-05-13",
+  "built_at": "2026-05-13T05:50:00.170148+00:00",
   "usd_rate": 2.909,
-  "exchange_rate_fetched_at": "2026-05-11T17:42:12.674674+00:00",
-  "exchange_rate_updated_at": "2026-05-11T12:22:03.1021849Z",
+  "exchange_rate_fetched_at": "2026-05-13T05:50:00.170148+00:00",
+  "exchange_rate_updated_at": "2026-05-12T12:21:03.397936Z",
   "exchange_rate_source": "Bank of Israel Public API",
-  "grand_total": 2859.25,
-  "grand_total_ils": 8399.37,
+  "grand_total": 2842.09,
+  "grand_total_ils": 8349.47,
   "current_month": "2026-05",
-  "current_month_total": 319.7,
-  "current_month_total_ils": 931.46,
+  "current_month_total": 302.54,
+  "current_month_total_ils": 881.56,
   "scanner_status": {
-    "last_run": "2026-05-11T20:42:08",
-    "next_run": "2026-05-11T20:47:00",
+    "last_run": "2026-05-13T05:49:34",
+    "next_run": "2026-05-14T03:00:00",
     "result": "ok",
     "new_count": 0,
     "new_tools": [],
     "error": null
   },
   "transactions": [
-    {
-      "date": "2026-05-10",
-      "tool": "CapCut",
-      "description": "Pro – May 2026 (₪49.90)",
-      "currency": "ILS",
-      "original_amount": 49.9,
-      "amount_usd": 17.153661,
-      "amount_ils": 49.9,
-      "entry_source": null
-    },
     {
       "date": "2026-05-08",
       "tool": "Higgsfield",
@@ -1311,7 +1301,7 @@
     "2026-02": 344.9,
     "2026-03": 321.41,
     "2026-04": 551.12,
-    "2026-05": 319.7
+    "2026-05": 302.54
   },
   "monthly_ils": {
     "2025-07": 872.92,
@@ -1324,7 +1314,7 @@
     "2026-02": 1006.9,
     "2026-03": 939.66,
     "2026-04": 1623.21,
-    "2026-05": 931.46
+    "2026-05": 881.56
   },
   "by_tool": {
     "Meta (Ads)": 602.76,
@@ -1335,8 +1325,8 @@
     "Genspark": 196.83,
     "Dzine": 155.51,
     "Lovable": 149.44,
-    "CapCut": 120.08,
     "Higgsfield": 113.08,
+    "CapCut": 102.92,
     "Eleven Labs": 77.9,
     "Runway ML": 62.76,
     "Make": 36.72,
@@ -1360,8 +1350,8 @@
     "Genspark": 572.57,
     "Dzine": 454.21,
     "Lovable": 435.11,
-    "CapCut": 349.3,
     "Higgsfield": 328.57,
+    "CapCut": 299.4,
     "Eleven Labs": 226.62,
     "Runway ML": 182.56,
     "Make": 106.81,
