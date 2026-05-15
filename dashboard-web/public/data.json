@@ -1,15 +1,15 @@
 {
   "generated": "2026-05-15",
-  "built_at": "2026-05-15T19:05:37.930421+00:00",
+  "built_at": "2026-05-15T20:40:05.134299+00:00",
   "usd_rate": 2.916,
-  "exchange_rate_fetched_at": "2026-05-15T19:05:37.930421+00:00",
+  "exchange_rate_fetched_at": "2026-05-15T20:40:05.134299+00:00",
   "exchange_rate_updated_at": "2026-05-15T09:22:03.0799363Z",
   "exchange_rate_source": "Bank of Israel Public API",
-  "grand_total": 2836.67,
-  "grand_total_ils": 8349.47,
+  "grand_total": 2856.67,
+  "grand_total_ils": 8407.79,
   "current_month": "2026-05",
-  "current_month_total": 302.19,
-  "current_month_total_ils": 881.56,
+  "current_month_total": 322.19,
+  "current_month_total_ils": 939.88,
   "scanner_status": {
     "last_run": "2026-05-15T19:05:34",
     "next_run": "2026-05-16T03:00:00",
@@ -19,6 +19,16 @@
     "error": null
   },
   "transactions": [
+    {
+      "date": "2026-05-15",
+      "tool": "Anthropic",
+      "description": "Claude Pro",
+      "currency": "ILS",
+      "original_amount": 58.32,
+      "amount_usd": 20.0,
+      "amount_ils": 58.32,
+      "entry_source": null
+    },
     {
       "date": "2026-05-08",
       "tool": "Higgsfield",
@@ -1301,7 +1311,7 @@
     "2026-02": 344.12,
     "2026-03": 320.68,
     "2026-04": 550.39,
-    "2026-05": 302.19
+    "2026-05": 322.19
   },
   "monthly_ils": {
     "2025-07": 872.92,
@@ -1314,11 +1324,11 @@
     "2026-02": 1006.9,
     "2026-03": 939.66,
     "2026-04": 1623.21,
-    "2026-05": 881.56
+    "2026-05": 939.88
   },
   "by_tool": {
     "Meta (Ads)": 601.43,
-    "Anthropic": 401.2,
+    "Anthropic": 421.2,
     "OpenAI": 282.42,
     "Google Workspace": 240.77,
     "Ideogram AI": 213.29,
@@ -1343,7 +1353,7 @@
   },
   "by_tool_ils": {
     "Meta (Ads)": 1757.35,
-    "Anthropic": 1180.78,
+    "Anthropic": 1239.1,
     "OpenAI": 884.27,
     "Google Workspace": 702.09,
     "Ideogram AI": 621.94,

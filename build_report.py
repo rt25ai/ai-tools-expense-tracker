@@ -210,6 +210,7 @@ MANUAL_TRANSACTIONS = [
     ("2026-05-03", "Anthropic", "Auto recharge extra usage, Individual plan", 45.19, "ILS"),  # $15.33 @ 2.9480
     ("2026-05-04", "Eleven Labs", "Creator monthly", 64.76, "ILS"),  # $22.00 @ 2.9438 (#2956-7721-5632)
     ("2026-05-04", "Anthropic", "Auto recharge extra usage, Individual plan", 45.29, "ILS"),  # $15.29 @ 2.9620
+    ("2026-05-15", "Anthropic", "Claude Pro", 58.32, "ILS"),  # $20.00 @ 2.9160
 ]
 
 TRACKING_START = datetime.date(2025, 7, 1)
