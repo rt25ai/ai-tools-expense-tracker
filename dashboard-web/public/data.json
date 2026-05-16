@@ -1,18 +1,18 @@
 {
   "generated": "2026-05-16",
-  "built_at": "2026-05-16T01:15:14.246154+00:00",
+  "built_at": "2026-05-16T04:51:46.322928+00:00",
   "usd_rate": 2.916,
-  "exchange_rate_fetched_at": "2026-05-16T01:15:14.246154+00:00",
+  "exchange_rate_fetched_at": "2026-05-16T04:51:46.322928+00:00",
   "exchange_rate_updated_at": "2026-05-15T09:22:03.0799363Z",
   "exchange_rate_source": "Bank of Israel Public API",
   "grand_total": 2876.67,
-  "grand_total_ils": 8480.79,
+  "grand_total_ils": 8466.19,
   "current_month": "2026-05",
   "current_month_total": 342.19,
-  "current_month_total_ils": 1012.88,
+  "current_month_total_ils": 998.28,
   "scanner_status": {
-    "last_run": "2026-05-16T01:15:08",
-    "next_run": "2026-05-16T03:00:00",
+    "last_run": "2026-05-16T04:51:41",
+    "next_run": "2026-05-17T03:00:00",
     "result": "ok",
     "new_count": 0,
     "new_tools": [],
@@ -26,7 +26,7 @@
       "currency": "USD",
       "original_amount": 20.0,
       "amount_usd": 20.0,
-      "amount_ils": 73.0,
+      "amount_ils": 58.4,
       "entry_source": "auto"
     },
     {
@@ -1334,7 +1334,7 @@
     "2026-02": 1006.9,
     "2026-03": 939.66,
     "2026-04": 1623.21,
-    "2026-05": 1012.88
+    "2026-05": 998.28
   },
   "by_tool": {
     "Meta (Ads)": 601.43,
@@ -1364,7 +1364,7 @@
   "by_tool_ils": {
     "Meta (Ads)": 1757.35,
     "Anthropic": 1239.1,
-    "OpenAI": 957.27,
+    "OpenAI": 942.67,
     "Google Workspace": 702.09,
     "Ideogram AI": 621.94,
     "Genspark": 572.57,
