@@ -1,15 +1,15 @@
 {
   "generated": "2026-05-17",
-  "built_at": "2026-05-17T15:59:12.241235+00:00",
+  "built_at": "2026-05-17T16:50:30.175677+00:00",
   "usd_rate": 3.65,
-  "exchange_rate_fetched_at": "2026-05-17T15:59:12.241235+00:00",
+  "exchange_rate_fetched_at": "2026-05-17T16:50:30.175677+00:00",
   "exchange_rate_updated_at": null,
   "exchange_rate_source": "Bank of Israel Public API (fallback)",
-  "grand_total": 2419.85,
-  "grand_total_ils": 8832.44,
+  "grand_total": 2437.85,
+  "grand_total_ils": 8898.14,
   "current_month": "2026-05",
-  "current_month_total": 308.57,
-  "current_month_total_ils": 1126.27,
+  "current_month_total": 326.57,
+  "current_month_total_ils": 1191.97,
   "scanner_status": {
     "last_run": "2026-05-17T15:58:58",
     "next_run": "2026-05-18T03:00:00",
@@ -19,6 +19,16 @@
     "error": null
   },
   "transactions": [
+    {
+      "date": "2026-05-17",
+      "tool": "Dzine",
+      "description": "Video Top-Up",
+      "currency": "USD",
+      "original_amount": 18,
+      "amount_usd": 18,
+      "amount_ils": 65.7,
+      "entry_source": "manual"
+    },
     {
       "date": "2026-05-16",
       "tool": "OpenAI",
@@ -1321,10 +1331,10 @@
     "2026-02": 278.94,
     "2026-03": 260.22,
     "2026-04": 489.99,
-    "2026-05": 308.57
+    "2026-05": 326.57
   },
   "monthly_ils": {
-    "2026-05": 1126.27,
+    "2026-05": 1191.97,
     "2026-04": 1788.44,
     "2026-03": 949.79,
     "2026-02": 1018.13,
@@ -1342,8 +1352,8 @@
     "OpenAI": 285.85,
     "Google Workspace": 192.35,
     "Ideogram AI": 170.39,
+    "Dzine": 163.25,
     "Genspark": 156.87,
-    "Dzine": 145.25,
     "Lovable": 120.12,
     "Higgsfield": 100.27,
     "CapCut": 82.03,
@@ -1367,8 +1377,8 @@
     "OpenAI": 1043.34,
     "Google Workspace": 702.09,
     "Ideogram AI": 621.94,
+    "Dzine": 595.87,
     "Genspark": 572.57,
-    "Dzine": 530.17,
     "Lovable": 438.43,
     "Higgsfield": 366,
     "CapCut": 299.4,
